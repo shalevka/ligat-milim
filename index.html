@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<!-- viewport: מתאים את המשחק לרוחב המסך של הטלפון ומונע זום בטעות -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- שתי השורות האלה עוזרות כשמוסיפים את המשחק למסך הבית באייפון -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ליגת המילים">
+<meta name="theme-color" content="#2e9e4f">
+<title>ליגת המילים ⚽</title>
+<style>
+/* ===================== עיצוב כללי ===================== */
+/* משתנים (CSS variables): צבעים שמשתמשים בהם בכל המשחק. משנים כאן = משתנה בכל מקום */
+:root{
+  --grass:#3bb55e; --grass-dark:#2e9e4f; --sky:#bfe8ff;
+  --sun:#ffd23f; --orange:#ff8c42; --blue:#3a86ff; --purple:#8e5cf7;
+  --ink:#24324a; --soft:#fff8e7; --hint:#ffb703;
+  --shirt:#ff6b35; /* צבע החולצה של השחקן */
+  --font:"Arial Hebrew","Arial",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--sky);font-family:var(--font);color:var(--ink);
+  /* מונע סימון טקסט בלחיצה ארוכה — חשוב לילדים */
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
+input,textarea{-webkit-user-select:text;user-select:text;font-family:var(--font)}
+button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulation}
+/* מסגרת המשחק: ברוחב טלפון, ממורכזת גם במחשב */
+#app{max-width:480px;margin:0 auto;height:100dvh;position:relative;overflow:hidden;
+  background:linear-gradient(#bfe8ff 0%,#e3f6ff 45%,var(--grass) 45%)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom))}
+.screen.active{display:flex}
+
+/* כפתורים גדולים ועגולים */
+.big-btn{background:var(--sun);color:var(--ink);font-size:24px;font-weight:bold;border-radius:22px;
+  padding:16px 18px;box-shadow:0 6px 0 #d9a600;margin:8px 0;transition:transform .1s}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #d9a600}
+.big-btn.blue{background:var(--blue);color:#fff;box-shadow:0 6px 0 #2563c9}
+.big-btn.green{background:#2ec46b;color:#fff;box-shadow:0 6px 0 #1f8f4c}
+.big-btn.purple{background:var(--purple);color:#fff;box-shadow:0 6px 0 #6a3fd0}
+.big-btn:disabled{opacity:.45}
+.small-btn{background:#fff;border-radius:14px;padding:8px 12px;font-size:17px;box-shadow:0 3px 0 #c9d6e3}
+.small-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #c9d6e3}
+
+/* שורת עליונה: מטבעות וכפתור בית */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px}
+.coins{background:#fff;border-radius:20px;padding:6px 14px;font-size:22px;font-weight:bold;box-shadow:0 3px 0 #c9d6e3}
+.coins.pop{animation:pop .45s}
+@keyframes pop{50%{transform:scale(1.3)}}
+.icon-btn{width:52px;height:52px;border-radius:50%;background:#fff;font-size:26px;box-shadow:0 3px 0 #c9d6e3}
+
+/* ===================== מסך הבית ===================== */
+#home h1{font-size:34px;margin:6px 0 0;text-align:center;color:#1d4e89;text-shadow:0 2px 0 #fff}
+.greet{text-align:center;font-size:22px;margin:4px 0}
+.hero{display:flex;flex-direction:column;align-items:center;margin:4px 0}
+.hero svg{width:110px;height:150px;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.player-name{background:#fff;border-radius:14px;padding:4px 14px;font-size:20px;font-weight:bold;margin-top:-6px}
+.list{flex:1;overflow-y:auto;padding:4px 2px 12px}
+.dict-card{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff;
+  border-radius:20px;padding:16px;font-size:23px;font-weight:bold;margin:8px 0;box-shadow:0 5px 0 #1f8f4c}
+.dict-card .stars{font-size:18px}
+.empty-note{background:#fff;border-radius:18px;padding:16px;text-align:center;font-size:20px}
+/* כפתור ההורה: קטן, בפינה, צריך לחיצה ארוכה */
+#parentBtn{position:absolute;left:12px;bottom:max(12px,env(safe-area-inset-bottom));width:46px;height:46px;
+  border-radius:50%;background:rgba(255,255,255,.7);font-size:22px;overflow:hidden}
+#parentBtn .fill{position:absolute;inset:0;background:var(--sun);transform:scaleY(0);transform-origin:bottom;opacity:.8}
+#parentBtn span{position:relative}
+
+/* ===================== מסך שם השחקן (פעם ראשונה) ===================== */
+#naming{justify-content:center;align-items:center;text-align:center}
+#naming h2{font-size:28px;margin:4px}
+#naming input{font-size:28px;text-align:center;border-radius:16px;border:3px solid var(--blue);padding:10px;width:80%;margin:10px 0}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0 14px}
+
+/* ===================== מסך בחירת שלב ===================== */
+#levels h2{text-align:center;font-size:28px;margin:8px 0;background:#fff;border-radius:16px;padding:8px}
+.level-btn{display:flex;align-items:center;gap:12px;text-align:right;width:100%}
+.level-btn .ico{font-size:38px}
+.level-btn .txt{flex:1}
+.level-btn small{display:block;font-size:16px;font-weight:normal}
+
+/* ===================== מסך המשחק ===================== */
+.progress{display:flex;gap:3px;flex:1;justify-content:center;flex-wrap:wrap}
+.progress i{font-style:normal;font-size:17px;opacity:.3;filter:grayscale(1)}
+.progress i.done{opacity:1;filter:none}
+.progress i.now{opacity:.8;filter:none;animation:pop 1s infinite}
+
+/* המגרש: שער, שוער, כדור ושחקן */
+.scene{position:relative;height:190px;border-radius:20px;overflow:hidden;margin:6px 0;flex-shrink:0;
+  background:repeating-linear-gradient(90deg,#43c067 0 40px,#3bb55e 40px 80px);transition:height .3s}
+.scene.short{height:100px}
+#game{overflow-y:auto} /* אם המסך קטן מאוד — אפשר לגלול ולא שום דבר נחתך */
+#game.typing .word{font-size:40px;min-height:56px}
+#game.typing .hear,#game.typing .slow{padding:7px 14px;font-size:20px}
+#game.typing .feedback{font-size:17px;min-height:26px}
+.crowd{position:absolute;top:0;left:0;right:0;height:26px;background:#5a6b86;font-size:15px;line-height:26px;
+  white-space:nowrap;overflow:hidden;text-align:center;letter-spacing:2px}
+.crowd.cheer{animation:jump .3s 4}
+@keyframes jump{50%{transform:translateY(-4px)}}
+.goal{position:absolute;top:34px;left:50%;width:62%;height:44%;transform:translateX(-50%);
+  border:6px solid #fff;border-bottom:none;border-radius:6px 6px 0 0;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 2px,transparent 2px 10px),
+             repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 2px,transparent 2px 10px)}
+.goal.shake{animation:shake .4s 2}
+@keyframes shake{25%{transform:translateX(-52%)}75%{transform:translateX(-48%)}}
+#keeper{position:absolute;bottom:-2px;left:50%;width:48px;height:70px;transform:translateX(-50%);transition:transform .35s}
+.scene.short #keeper{height:52px}
+#ball{position:absolute;bottom:14px;left:58%;font-size:30px;transition:all .55s cubic-bezier(.3,.6,.4,1);z-index:3}
+#kicker{position:absolute;bottom:4px;left:30%;width:52px;height:74px;transition:transform .25s}
+.scene.short #kicker{height:56px;width:40px}
+/* הדמות מגיבה: קופצת ומסתובבת אחרי גול, מתנדנדת ומעודדת אחרי פספוס */
+#kicker.celebrate{animation:celebrate .5s ease-in-out 3}
+@keyframes celebrate{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-28px) rotate(-12deg)}70%{transform:translateY(-14px) rotate(10deg)}}
+#kicker.encourage{animation:encourage .35s ease-in-out 3}
+@keyframes encourage{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.bubble{position:absolute;bottom:74px;left:14%;background:#fff;border-radius:14px;padding:3px 10px;font-size:17px;font-weight:bold;
+  white-space:nowrap;opacity:0;transform:scale(.5);transition:all .25s;z-index:4;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.bubble.show{opacity:1;transform:scale(1)}
+.scene.short .bubble{bottom:56px;font-size:15px}
+.scene.short #ball{font-size:24px;bottom:8px}
+
+/* אזור השאלה */
+.ask{background:#fff;border-radius:20px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.ask-row{display:flex;gap:10px;align-items:center;justify-content:center;width:100%}
+.hear{background:var(--blue);color:#fff;font-size:22px;font-weight:bold;border-radius:18px;padding:10px 18px;box-shadow:0 5px 0 #2563c9}
+.hear:active{transform:translateY(3px);box-shadow:0 2px 0 #2563c9}
+.slow{background:#e7f0ff;font-size:22px;border-radius:18px;padding:10px 14px;box-shadow:0 5px 0 #b8cdf0}
+/* המילה עצמה: גופן גדול כדי שהניקוד ייראה טוב */
+.word{font-size:46px;line-height:1.5;min-height:72px;display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;direction:rtl;letter-spacing:1px}
+.word .gap{display:inline-block;min-width:44px;border-bottom:4px dashed var(--orange);margin:0 3px;color:var(--orange);
+  animation:pulse 1.2s infinite;text-align:center}
+.word .focus{background:#fff2cc;border-radius:10px;padding:0 4px;outline:3px dashed var(--orange);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.word .cursor{display:inline-block;width:3px;height:44px;background:var(--blue);margin:0 2px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+/* סימון טעויות: כתום/צהוב רך, בלי אדום מפחיד */
+.word .bad-l{background:#ffe0b3;border-radius:8px;border-bottom:4px solid var(--orange)}
+.word .bad-n{background:#fff3b0;border-radius:8px;border-bottom:4px dotted var(--hint)}
+.word .placeholder{color:#b0bccb;font-size:22px}
+
+.feedback{min-height:32px;font-size:21px;font-weight:bold;text-align:center;padding:2px 6px}
+.feedback:not(:empty){background:rgba(255,255,255,.92);border-radius:14px;margin-top:4px} /* רקע לבן כדי שיהיה קל לקרוא על הדשא */
+.feedback.good{color:#1f8f4c}
+.feedback.try{color:#c26a00}
+
+/* כפתורי בחירה (שלבים 1 ו-2) */
+.choices{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.choice{width:92px;height:92px;border-radius:24px;background:#fff;font-size:50px;box-shadow:0 6px 0 #c9d6e3;
+  font-family:var(--font)}
+.choice:active{transform:translateY(4px);box-shadow:0 2px 0 #c9d6e3}
+.choice.off{opacity:.25;pointer-events:none}
+.choice.right{background:#c9f7d8;box-shadow:0 6px 0 #1f8f4c}
+
+/* המקלדת (שלב 3) */
+.kb{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:6px;flex-shrink:0}
+.key{height:44px;border-radius:12px;background:#fff;font-size:27px;box-shadow:0 3px 0 #b9c7d6;padding:0;font-family:var(--font)}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 #b9c7d6}
+.key.n{background:#fff4d6;font-size:30px}   /* מקשי ניקוד בצבע אחר */
+.key.fn{background:#dfe9f5;font-size:18px}
+.key.wide{grid-column:span 2}
+.key.check{grid-column:span 2;background:#2ec46b;color:#fff;font-size:22px;font-weight:bold;box-shadow:0 3px 0 #1f8f4c}
+.key.hidden{display:none}
+/* מקלדת חכמה: הדגשה חזקה / קלה של האותיות שבמילה */
+.key.hl{background:#d6e8ff;box-shadow:0 3px 0 #3a86ff}
+.key.hl-light{background:#edf5ff;box-shadow:0 3px 0 #9cc3ff}
+.wiggle{animation:wig .3s}
+@keyframes wig{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+
+.next-btn{margin-top:8px}
+
+/* קונפטי */
+.confetti{position:absolute;top:-10px;width:10px;height:14px;z-index:9;pointer-events:none;animation:fall 1.4s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.float-coin{position:absolute;font-size:30px;z-index:9;pointer-events:none;animation:up 1s ease-out forwards}
+@keyframes up{to{transform:translateY(-120px);opacity:0}}
+
+/* ===================== מסך סיום ===================== */
+#done{justify-content:center;align-items:center;text-align:center}
+#done .trophy{font-size:96px;animation:bob 1.5s infinite}
+#done h2{font-size:34px;margin:6px}
+#done .big-stars{font-size:46px;letter-spacing:6px}
+#done .earned{font-size:26px;background:#fff;border-radius:16px;padding:8px 18px;margin:10px}
+#done .big-btn{width:85%}
+
+/* ===================== מסכי הורה ===================== */
+.parent{background:#f3f6fa;overflow-y:auto}
+.parent h2{margin:6px 0 10px;font-size:24px}
+.card{background:#fff;border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.card h3{margin:0 0 8px;font-size:19px}
+.card label{display:block;font-size:16px;margin:6px 0 4px}
+.card input[type=text],.card textarea{width:100%;font-size:20px;border:2px solid #c9d6e3;border-radius:10px;padding:8px}
+.card textarea{min-height:200px;line-height:1.6;font-size:24px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.note{font-size:14px;color:#5a6b86;margin:6px 0}
+.warn{font-size:15px;background:#fff6dd;border-radius:10px;padding:8px;margin:6px 0}
+.nq-bar{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.nq-bar button{width:42px;height:42px;font-size:26px;border-radius:10px;background:#fff4d6;box-shadow:0 2px 0 #e0c98a}
+.word-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #eef2f6}
+.word-row .w{flex:1;font-size:26px}
+.word-row .src{font-size:13px;color:#5a6b86}
+.rec-on{background:#ffd6d6 !important;animation:pulse .8s infinite}
+#gate{justify-content:center;align-items:center;text-align:center}
+#gate .dots{font-size:40px;letter-spacing:10px;min-height:56px}
+.pad{display:grid;grid-template-columns:repeat(3,80px);gap:10px;justify-content:center}
+.pad button{height:70px;border-radius:18px;background:#fff;font-size:30px;box-shadow:0 4px 0 #c9d6e3}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ========== מסך שם לשחקן (מופיע רק בפעם הראשונה) ========== -->
+  <section id="naming" class="screen">
+    <div id="namingHero" class="hero"></div>
+    <h2>זה השחקן שלך! ⚽</h2>
+    <div style="font-size:20px">איך תקרא לו?</div>
+    <input id="playerNameInput" type="text" maxlength="12" placeholder="שם לשחקן">
+    <div class="sugg" id="suggBox"></div>
+    <button class="big-btn green" id="namingOk">יאללה למגרש! ▶</button>
+  </section>
+
+  <!-- ========== מסך הבית ========== -->
+  <section id="home" class="screen">
+    <div class="topbar">
+      <div class="coins" id="homeCoins">🪙 0</div>
+      <div></div>
+    </div>
+    <h1>ליגת המילים</h1>
+    <div class="greet" id="greet"></div>
+    <div class="hero" id="homeHero"></div>
+    <div style="text-align:center;font-size:19px;margin:6px 0 0">בחר מחזור 👇</div>
+    <div class="list" id="dictList"></div>
+    <!-- כפתור הורה: לחיצה ארוכה של 2 שניות -->
+    <button id="parentBtn" aria-label="מסך הורה"><div class="fill" id="parentFill"></div><span>⚙️</span></button>
+  </section>
+
+  <!-- ========== מסך בחירת שלב ========== -->
+  <section id="levels" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" id="levelsBack">🏠</button>
+      <div class="coins" id="levelsCoins">🪙 0</div>
+    </div>
+    <h2 id="levelsTitle"></h2>
+    <div class="list" id="levelList"></div>
+  </section>
+
+  <!-- ========== מסך המשחק ========== -->
+  <section id="game" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" id="gameBack">🏠</button>
+      <div class="progress" id="progress"></div>
+      <div class="coins" id="gameCoins">🪙 0</div>
+    </div>
+    <div class="scene" id="scene">
+      <div class="crowd" id="crowd">🙂🙂😃🙂😀🙂🙂😃🙂😀🙂🙂😃🙂😀🙂</div>
+      <div class="goal" id="goal"><div id="keeper"></div></div>
+      <div id="kicker"></div>
+      <div id="bubble" class="bubble"></div>
+      <div id="ball">⚽</div>
+    </div>
+    <div class="ask">
+      <div class="ask-row">
+        <button class="hear" id="hearBtn">🔊 שמע</button>
+        <button class="slow" id="slowBtn" aria-label="לאט">🐢</button>
+      </div>
+      <div class="word" id="wordView"></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div id="controls"></div>
+  </section>
+
+  <!-- ========== מסך סיום שלב ========== -->
+  <section id="done" class="screen">
+    <div class="trophy">🏆</div>
+    <h2 id="doneTitle">כל הכבוד!</h2>
+    <div class="big-stars" id="doneStars"></div>
+    <div class="earned" id="doneCoins"></div>
+    <button class="big-btn green" id="doneNext">לשלב הבא ▶</button>
+    <button class="big-btn" id="doneAgain">שחק שוב 🔁</button>
+    <button class="big-btn blue" id="doneHome">הביתה 🏠</button>
+  </section>
+
+  <!-- ========== שער כניסה להורה (קוד) ========== -->
+  <section id="gate" class="screen parent">
+    <h2 id="gateTitle">קוד הורה</h2>
+    <div class="note" id="gateNote"></div>
+    <div class="dots" id="gateDots"></div>
+    <div class="pad" id="gatePad"></div>
+    <button class="small-btn" style="margin-top:16px" id="gateCancel">חזרה</button>
+  </section>
+
+  <!-- ========== מסך הורה ========== -->
+  <section id="parent" class="screen parent">
+    <div class="row" style="justify-content:space-between">
+      <h2>👨‍👩‍👦 מסך הורה</h2>
+      <button class="small-btn" id="parentExit">יציאה ✖</button>
+    </div>
+
+    <div class="card">
+      <h3>פרטים</h3>
+      <label>שם פרטי של הילד (רק שם פרטי, נשמר רק במכשיר הזה)</label>
+      <input type="text" id="childName" maxlength="15">
+      <label>שם השחקן במשחק</label>
+      <input type="text" id="playerName2" maxlength="12">
+    </div>
+
+    <div class="card">
+      <h3>הכתבות</h3>
+      <div id="parentDictList"></div>
+      <button class="big-btn green" style="width:100%;font-size:20px" id="newDict">+ הכתבה חדשה</button>
+    </div>
+
+    <div class="card">
+      <h3>קול</h3>
+      <div id="voiceStatus" class="note"></div>
+      <button class="small-btn" id="voiceTest">🔊 בדיקת קול: "שָׁלוֹם"</button>
+      <div class="note">אם הקול הממוחשב לא מבטא נכון — אפשר להקליט כל מילה בעריכת ההכתבה (🎙️). הקלטה תמיד גוברת על הקול הממוחשב.</div>
+    </div>
+
+    <div class="card">
+      <h3>גיבוי</h3>
+      <div class="warn">⚠️ ההכתבות, ההקלטות והמטבעות נשמרים רק בדפדפן של המכשיר הזה. באייפון הם עלולים להימחק אם לא נכנסים למשחק כמה ימים, או בניקוי נתוני גלישה. כדאי: להוסיף את המשחק למסך הבית, ולשמור גיבוי מדי פעם.</div>
+      <div class="row">
+        <button class="small-btn" id="exportBtn">💾 שמירת גיבוי לקובץ</button>
+        <button class="small-btn" id="importBtn">📂 טעינת גיבוי</button>
+        <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+      </div>
+      <div class="note" id="backupMsg"></div>
+    </div>
+
+    <div class="card">
+      <h3>איפוס</h3>
+      <div class="row">
+        <button class="small-btn" id="resetProgress">איפוס מטבעות והתקדמות</button>
+        <button class="small-btn" id="changeCode">שינוי קוד הורה</button>
+      </div>
+      <div class="note" id="resetMsg"></div>
+    </div>
+    <div class="note" style="text-align:center">ליגת המילים · גרסה 1 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
+  </section>
+
+  <!-- ========== עריכת הכתבה (הורה) ========== -->
+  <section id="editor" class="screen parent">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="editorTitle">הכתבה חדשה</h2>
+      <button class="small-btn" id="editorBack">חזרה</button>
+    </div>
+    <div class="card">
+      <label>שם ההכתבה (למשל: הכתבה 12)</label>
+      <input type="text" id="dictName" maxlength="25">
+      <label>המילים — מילה אחת בכל שורה, עם ניקוד</label>
+      <textarea id="dictWords" dir="rtl" placeholder="שֻׁלְחָן&#10;כִּתָּה"></textarea>
+      <div class="note">להוספת ניקוד: שימו את הסמן אחרי האות ולחצו על סימן:</div>
+      <div class="nq-bar" id="nqBar"></div>
+      <button class="small-btn" id="dictaBtn">🔗 פתיחת הנקדן של דיקטה (באתר חיצוני)</button>
+      <div class="note">בדיקטה: כותבים את המילים, מעתיקים את התוצאה המנוקדת ומדביקים כאן.</div>
+      <label>מה לבדוק כשהילד כותב?</label>
+      <div class="row">
+        <label style="font-size:18px"><input type="radio" name="checkMode" value="full" checked> אותיות + ניקוד</label>
+        <label style="font-size:18px"><input type="radio" name="checkMode" value="letters"> אותיות בלבד</label>
+      </div>
+      <button class="big-btn green" style="width:100%;font-size:20px" id="dictSave">שמירה ✔</button>
+      <div class="note" id="editorMsg"></div>
+    </div>
+    <div class="card" id="wordsCard" style="display:none">
+      <h3>הקלטות (לא חובה)</h3>
+      <div class="note">🎙️ לחיצה = התחלת הקלטה, לחיצה נוספת = סיום. 🔊 = השמעה. 🗑️ = מחיקת ההקלטה וחזרה לקול ממוחשב.</div>
+      <div id="wordRows"></div>
+      <div class="note" id="recMsg"></div>
+    </div>
+    <div class="card" id="deleteCard" style="display:none">
+      <button class="small-btn" id="dictDelete">🗑️ מחיקת ההכתבה</button>
+      <span class="note" id="deleteMsg"></span>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* =========================================================
+   הגדרות שקל לשנות — כל המספרים החשובים נמצאים כאן
+   ========================================================= */
+const CONFIG = {
+  COINS_FIRST_TRY: 3,     // מטבעות על תשובה נכונה בניסיון הראשון
+  COINS_RETRY: 2,         // מטבעות על תשובה נכונה בניסיון שני או שלישי
+  COINS_SHOWN: 1,         // מטבע עידוד כשהמשחק הראה את התשובה
+  HINT_AFTER: 2,          // אחרי כמה טעויות מופיע רמז (בשלב 3)
+  SHOW_ANSWER_AFTER: 3,   // אחרי כמה טעויות מראים את התשובה וממשיכים
+  TTS_RATE: 0.8,          // מהירות הקול הממוחשב (1 = רגיל)
+  TTS_SLOW_RATE: 0.45,    // מהירות בכפתור הצב 🐢
+  REC_SLOW_RATE: 0.65,    // מהירות הקלטה בכפתור הצב
+  PARENT_HOLD_MS: 2000,   // כמה זמן מחזיקים את ⚙️ כדי להיכנס למסך הורה
+  MAX_REC_MS: 5000,       // הקלטה נעצרת לבד אחרי 5 שניות
+  IMPROVE_BONUS_PER_STAR: 5, // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
+  STORAGE_KEY: "ligat-milim-v1"
+};
+
+/* =========================================================
+   ניקוד — קודי יוניקוד של סימני הניקוד
+   כל סימן ניקוד הוא "תו מצטרף" שבא אחרי האות שהוא יושב עליה
+   ========================================================= */
+const N = {
+  SHEVA:"ְ", HATAF_SEGOL:"ֱ", HATAF_PATAH:"ֲ", HATAF_QAMATS:"ֳ",
+  HIRIQ:"ִ", TSERE:"ֵ", SEGOL:"ֶ", PATAH:"ַ", QAMATS:"ָ",
+  HOLAM:"ֹ", HOLAM_VAV:"ֺ", QUBUTS:"ֻ", DAGESH:"ּ",
+  SHIN_DOT:"ׁ", SIN_DOT:"ׂ", QAMATS_QATAN:"ׇ"
+};
+// התנועות (בלי דגש ובלי נקודת שׁ/שׂ) — לכל אות יכולה להיות רק תנועה אחת
+const VOWELS = [N.SHEVA,N.HATAF_SEGOL,N.HATAF_PATAH,N.HATAF_QAMATS,N.HIRIQ,N.TSERE,N.SEGOL,N.PATAH,N.QAMATS,N.HOLAM,N.QUBUTS];
+const MAIN_VOWELS = [N.QAMATS,N.PATAH,N.TSERE,N.SEGOL,N.HIRIQ,N.HOLAM,N.QUBUTS,N.SHEVA];
+// תנועות שנשמעות דומה — מהן בוחרים "מסיחים" (תשובות לא נכונות) בשלב 2
+const VOWEL_FAMILY = [
+  [N.QAMATS,N.PATAH,N.HATAF_PATAH],
+  [N.TSERE,N.SEGOL,N.HATAF_SEGOL],
+  [N.HOLAM,N.HATAF_QAMATS,N.QUBUTS],
+  [N.HIRIQ,N.TSERE],
+  [N.QUBUTS,N.HOLAM],
+  [N.SHEVA,N.SEGOL]
+];
+const DOTTED = "◌"; // עיגול מקווקו — מציג סימן ניקוד בלי אות
+
+const isLetter = ch => ch >= "א" && ch <= "ת";
+// האם התו הוא סימן ניקוד או טעם (טעמי מקרא) — טווח 0591-05C7 בלי סימני פיסוק
+const isMark = ch => { const c = ch.charCodeAt(0);
+  return c >= 0x0591 && c <= 0x05C7 && ![0x05BE,0x05C0,0x05C3,0x05C6].includes(c); };
+
+// אותיות סופיות ↔ רגילות
+const FINAL = {"כ":"ך","מ":"ם","נ":"ן","פ":"ף","צ":"ץ"};
+const UNFINAL = {"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
+
+/* ניקוי מילה: מוריד טעמי מקרא ומתג, ומאחד סימנים שנראים אותו דבר */
+function cleanWord(w){
+  let out = "";
+  for (const ch of w.normalize("NFC").trim()){
+    const c = ch.charCodeAt(0);
+    if (c >= 0x0591 && c <= 0x05AF) continue;          // טעמי מקרא
+    if (c === 0x05BD || c === 0x05BF || c === 0x05C4 || c === 0x05C5) continue; // מתג, רפה ועוד
+    if (ch === N.HOLAM_VAV) { out += N.HOLAM; continue; } // חולם חסר לוו = חולם
+    if (ch === N.QAMATS_QATAN) { out += N.QAMATS; continue; } // קמץ קטן נראה כמו קמץ
+    out += ch;
+  }
+  return out;
+}
+
+/* פירוק מילה ל"אשכולות": כל אשכול = אות אחת + סימני הניקוד שלה.
+   למשל "שָׁלוֹם" → [ {base:"ש", marks:["ׁ","ָ"]}, {base:"ל"}, {base:"ו", marks:["ֹ"]}, {base:"ם"} ] */
+function toClusters(w){
+  const list = [];
+  for (const ch of cleanWord(w)){
+    if (isMark(ch) && list.length) list[list.length-1].marks.push(ch);
+    else list.push({base:ch, marks:[]});
+  }
+  list.forEach(c => c.marks = [...new Set(c.marks)].sort()); // מיון: סדר הסימנים לא משנה
+  return list;
+}
+const clusterText = c => c.base + c.marks.join("");
+const vowelOf = c => c.marks.find(m => VOWELS.includes(m));
+
+/* השוואת תשובה של הילד למילה הנכונה.
+   מחזיר: ok (נכון?), ופירוט לכל אות — האם האות נכונה והאם הניקוד נכון */
+function compareWords(answer, target, mode){
+  const a = toClusters(answer), t = toClusters(target);
+  const res = {ok:false, details:[], lenDiff: a.length - t.length};
+  for (let i=0;i<a.length;i++){
+    const tc = t[i];
+    const letterOk = !!tc && a[i].base === tc.base;
+    // במצב "אותיות בלבד" לא בודקים ניקוד בכלל
+    const nikudOk = mode === "letters" || (!!tc && a[i].marks.join("") === tc.marks.join(""));
+    res.details.push({letterOk, nikudOk});
+  }
+  res.ok = res.lenDiff === 0 && res.details.every(d => d.letterOk && d.nikudOk);
+  return res;
+}
+
+/* =========================================================
+   שמירה במכשיר
+   localStorage = נתונים קטנים (הכתבות, מטבעות)
+   IndexedDB = הקלטות (קבצים גדולים יותר)
+   ========================================================= */
+let S; // כל המצב של המשחק
+function defaultState(){
+  return {
+    childName:"", playerName:"", coins:0, parentCode:"",
+    dictations:[ sampleDictation() ]
+  };
+}
+function sampleDictation(){
+  // הכתבה לדוגמה כדי שאפשר יהיה לנסות מיד. ההורה יכול למחוק אותה.
+  return { id:"sample", name:"הכתבה לדוגמה", created:Date.now(), mode:"full",
+    words:["שֻׁלְחָן","כִּתָּה","חָבֵר","יֶלֶד","תַּפּוּחַ","מַחְבֶּרֶת"].map(text=>({text})),
+    progress:{} };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+    S = raw ? Object.assign(defaultState(), JSON.parse(raw)) : defaultState();
+  }catch(e){ S = defaultState(); }
+}
+function save(){
+  try{ localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(S)); }
+  catch(e){ console.warn("save failed", e); }
+}
+// מבקשים מהדפדפן "שמירה קבועה" — לא תמיד מאושר, אבל עוזר
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+
+// --- IndexedDB קטן ופשוט להקלטות ---
+let dbPromise = null;
+function db(){
+  if (!dbPromise) dbPromise = new Promise((res, rej) => {
+    const r = indexedDB.open("ligat-milim-audio", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("rec");
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  return dbPromise;
+}
+async function idb(mode, fn){
+  const d = await db();
+  return new Promise((res, rej) => {
+    const tx = d.transaction("rec", mode); const st = tx.objectStore("rec");
+    const req = fn(st);
+    tx.oncomplete = () => res(req && req.result);
+    tx.onerror = () => rej(tx.error);
+  });
+}
+const recKey = (dictId, text) => dictId + "|" + cleanWord(text);
+const getRec = k => idb("readonly", st => st.get(k)).catch(()=>null);
+const setRec = (k, v) => idb("readwrite", st => st.put(v, k));
+const delRec = k => idb("readwrite", st => st.delete(k));
+const allRecKeys = () => idb("readonly", st => st.getAllKeys()).catch(()=>[]);
+
+/* =========================================================
+   צלילים — נוצרים בקוד (Web Audio), בלי קבצים חיצוניים
+   ========================================================= */
+let AC = null;
+function audio(){ // האייפון מרשה צליל רק אחרי נגיעה של המשתמש
+  if (!AC) { try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if (AC && AC.state === "suspended") AC.resume();
+  return AC;
+}
+function tone(freq, dur, type="sine", vol=0.25, when=0){
+  const ac = audio(); if (!ac) return;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.value = freq;
+  const t = ac.currentTime + when;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur);
+}
+function noise(dur, vol=0.18){ // רעש = קהל מריע
+  const ac = audio(); if (!ac) return;
+  const buf = ac.createBuffer(1, ac.sampleRate*dur, ac.sampleRate), d = buf.getChannelData(0);
+  for (let i=0;i<d.length;i++) d[i] = (Math.random()*2-1) * Math.sin(Math.PI*i/d.length);
+  const src = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  f.type = "bandpass"; f.frequency.value = 1200; g.gain.value = vol;
+  src.buffer = buf; src.connect(f).connect(g).connect(ac.destination); src.start();
+}
+const SFX = {
+  kick(){ tone(120,.15,"triangle",.5); },
+  goal(){ noise(1.4,.25); [523,659,784,1046].forEach((f,i)=>tone(f,.18,"square",.08,i*.1)); },
+  coin(){ tone(988,.08,"square",.1); tone(1319,.25,"square",.1,.08); },
+  miss(){ tone(330,.15,"sine",.2); tone(262,.25,"sine",.2,.15); }, // צליל רך, לא מפחיד
+  tap(){ tone(660,.05,"sine",.12); },
+  win(){ [523,659,784,659,784,1046].forEach((f,i)=>tone(f,.2,"triangle",.15,i*.14)); noise(1.8,.2); }
+};
+
+/* =========================================================
+   השמעת המילה: הקלטה של ההורה, ואם אין — קול ממוחשב
+   ========================================================= */
+let heVoice = null;
+function findVoice(){
+  if (!("speechSynthesis" in window)) return;
+  const vs = speechSynthesis.getVoices();
+  heVoice = vs.find(v => /^he|^iw/i.test(v.lang)) || null;
+  renderVoiceStatus();
+}
+if ("speechSynthesis" in window){ findVoice(); speechSynthesis.onvoiceschanged = findVoice; }
+
+let currentAudio = null;
+async function sayWord(text, dictId, slow=false){
+  audio();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  const rec = dictId ? await getRec(recKey(dictId, text)) : null;
+  if (rec){
+    currentAudio = new Audio(rec);
+    currentAudio.playbackRate = slow ? CONFIG.REC_SLOW_RATE : 1;
+    currentAudio.play().catch(()=>{});
+    return;
+  }
+  speak(text, slow);
+}
+function speak(text, slow=false){
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "he-IL"; if (heVoice) u.voice = heVoice;
+  u.rate = slow ? CONFIG.TTS_SLOW_RATE : CONFIG.TTS_RATE;
+  speechSynthesis.speak(u);
+}
+
+/* =========================================================
+   ציור הדמויות (SVG) — דמויות מקוריות
+   ========================================================= */
+function playerSVG({shirt="var(--shirt)", shorts="#1d4e89", hair="#4a2c17", skin="#f1c27d", gloves=null, num=""}={}){
+  return `<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+    <rect x="19" y="62" width="8" height="20" rx="3" fill="${skin}"/><rect x="33" y="62" width="8" height="20" rx="3" fill="${skin}"/>
+    <rect x="16" y="80" width="13" height="7" rx="3" fill="#222"/><rect x="31" y="80" width="13" height="7" rx="3" fill="#222"/>
+    <rect x="17" y="52" width="26" height="14" rx="4" fill="${shorts}"/>
+    <rect x="14" y="30" width="32" height="26" rx="9" fill="${shirt}"/>
+    <rect x="6" y="32" width="10" height="20" rx="5" fill="${shirt}"/><rect x="44" y="32" width="10" height="20" rx="5" fill="${shirt}"/>
+    <circle cx="11" cy="54" r="5" fill="${gloves||skin}"/><circle cx="49" cy="54" r="5" fill="${gloves||skin}"/>
+    <text x="30" y="49" font-size="13" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Arial">${num}</text>
+    <circle cx="30" cy="18" r="13" fill="${skin}"/>
+    <path d="M17 16 Q18 3 30 4 Q43 3 43 16 Q38 9 30 10 Q22 9 17 16Z" fill="${hair}"/>
+    <circle cx="25" cy="19" r="2" fill="#222"/><circle cx="35" cy="19" r="2" fill="#222"/>
+    <path d="M24 24 Q30 29 36 24" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+const keeperSVG = () => playerSVG({shirt:"#8e5cf7", shorts:"#333", hair:"#222", skin:"#c68642", gloves:"#3ad16a", num:"1"});
+
+/* =========================================================
+   ניווט בין מסכים
+   ========================================================= */
+const $ = id => document.getElementById(id);
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+  if (id === "home") renderHome();
+}
+function updateCoins(pop=false){
+  ["homeCoins","levelsCoins","gameCoins"].forEach(id => {
+    const el = $(id); el.textContent = "🪙 " + S.coins;
+    if (pop){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+  });
+}
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ===================== מסך שם לשחקן ===================== */
+function renderNaming(){
+  $("namingHero").innerHTML = playerSVG({num:"10"});
+  $("suggBox").innerHTML = ["טורבו","רוקט","ברק","כוכבי","זריז"].map(n=>`<button class="small-btn">${n}</button>`).join("");
+  $("suggBox").querySelectorAll("button").forEach(b => b.onclick = () => { SFX.tap(); $("playerNameInput").value = b.textContent; });
+}
+$("namingOk").onclick = () => {
+  audio();
+  S.playerName = $("playerNameInput").value.trim() || "טורבו";
+  save(); show("home");
+};
+
+/* ===================== מסך הבית ===================== */
+function starsText(n){ return "⭐".repeat(n) + "☆".repeat(3-n); }
+function dictStars(d){ return [1,2,3].reduce((s,l)=> s + ((d.progress[l]&&d.progress[l].stars)||0), 0); }
+function renderHome(){
+  updateCoins();
+  $("greet").textContent = S.childName ? `שלום ${S.childName}! 👋` : "שלום! 👋";
+  $("homeHero").innerHTML = playerSVG({num:"10"}) + `<div class="player-name">${esc(S.playerName||"השחקן שלי")}</div>`;
+  const list = $("dictList");
+  if (!S.dictations.length){
+    list.innerHTML = `<div class="empty-note">עוד אין מחזורים 🙂<br>בקשו מההורה להוסיף הכתבה</div>`;
+    return;
+  }
+  // ההכתבה החדשה ביותר למעלה
+  const ds = S.dictations.slice().sort((a,b)=>b.created-a.created);
+  list.innerHTML = ds.map(d => `<button class="dict-card" data-id="${d.id}">
+      <span>⚽ ${esc(d.name)}</span><span class="stars">⭐ ${dictStars(d)}/9</span></button>`).join("");
+  list.querySelectorAll(".dict-card").forEach(b => b.onclick = () => { SFX.tap(); openLevels(b.dataset.id); });
+}
+
+/* ===================== בחירת שלב ===================== */
+let curDict = null;
+const LEVELS = {
+  1:{ico:"🎯", name:"אימון בעיטות", desc:"השלם את האות החסרה"},
+  2:{ico:"✨", name:"אימון מסירות", desc:"השלם את הניקוד החסר"},
+  3:{ico:"🏟️", name:"המשחק הגדול", desc:"שמע וכתוב את כל המילה"}
+};
+// איזה מילים מתאימות לכל שלב
+function wordsFor(d, level){
+  if (level === 2) return d.mode === "letters" ? [] : d.words.filter(w => toClusters(w.text).some(vowelOf));
+  if (level === 1) return d.words.filter(w => toClusters(w.text).filter(c=>isLetter(c.base)).length >= 2);
+  return d.words;
+}
+function levelOpen(d, level){
+  if (level === 1) return true;
+  const prev = level === 3 && !wordsFor(d,2).length ? 1 : level - 1;
+  return !!(d.progress[prev] && d.progress[prev].done);
+}
+function openLevels(id){
+  curDict = S.dictations.find(d => d.id === id);
+  $("levelsTitle").textContent = "⚽ " + curDict.name;
+  const box = $("levelList"); box.innerHTML = "";
+  [1,2,3].forEach(l => {
+    const n = wordsFor(curDict, l).length;
+    if (!n) return; // אין מילים מתאימות לשלב (למשל בלי ניקוד) — מדלגים
+    const open = levelOpen(curDict, l), p = curDict.progress[l];
+    const b = document.createElement("button");
+    b.className = "big-btn level-btn " + (open ? (l===3?"purple":l===2?"blue":"") : "");
+    b.disabled = !open;
+    b.innerHTML = `<span class="ico">${open?LEVELS[l].ico:"🔒"}</span>
+      <span class="txt">${l}. ${LEVELS[l].name}<small>${LEVELS[l].desc}</small></span>
+      <span>${p&&p.done ? starsText(p.stars) : ""}</span>`;
+    b.onclick = () => { SFX.tap(); startLevel(l); };
+    box.appendChild(b);
+  });
+  updateCoins(); show("levels");
+}
+$("levelsBack").onclick = () => show("home");
+
+/* =========================================================
+   המשחק עצמו
+   ========================================================= */
+let G = null; // מצב הסיבוב הנוכחי
+function startLevel(level){
+  audio();
+  const words = shuffle(wordsFor(curDict, level));
+  G = { level, words, i:0, tries:0, firstTry:0, earned:0, busy:false, typed:[], showMore:false,
+        origCount: words.length,  // כמה מילים היו בסיבוב הרגיל (בלי התרגול החוזר)
+        retry: [], retryAdded:false }; // מילים שהיו קשות — יחזרו בסוף
+  // כדי לא לתת מטבעות פעמיים על אותה מילה באותו שלב, שומרים רשימה של מילים ש"כבר שולמו"
+  const p = curDict.progress[level] || (curDict.progress[level] = {});
+  // שלב שהסתיים בגרסה קודמת (בלי רשימה) — נחשב כאילו כל המילים כבר שולמו
+  p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(w.text)) : []);
+  G.prevStars = p.stars || 0;
+  G.replay = !!p.done;
+  $("kicker").innerHTML = playerSVG({num:"10"});
+  $("keeper").innerHTML = keeperSVG();
+  $("scene").classList.toggle("short", level === 3); // בשלב 3 צריך מקום למקלדת
+  $("game").classList.toggle("typing", level === 3);
+  show("game"); updateCoins(); nextWord();
+}
+function curWord(){ return G.words[G.i]; }
+const inRetry = () => G.i >= G.origCount; // האם אנחנו בחלק של התרגול החוזר
+
+// מסך קטן בין הסיבוב הרגיל לתרגול החוזר
+function showRetryIntro(){
+  renderProgress(); resetScene();
+  $("wordView").innerHTML = `<span style="font-size:26px">🔁 הארכה!</span>`;
+  $("feedback").className = "feedback good";
+  $("feedback").textContent = `עוד ${G.retry.length === 1 ? "מילה אחת שהייתה קשה" : G.retry.length + " מילים שהיו קשות"} — הפעם זה יצליח! 💪`;
+  $("controls").innerHTML = `<button class="big-btn green next-btn" style="width:100%" id="retryGo">יאללה! ▶</button>`;
+  $("retryGo").onclick = () => { SFX.tap(); nextWord(); };
+}
+
+function renderProgress(){
+  $("progress").innerHTML = G.words.map((w,i) =>
+    `<i class="${i<G.i?"done":i===G.i?"now":""}">${i>=G.origCount?"🔁":"⚽"}</i>`).join("");
+}
+function resetScene(){
+  const ball = $("ball");
+  ball.style.transition = "none";
+  ball.style.left = "58%"; ball.style.bottom = $("scene").classList.contains("short") ? "8px" : "14px";
+  ball.style.transform = ""; ball.style.opacity = 1;
+  $("keeper").style.transform = "translateX(-50%)";
+  $("kicker").style.transform = "";
+  $("kicker").classList.remove("celebrate","encourage");
+  $("bubble").classList.remove("show");
+  void ball.offsetWidth; ball.style.transition = "";
+}
+
+function nextWord(){
+  // תרגול חוזר: בסוף הסיבוב מוסיפים פעם אחת את המילים שהיו בהן טעויות
+  if (G.i >= G.words.length && G.retry.length && !G.retryAdded){
+    G.retryAdded = true;
+    G.words = G.words.concat(shuffle(G.retry));
+    showRetryIntro(); return;
+  }
+  if (G.i >= G.words.length) return finishLevel();
+  G.tries = 0; G.busy = false; G.typed = [];
+  resetScene(); renderProgress();
+  $("feedback").textContent = ""; $("feedback").className = "feedback";
+  const w = curWord();
+  if (G.level === 1) setupMissingLetter(w);
+  else if (G.level === 2) setupMissingVowel(w);
+  else setupTyping(w);
+  // משמיעים את המילה אוטומטית (בחלק מהמכשירים צריך ללחוץ 🔊)
+  setTimeout(() => sayWord(w.text, curDict.id), 350);
+}
+$("hearBtn").onclick = () => sayWord(curWord().text, curDict.id, false);
+$("slowBtn").onclick = () => sayWord(curWord().text, curDict.id, true);
+$("gameBack").onclick = () => { speechSynthesis && speechSynthesis.cancel(); openLevels(curDict.id); };
+
+/* ---------- שלב 1: אות חסרה ---------- */
+// אותיות שקל להתבלבל ביניהן — מהן נבחרות התשובות הלא נכונות
+const CONFUSE = {"ט":["ת"],"ת":["ט"],"כ":["ק","ח"],"ק":["כ"],"ח":["כ","ה"],"א":["ע","ה"],"ע":["א"],
+  "ה":["א","ח"],"ס":["ש"],"ש":["ס"],"ב":["ו","פ"],"ו":["ב"],"ג":["ק"],"ד":["ר"],"ר":["ד"],"מ":["נ"],"נ":["מ"],"י":["ו"],"צ":["ס"],"פ":["ב"],"ז":["ס"],"ל":["נ"]};
+const COMMON = "אבגדהוזחטיכלמנסעפצקרשת".split("");
+
+// בונה אשכול "מבלבל": אות אחרת עם אותו ניקוד
+function swapLetter(c, newBase, isLast){
+  let marks = c.marks.filter(m => m !== N.SHIN_DOT && m !== N.SIN_DOT); // נקודת שׁ רק על ש
+  if (newBase === "ש") marks.push(c.base === "ס" ? N.SIN_DOT : N.SHIN_DOT);
+  if (newBase === "ו" && marks.includes(N.DAGESH) && vowelOf(c)) marks = marks.filter(m=>m!==N.DAGESH);
+  let b = newBase;
+  if (isLast && FINAL[b]) b = FINAL[b];
+  return b + [...new Set(marks)].sort().join("");
+}
+function setupMissingLetter(w){
+  const cl = toClusters(w.text);
+  const idxs = cl.map((c,i)=>i).filter(i => isLetter(cl[i].base));
+  // מעדיפים להסתיר אות שיש לה "אות מבלבלת" (ט/ת, כ/ק...)
+  const good = idxs.filter(i => CONFUSE[UNFINAL[cl[i].base]||cl[i].base]);
+  const hide = pick(good.length ? good : idxs);
+  const target = cl[hide], isLast = hide === cl.length-1;
+  const right = clusterText(target);
+  const baseN = UNFINAL[target.base] || target.base;
+  const opts = new Set([right]);
+  for (const b of shuffle(CONFUSE[baseN]||[])) { if (opts.size<3) opts.add(swapLetter(target,b,isLast)); }
+  let guard = 0;
+  while (opts.size < 3 && guard++ < 50) opts.add(swapLetter(target, pick(COMMON), isLast));
+  G.answer = right;
+  $("wordView").innerHTML = cl.map((c,i) => i===hide ? `<span class="gap">?</span>` : esc(clusterText(c))).join("");
+  renderChoices(shuffle([...opts]), (val, btn) => {
+    if (val === right){
+      $("wordView").innerHTML = cl.map((c,i) => i===hide ? `<span style="color:#1f8f4c">${esc(right)}</span>` : esc(clusterText(c))).join("");
+      return true;
+    }
+    return false;
+  });
+}
+
+/* ---------- שלב 2: ניקוד חסר ---------- */
+function setupMissingVowel(w){
+  const cl = toClusters(w.text);
+  const idxs = cl.map((c,i)=>i).filter(i => vowelOf(cl[i]));
+  const hide = pick(idxs), target = cl[hide];
+  const v = vowelOf(target);
+  const without = target.base + target.marks.filter(m=>m!==v).join("");
+  const right = clusterText(target);
+  // מסיחים: קודם תנועות שנשמעות דומה, ואז תנועות אחרות
+  const fam = VOWEL_FAMILY.filter(f=>f.includes(v)).flat().filter(x=>x!==v);
+  const pool = [...new Set([...shuffle(fam), ...shuffle(MAIN_VOWELS)])].filter(x=>x!==v);
+  const opts = new Set([right]);
+  for (const x of pool){ if (opts.size>=3) break;
+    opts.add(target.base + [...target.marks.filter(m=>m!==v), x].sort().join("")); }
+  G.answer = right;
+  $("wordView").innerHTML = cl.map((c,i) => i===hide ? `<span class="focus">${esc(without)}</span>` : esc(clusterText(c))).join("");
+  renderChoices(shuffle([...opts]), (val) => {
+    if (val === right){
+      $("wordView").innerHTML = cl.map((c,i) => i===hide ? `<span style="color:#1f8f4c">${esc(right)}</span>` : esc(clusterText(c))).join("");
+      return true;
+    }
+    return false;
+  });
+}
+
+/* כפתורי בחירה גדולים (לשלבים 1 ו-2) */
+function renderChoices(opts, isRight){
+  const box = $("controls"); box.innerHTML = `<div class="choices"></div>`;
+  const wrap = box.firstChild;
+  opts.forEach(o => {
+    const b = document.createElement("button");
+    b.className = "choice"; b.textContent = o;
+    b.onclick = () => {
+      if (G.busy) return;
+      if (isRight(o, b)) { b.classList.add("right"); success(); }
+      else { b.classList.add("off"); miss(); }
+    };
+    wrap.appendChild(b);
+  });
+}
+
+/* ---------- שלב 3: כתיבת מילה שלמה ---------- */
+const KB_LETTERS = "אבגדהוזחטיכךלמםנןסעפףצץקרשת".split("");
+const KB_NIKUD = [N.QAMATS,N.PATAH,N.TSERE,N.SEGOL,N.HIRIQ,N.HOLAM,N.QUBUTS,N.SHEVA,N.DAGESH];
+const KB_MORE = [N.HATAF_PATAH,N.HATAF_SEGOL,N.HATAF_QAMATS];
+
+function setupTyping(){
+  G.typed = []; G.showMore = false;
+  renderTyped();
+  const box = $("controls");
+  // סידור המקלדת (7 מקשים בשורה):
+  // 4 שורות אותיות + מחיקה, שורת תנועות, שורה של שווא/דגש/שׁ/שׂ/עוד/בדוק, ושורה נסתרת של חטפים ורווח
+  let h = `<div class="kb">`;
+  KB_LETTERS.forEach(l => h += `<button class="key" data-l="${l}">${l}</button>`);
+  h += `<button class="key fn" data-act="back">⌫</button>`;
+  KB_NIKUD.forEach(m => h += `<button class="key n" data-m="${m}">${DOTTED}${m}</button>`);
+  h += `<button class="key n" data-m="${N.SHIN_DOT}">שׁ</button><button class="key n" data-m="${N.SIN_DOT}">שׂ</button>`;
+  h += `<button class="key fn" data-act="more">עוד…</button><button class="key check" data-act="check">בדוק ✔</button>`;
+  KB_MORE.forEach(m => h += `<button class="key n hidden more" data-m="${m}">${DOTTED}${m}</button>`);
+  h += `<button class="key fn wide hidden more" data-act="space">רווח</button></div>`;
+  box.innerHTML = h;
+  box.querySelectorAll(".key").forEach(k => k.onclick = () => onKey(k));
+  smartKeyboard();
+}
+
+/* מקלדת חכמה: מדגישים את האותיות שיש במילה.
+   כל פעם שהילד כותב את המילה נכון בניסיון ראשון — ההדגשה נחלשת:
+   0 הצלחות = הדגשה חזקה, 1 = הדגשה קלה, 2 ומעלה = בלי הדגשה */
+function smartKeyboard(){
+  const wins = winsOf(curWord().text);
+  const cls = wins === 0 ? "hl" : wins === 1 ? "hl-light" : "";
+  if (!cls) return;
+  const letters = new Set(toClusters(curWord().text).map(c => c.base));
+  document.querySelectorAll(".key[data-l]").forEach(k => { if (letters.has(k.dataset.l)) k.classList.add(cls); });
+}
+function winsOf(text){ const w = (curDict.progress[3] && curDict.progress[3].wins) || {}; return w[cleanWord(text)] || 0; }
+function addWin(text){
+  const p = curDict.progress[3]; p.wins = p.wins || {};
+  const k = cleanWord(text); p.wins[k] = (p.wins[k] || 0) + 1; save();
+}
+function onKey(k){
+  if (G.busy) return;
+  SFX.tap();
+  const T = G.typed, last = T[T.length-1];
+  if (k.dataset.l){ T.push({base:k.dataset.l, marks:[]}); }
+  else if (k.dataset.m){
+    const m = k.dataset.m;
+    // ניקוד חייב לשבת על אות
+    if (!last || !isLetter(last.base)) return wiggle(k);
+    if (m === N.SHIN_DOT || m === N.SIN_DOT){
+      if (last.base !== "ש") return wiggle(k); // נקודה כזו רק על ש
+      last.marks = last.marks.filter(x => x!==N.SHIN_DOT && x!==N.SIN_DOT);
+      last.marks.push(m);
+    } else if (m === N.DAGESH){
+      // דגש: לחיצה שנייה מורידה אותו
+      last.marks = last.marks.includes(m) ? last.marks.filter(x=>x!==m) : [...last.marks, m];
+    } else {
+      // תנועה: אם כבר יש תנועה — מחליפים (נוח לילדים)
+      last.marks = last.marks.filter(x => !VOWELS.includes(x)); last.marks.push(m);
+    }
+  }
+  else if (k.dataset.act === "back"){
+    if (last){ if (last.marks.length) last.marks.pop(); else T.pop(); }
+  }
+  else if (k.dataset.act === "space"){ if (last && last.base !== " ") T.push({base:" ", marks:[]}); }
+  else if (k.dataset.act === "more"){
+    G.showMore = !G.showMore;
+    document.querySelectorAll(".key.more").forEach(x => x.classList.toggle("hidden", !G.showMore));
+    return;
+  }
+  else if (k.dataset.act === "check"){ return checkTyped(); }
+  $("feedback").textContent = ""; renderTyped();
+}
+function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
+const typedText = () => G.typed.map(c => c.base + c.marks.join("")).join("");
+function renderTyped(marks){
+  const v = $("wordView");
+  if (!G.typed.length){ v.innerHTML = `<span class="placeholder">כתוב כאן את המילה ✏️</span><span class="cursor"></span>`; return; }
+  v.innerHTML = G.typed.map((c,i) => {
+    const t = esc(c.base === " " ? " " : c.base + [...c.marks].sort().join(""));
+    if (marks && marks[i]){
+      if (!marks[i].letterOk) return `<span class="bad-l">${t}</span>`;
+      if (!marks[i].nikudOk) return `<span class="bad-n">${t}</span>`;
+    }
+    return t;
+  }).join("") + (marks ? "" : `<span class="cursor"></span>`);
+}
+function checkTyped(){
+  if (!G.typed.length){ $("feedback").className="feedback try"; $("feedback").textContent = "קודם שמע 🔊 ואז כתוב 🙂"; return; }
+  const w = curWord();
+  const r = compareWords(typedText(), w.text, curDict.mode);
+  if (r.ok){ renderTyped(); $("wordView").querySelector(".cursor")?.remove(); return success(); }
+  renderTyped(r.details);
+  // הסבר עדין מה לא מתאים
+  const badL = r.details.filter(d=>!d.letterOk).length, badN = r.details.filter(d=>d.letterOk && !d.nikudOk).length;
+  let msg;
+  if (r.lenDiff < 0) msg = "חסרה אות 🙂 הקשב שוב 👂";
+  else if (r.lenDiff > 0) msg = "יש אות אחת יותר מדי 🙂";
+  else if (badL) msg = `כמעט! ${badL===1?"אות אחת":badL+" אותיות"} מסומנ${badL===1?"ת":"ות"} בכתום 🧡`;
+  else msg = `האותיות נכונות! 🎉 תקן את הניקוד בצהוב`;
+  miss(msg);
+}
+
+/* ---------- הצלחה וטעות ---------- */
+const PRAISE = ["גוֹל! ⚽","איזו בעיטה! 🚀","מעולה! 🌟","אלוף! 🏆","יופי של גול! 🎉","בדיוק! 💪"];
+const ENCOURAGE = ["כמעט! נסה שוב 💪","השוער תפס הפעם… עוד ניסיון! 🙂","קרוב מאוד! 🧡","לא נורא, ממשיכים לנסות! ⭐"];
+
+function success(){
+  G.busy = true;
+  const coins = G.tries === 0 ? CONFIG.COINS_FIRST_TRY : CONFIG.COINS_RETRY;
+  if (G.tries === 0 && !inRetry()) G.firstTry++; // הכוכבים נקבעים לפי הסיבוב הרגיל בלבד
+  if (G.level === 3 && G.tries === 0) addWin(curWord().text); // למקלדת החכמה
+  $("feedback").className = "feedback good"; $("feedback").textContent = pick(PRAISE);
+  shoot(true);
+  setTimeout(() => { payWord(coins); }, 600);
+  setTimeout(() => { G.i++; nextWord(); }, 1900);
+}
+function miss(msg){
+  G.tries++;
+  // טעות ראשונה במילה (בסיבוב הרגיל) — המילה תחזור בהארכה
+  if (G.tries === 1 && !inRetry() && !G.retry.includes(curWord())) G.retry.push(curWord());
+  shoot(false);
+  $("feedback").className = "feedback try";
+  if (G.tries >= CONFIG.SHOW_ANSWER_AFTER) return showAnswer();
+  let text = msg || pick(ENCOURAGE);
+  if (G.level === 3 && G.tries >= CONFIG.HINT_AFTER) text += "  " + hintText();
+  $("feedback").textContent = text;
+}
+// רמז בשלב 3: מראים את האות הראשונה שלא מתאימה
+function hintText(){
+  const t = toClusters(curWord().text), a = toClusters(typedText());
+  let i = 0; while (i < t.length && a[i] && clusterText(a[i]) === clusterText(t[i])) i++;
+  if (i >= t.length) return "";
+  return `💡 רמז: האות ה-${i+1} היא ${clusterText(t[i])}`;
+}
+// אחרי 3 ניסיונות: מראים בעדינות את המילה הנכונה וממשיכים
+function showAnswer(){
+  G.busy = true;
+  const w = curWord();
+  $("wordView").innerHTML = `<span style="color:#1d4e89">${esc(cleanWord(w.text))}</span>`;
+  $("feedback").className = "feedback good";
+  $("feedback").textContent = "זו המילה 👆 בפעם הבאה זה יצליח! מטבע על המאמץ 🪙";
+  $("controls").innerHTML = `<button class="big-btn green next-btn" style="width:100%" id="contBtn">המשך ▶</button>`;
+  sayWord(w.text, curDict.id, true);
+  $("contBtn").onclick = () => { payWord(CONFIG.COINS_SHOWN); G.i++; nextWord(); };
+}
+
+// נותן מטבעות על מילה — רק אם עוד לא קיבלו עליה מטבעות בשלב הזה
+function payWord(n){
+  const paid = curDict.progress[G.level].paid, key = cleanWord(curWord().text);
+  if (paid.includes(key)) return; // כבר שולם — בלי מטבעות (משחק חוזר)
+  paid.push(key);
+  giveCoins(n);
+}
+
+function giveCoins(n){
+  S.coins += n; G.earned += n; save();
+  SFX.coin(); updateCoins(true);
+  const c = document.createElement("div");
+  c.className = "float-coin"; c.textContent = "🪙+" + n;
+  c.style.left = "40%"; c.style.top = "120px";
+  $("app").appendChild(c); setTimeout(()=>c.remove(), 1000);
+}
+
+/* אנימציית הבעיטה: גול או שהשוער תופס */
+function shoot(goal){
+  const ball = $("ball"), keeper = $("keeper"), kicker = $("kicker"), scene = $("scene");
+  SFX.kick();
+  kicker.style.transform = "translateX(14px) rotate(-8deg)";
+  setTimeout(() => kicker.style.transform = "", 250);
+  const H = scene.clientHeight;
+  const side = Math.random() < .5 ? -1 : 1;
+  if (goal){
+    ball.style.left = (50 + side*15) + "%";
+    ball.style.bottom = (H*0.52) + "px";
+    ball.style.transform = "scale(.6) rotate(720deg)";
+    keeper.style.transform = `translateX(${-50 - side*60}%) rotate(${-side*25}deg)`; // השוער קופץ לצד הלא נכון
+    setTimeout(() => { SFX.goal(); $("goal").classList.remove("shake"); void $("goal").offsetWidth; $("goal").classList.add("shake");
+      $("crowd").classList.remove("cheer"); void $("crowd").offsetWidth; $("crowd").classList.add("cheer"); confetti(18); react(true); }, 500);
+  } else {
+    ball.style.left = "50%"; ball.style.bottom = (H*0.42) + "px"; ball.style.transform = "scale(.7) rotate(360deg)";
+    setTimeout(() => { SFX.miss(); react(false); ball.style.bottom = (H*0.1) + "px"; ball.style.left = "55%"; ball.style.transform = ""; }, 550);
+    setTimeout(() => { if (!G.busy) resetScene(); }, 1300);
+  }
+}
+// תגובה של השחקן: אנימציה + בועת דיבור
+const CHEERS = ["יֵשׁ! 🙌","גּוֹל! 🎉","אַלּוּף! 🌟"];
+const PEPS = ["עוֹד פַּעַם! 💪","אֲנִי אִתְּךָ! 🤝","כִּמְעַט! 🙂"];
+function react(goal){
+  const k = $("kicker"), b = $("bubble");
+  k.classList.remove("celebrate","encourage"); void k.offsetWidth;
+  k.classList.add(goal ? "celebrate" : "encourage");
+  b.textContent = pick(goal ? CHEERS : PEPS); b.classList.add("show");
+  setTimeout(() => b.classList.remove("show"), 1500);
+}
+function confetti(n){
+  const colors = ["#ff6b35","#ffd23f","#3a86ff","#2ec46b","#8e5cf7","#ff5d8f"];
+  for (let i=0;i<n;i++){
+    const c = document.createElement("div"); c.className = "confetti";
+    c.style.left = Math.random()*100 + "%"; c.style.background = pick(colors);
+    c.style.animationDelay = (Math.random()*.4) + "s";
+    $("app").appendChild(c); setTimeout(()=>c.remove(), 2000);
+  }
+}
+
+/* ---------- סוף שלב ---------- */
+function finishLevel(){
+  const ratio = G.firstTry / G.origCount;
+  const stars = ratio >= .8 ? 3 : ratio >= .5 ? 2 : 1; // תמיד לפחות כוכב אחד
+  const p = curDict.progress[G.level];
+  // בונוס שיפור: רק אם זה משחק חוזר והילד קיבל יותר כוכבים מהשיא הקודם
+  const bonus = G.replay && stars > G.prevStars ? (stars - G.prevStars) * CONFIG.IMPROVE_BONUS_PER_STAR : 0;
+  p.done = true; p.stars = Math.max(stars, p.stars||0);
+  if (bonus) giveCoins(bonus);
+  save();
+  SFX.win(); confetti(40);
+  $("doneTitle").textContent = stars === 3 ? "אלוף הליגה! 🏆" : stars === 2 ? "משחק מצוין! ⚽" : "כל הכבוד על המאמץ! 💪";
+  $("doneStars").textContent = starsText(stars);
+  $("doneCoins").textContent = bonus ? `שיפרת את השיא! בונוס 🪙 ${bonus}`
+    : G.earned ? `הרווחת 🪙 ${G.earned}`
+    : `אימון חוזר 💪 מטבעות מקבלים כששוברים שיא כוכבים`;
+  const nextL = [G.level+1, G.level+2].find(l => l<=3 && wordsFor(curDict,l).length);
+  $("doneNext").style.display = nextL ? "" : "none";
+  $("doneNext").onclick = () => startLevel(nextL);
+  show("done");
+}
+$("doneAgain").onclick = () => startLevel(G.level);
+$("doneHome").onclick = () => show("home");
+
+/* =========================================================
+   כניסת הורה: לחיצה ארוכה על ⚙️ ואז קוד
+   ========================================================= */
+(function(){
+  const btn = $("parentBtn"), fill = $("parentFill"); let t0 = 0, raf = 0;
+  const start = e => { e.preventDefault(); t0 = performance.now(); loop(); };
+  const loop = () => {
+    const p = (performance.now()-t0) / CONFIG.PARENT_HOLD_MS;
+    fill.style.transform = `scaleY(${Math.min(p,1)})`;
+    if (p >= 1){ stop(); openGate(); } else raf = requestAnimationFrame(loop);
+  };
+  const stop = () => { cancelAnimationFrame(raf); fill.style.transform = "scaleY(0)"; };
+  btn.addEventListener("touchstart", start, {passive:false}); btn.addEventListener("mousedown", start);
+  ["touchend","touchcancel","mouseup","mouseleave"].forEach(ev => btn.addEventListener(ev, stop));
+})();
+
+let gateInput = "", gateMode = "enter", gateFirst = "";
+function openGate(mode){
+  gateMode = mode || (S.parentCode ? "enter" : "create");
+  gateInput = ""; gateFirst = "";
+  $("gateTitle").textContent = gateMode === "enter" ? "קוד הורה" : "בחרו קוד הורה (4 ספרות)";
+  $("gateNote").textContent = gateMode === "enter" ? "" : "הקוד מונע מהילד להיכנס למסך ההורה בטעות. כדאי לזכור אותו 🙂";
+  renderGate(); show("gate");
+}
+function renderGate(){ $("gateDots").textContent = "●".repeat(gateInput.length) + "○".repeat(4-gateInput.length); }
+$("gatePad").innerHTML = ["1","2","3","4","5","6","7","8","9","","0","⌫"].map(k => k ? `<button>${k}</button>` : "<span></span>").join("");
+$("gatePad").querySelectorAll("button").forEach(b => b.onclick = () => {
+  const k = b.textContent;
+  if (k === "⌫") gateInput = gateInput.slice(0,-1);
+  else if (gateInput.length < 4) gateInput += k;
+  renderGate();
+  if (gateInput.length < 4) return;
+  setTimeout(() => {
+    if (gateMode === "enter"){
+      if (gateInput === S.parentCode) openParent();
+      else { $("gateNote").textContent = "הקוד לא נכון, נסו שוב"; gateInput = ""; renderGate(); }
+    } else if (!gateFirst){
+      gateFirst = gateInput; gateInput = ""; $("gateTitle").textContent = "הקלידו את הקוד שוב לאישור"; renderGate();
+    } else if (gateFirst === gateInput){
+      S.parentCode = gateInput; save(); openParent();
+    } else { $("gateNote").textContent = "הקודים לא תואמים, מתחילים מחדש"; gateFirst = ""; gateInput = "";
+      $("gateTitle").textContent = "בחרו קוד הורה (4 ספרות)"; renderGate(); }
+  }, 150);
+});
+$("gateCancel").onclick = () => show("home");
+
+/* ===================== מסך הורה ===================== */
+function openParent(){
+  $("childName").value = S.childName; $("playerName2").value = S.playerName;
+  renderParentList(); renderVoiceStatus(); show("parent");
+}
+$("childName").oninput = e => { S.childName = e.target.value.trim(); save(); };
+$("playerName2").oninput = e => { S.playerName = e.target.value.trim(); save(); };
+$("parentExit").onclick = () => show("home");
+
+function renderParentList(){
+  const box = $("parentDictList");
+  if (!S.dictations.length){ box.innerHTML = `<div class="note">אין הכתבות עדיין</div>`; return; }
+  box.innerHTML = S.dictations.slice().sort((a,b)=>b.created-a.created).map(d =>
+    `<div class="word-row"><span class="w" style="font-size:19px">${esc(d.name)} <span class="src">(${d.words.length} מילים)</span></span>
+     <button class="small-btn" data-id="${d.id}">עריכה ✏️</button></div>`).join("");
+  box.querySelectorAll("button").forEach(b => b.onclick = () => openEditor(b.dataset.id));
+}
+function renderVoiceStatus(){
+  const el = document.getElementById("voiceStatus"); if (!el) return; // נקרא גם לפני שהדף מוכן
+  if (!("speechSynthesis" in window)) el.textContent = "❌ במכשיר הזה אין קול ממוחשב — צריך להקליט את המילים.";
+  else if (heVoice) el.textContent = `✅ נמצא קול עברי במכשיר (${heVoice.name}). כדאי לבדוק שהוא מבטא נכון.`;
+  else el.textContent = "⚠️ לא נמצא קול עברי במכשיר. ייתכן שהקול לא יעבוד — מומלץ להקליט את המילים.";
+}
+$("voiceTest").onclick = () => speak("שָׁלוֹם");
+
+/* ---------- גיבוי: ייצוא וייבוא ---------- */
+$("exportBtn").onclick = async () => {
+  const keys = await allRecKeys(), recs = {};
+  for (const k of keys) recs[k] = await getRec(k);
+  const data = JSON.stringify({app:"ligat-milim", version:1, saved:new Date().toISOString(), state:S, recordings:recs});
+  const blob = new Blob([data], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ligat-milim-backup-" + new Date().toISOString().slice(0,10) + ".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  $("backupMsg").textContent = "✅ קובץ הגיבוי נוצר. באייפון הוא נשמר באפליקציית 'קבצים' (הורדות).";
+};
+$("importBtn").onclick = () => $("importFile").click();
+$("importFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try{
+    const data = JSON.parse(await f.text());
+    if (data.app !== "ligat-milim" || !data.state) throw new Error("not a backup");
+    S = Object.assign(defaultState(), data.state); save();
+    for (const [k,v] of Object.entries(data.recordings||{})) await setRec(k, v);
+    $("backupMsg").textContent = "✅ הגיבוי נטען בהצלחה!";
+    openParent();
+  }catch(err){ $("backupMsg").textContent = "❌ זה לא נראה כמו קובץ גיבוי של ליגת המילים."; }
+  e.target.value = "";
+};
+
+/* ---------- איפוס ---------- */
+let resetArmed = false;
+$("resetProgress").onclick = () => {
+  if (!resetArmed){ resetArmed = true; $("resetMsg").textContent = "לחצו שוב כדי לאשר איפוס (ההכתבות לא יימחקו)"; setTimeout(()=>resetArmed=false, 4000); return; }
+  S.coins = 0; S.dictations.forEach(d => d.progress = {}); save(); resetArmed = false;
+  $("resetMsg").textContent = "✅ המטבעות וההתקדמות אופסו";
+};
+$("changeCode").onclick = () => openGate("create");
+
+/* ===================== עריכת הכתבה ===================== */
+let editId = null;
+// סרגל ניקוד לתיבת הטקסט של ההורה
+$("nqBar").innerHTML = [N.QAMATS,N.PATAH,N.TSERE,N.SEGOL,N.HIRIQ,N.HOLAM,N.QUBUTS,N.SHEVA,N.DAGESH,N.SHIN_DOT,N.SIN_DOT,N.HATAF_PATAH,N.HATAF_SEGOL,N.HATAF_QAMATS]
+  .map(m => `<button data-m="${m}">${m===N.SHIN_DOT?"שׁ":m===N.SIN_DOT?"שׂ":DOTTED+m}</button>`).join("");
+$("nqBar").querySelectorAll("button").forEach(b => {
+  // mousedown + preventDefault: כדי שהסמן לא יברח מתיבת הטקסט
+  const ins = e => { e.preventDefault(); const ta = $("dictWords");
+    const s = ta.selectionStart ?? ta.value.length, en = ta.selectionEnd ?? s;
+    ta.value = ta.value.slice(0,s) + b.dataset.m + ta.value.slice(en);
+    ta.selectionStart = ta.selectionEnd = s + 1; ta.focus(); };
+  b.addEventListener("mousedown", ins); b.addEventListener("touchstart", ins, {passive:false});
+});
+// קישור חיצוני — רק במסך ההורה
+$("dictaBtn").onclick = () => window.open("https://nakdan.dicta.org.il/", "_blank", "noopener");
+
+function openEditor(id){
+  editId = id || null;
+  const d = id ? S.dictations.find(x=>x.id===id) : null;
+  $("editorTitle").textContent = d ? "עריכת הכתבה" : "הכתבה חדשה";
+  $("dictName").value = d ? d.name : "הכתבה " + (S.dictations.length + 1);
+  $("dictWords").value = d ? d.words.map(w=>w.text).join("\n") : "";
+  document.querySelector(`input[name=checkMode][value=${d?d.mode:"full"}]`).checked = true;
+  $("editorMsg").textContent = ""; $("deleteMsg").textContent = "";
+  $("deleteCard").style.display = d ? "" : "none";
+  renderWordRows(); show("editor");
+}
+$("newDict").onclick = () => openEditor(null);
+$("editorBack").onclick = () => { stopRec(); openParent(); };
+
+$("dictSave").onclick = () => {
+  const name = $("dictName").value.trim() || "הכתבה";
+  // מילה בכל שורה. שורה עם "=" (מילה נרדפת) — בגרסה 1 לוקחים רק את המילה הראשונה
+  const lines = $("dictWords").value.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const words = [];
+  for (const line of lines){
+    const [main, syn] = line.split("=").map(x => x && x.trim());
+    const text = cleanWord(main || "");
+    if (!text || ![...text].some(isLetter)) continue;
+    words.push(syn ? {text, syn: cleanWord(syn)} : {text});
+  }
+  if (!words.length){ $("editorMsg").textContent = "צריך לפחות מילה אחת בעברית 🙂"; return; }
+  const mode = document.querySelector("input[name=checkMode]:checked").value;
+  const noNikud = words.every(w => !toClusters(w.text).some(c => c.marks.length));
+  if (editId){
+    const d = S.dictations.find(x=>x.id===editId);
+    d.name = name; d.words = words; d.mode = mode;
+  } else {
+    editId = "d" + Date.now();
+    S.dictations.push({id:editId, name, created:Date.now(), mode, words, progress:{}});
+  }
+  save();
+  $("editorMsg").textContent = `✅ נשמר! ${words.length} מילים.` + (noNikud && mode==="full" ? " ⚠️ שימו לב: אין במילים ניקוד." : "")
+    + (words.some(w=>w.syn) ? " (מילים נרדפות יגיעו בגרסה הבאה — כרגע הילד כותב את המילה הראשונה.)" : "");
+  $("editorTitle").textContent = "עריכת הכתבה"; $("deleteCard").style.display = "";
+  renderWordRows();
+};
+
+let delArmed = false;
+$("dictDelete").onclick = async () => {
+  if (!delArmed){ delArmed = true; $("deleteMsg").textContent = " לחצו שוב כדי למחוק"; setTimeout(()=>{delArmed=false; $("deleteMsg").textContent="";}, 4000); return; }
+  const d = S.dictations.find(x=>x.id===editId);
+  if (d) for (const w of d.words) await delRec(recKey(d.id, w.text)).catch(()=>{});
+  S.dictations = S.dictations.filter(x=>x.id!==editId); save(); delArmed = false; openParent();
+};
+
+/* ---------- הקלטות ---------- */
+async function renderWordRows(){
+  const d = editId && S.dictations.find(x=>x.id===editId);
+  $("wordsCard").style.display = d ? "" : "none";
+  if (!d) return;
+  const box = $("wordRows"); box.innerHTML = "";
+  for (const w of d.words){
+    const has = !!(await getRec(recKey(d.id, w.text)));
+    const row = document.createElement("div"); row.className = "word-row";
+    row.innerHTML = `<span class="w">${esc(w.text)}<br><span class="src">${has?"🎙️ הקלטה":"🤖 קול ממוחשב"}</span></span>
+      <button class="small-btn" data-a="play">🔊</button><button class="small-btn" data-a="rec">🎙️</button>
+      ${has?'<button class="small-btn" data-a="del">🗑️</button>':""}`;
+    row.querySelector('[data-a=play]').onclick = () => sayWord(w.text, d.id);
+    row.querySelector('[data-a=rec]').onclick = e => toggleRec(e.currentTarget, d.id, w.text);
+    const del = row.querySelector('[data-a=del]');
+    if (del) del.onclick = async () => { await delRec(recKey(d.id, w.text)); renderWordRows(); };
+    box.appendChild(row);
+  }
+}
+let rec = null; // הקלטה פעילה
+async function toggleRec(btn, dictId, text){
+  if (rec){ const same = rec.btn === btn; stopRec(); if (same) return; }
+  if (!navigator.mediaDevices || !window.MediaRecorder){
+    $("recMsg").textContent = "❌ הדפדפן הזה לא תומך בהקלטה."; return; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const mr = new MediaRecorder(stream), chunks = [];
+    mr.ondataavailable = e => e.data.size && chunks.push(e.data);
+    mr.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, {type: mr.mimeType || "audio/mp4"});
+      // שומרים כטקסט (dataURL) — כך קל לגבות לקובץ
+      const fr = new FileReader();
+      fr.onload = async () => { await setRec(recKey(dictId, text), fr.result); $("recMsg").textContent = "✅ ההקלטה נשמרה"; renderWordRows(); };
+      fr.readAsDataURL(blob);
+    };
+    mr.start(); btn.classList.add("rec-on"); $("recMsg").textContent = "🔴 מקליטים… אמרו את המילה ולחצו שוב";
+    rec = {mr, btn, timer: setTimeout(stopRec, CONFIG.MAX_REC_MS)};
+  }catch(err){
+    $("recMsg").textContent = "❌ אין גישה למיקרופון. צריך לאשר מיקרופון בדפדפן (וזה עובד רק בכתובת https).";
+  }
+}
+function stopRec(){
+  if (!rec) return;
+  clearTimeout(rec.timer); rec.btn.classList.remove("rec-on");
+  if (rec.mr.state !== "inactive") rec.mr.stop();
+  rec = null;
+}
+
+/* =========================================================
+   התחלה
+   ========================================================= */
+loadState();
+renderNaming();
+updateCoins();
+show(S.playerName ? "home" : "naming");
+</script>
+</body>
+</html>
