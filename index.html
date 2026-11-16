@@ -54,7 +54,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 #home h1{font-size:34px;margin:6px 0 0;text-align:center;color:#1d4e89;text-shadow:0 2px 0 #fff}
 .greet{text-align:center;font-size:22px;margin:4px 0}
 .hero{display:flex;flex-direction:column;align-items:center;margin:4px 0}
-.hero svg{width:110px;height:150px;animation:bob 2.2s ease-in-out infinite}
+.hero .pl{width:104px;height:156px;cursor:pointer}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .player-name{background:#fff;border-radius:14px;padding:4px 14px;font-size:20px;font-weight:bold;margin-top:-6px}
 .list{flex:1;overflow-y:auto;padding:4px 2px 12px}
@@ -105,11 +105,11 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
              repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 2px,transparent 2px 10px)}
 .goal.shake{animation:shake .4s 2}
 @keyframes shake{25%{transform:translateX(-52%)}75%{transform:translateX(-48%)}}
-#keeper{position:absolute;bottom:-2px;left:50%;width:48px;height:70px;transform:translateX(-50%);transition:transform .35s}
-.scene.short #keeper{height:52px}
-#ball{position:absolute;bottom:14px;left:58%;font-size:30px;transition:all .55s cubic-bezier(.3,.6,.4,1);z-index:3}
-#kicker{position:absolute;bottom:4px;left:30%;width:52px;height:74px;transition:transform .25s}
-.scene.short #kicker{height:56px;width:40px}
+#keeper{position:absolute;bottom:-2px;left:50%;width:50px;height:75px;transform:translateX(-50%);transition:transform .35s}
+.scene.short #keeper{height:54px;width:36px}
+#ball{position:absolute;bottom:14px;left:58%;width:30px;height:30px;transition:all .55s cubic-bezier(.3,.6,.4,1);z-index:3}
+#kicker{position:absolute;bottom:4px;left:30%;width:54px;height:81px;transition:transform .25s}
+.scene.short #kicker{height:60px;width:40px}
 /* הדמות מגיבה: קופצת ומסתובבת אחרי גול, מתנדנדת ומעודדת אחרי פספוס */
 #kicker.celebrate{animation:celebrate .5s ease-in-out 3}
 @keyframes celebrate{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-28px) rotate(-12deg)}70%{transform:translateY(-14px) rotate(10deg)}}
@@ -119,7 +119,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
   white-space:nowrap;opacity:0;transform:scale(.5);transition:all .25s;z-index:4;box-shadow:0 2px 4px rgba(0,0,0,.15)}
 .bubble.show{opacity:1;transform:scale(1)}
 .scene.short .bubble{bottom:56px;font-size:15px}
-.scene.short #ball{font-size:24px;bottom:8px}
+.scene.short #ball{width:24px;height:24px;bottom:8px}
 
 /* אזור השאלה */
 .ask{background:#fff;border-radius:20px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
@@ -179,11 +179,66 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 
 /* ===================== מסך סיום ===================== */
 #done{justify-content:center;align-items:center;text-align:center}
-#done .trophy{font-size:96px;animation:bob 1.5s infinite}
+#done{gap:2px}
+.done-total{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px}
+.ceremony{position:relative;width:130px;height:200px;margin-top:40px}
+#donePlayer{position:absolute;bottom:0;left:7px;width:116px;height:174px}
+.cup{position:absolute;top:-52px;left:50%;font-size:62px;transform:translateX(-50%);animation:bob 1s ease-in-out infinite;z-index:2}
+#done .big-stars span{display:inline-block;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.8,.5,1)}
+#done .big-stars span.in{transform:scale(1)}
+.fly-coin{position:absolute;font-size:28px;z-index:20;pointer-events:none;transition:left .7s cubic-bezier(.4,0,.6,1),top .7s cubic-bezier(.4,-.6,.6,1),transform .7s}
+
+/* ===================== מפת הליגה ===================== */
+.map{position:relative;flex:1;border-radius:24px;overflow:hidden;margin:4px 0;
+  background:repeating-linear-gradient(0deg,#43c067 0 46px,#3bb55e 46px 92px)}
+.map > svg.path{position:absolute;inset:0;width:100%;height:100%}
+.deco{position:absolute;font-size:26px;opacity:.9;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);background:none;padding:0;display:flex;flex-direction:column;align-items:center;z-index:2}
+.stadium{width:88px;height:88px;border-radius:50%;background:#fff;border:6px solid var(--sun);font-size:36px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 rgba(0,0,0,.18);position:relative}
+.node.l2 .stadium{border-color:var(--blue)} .node.l3 .stadium{border-color:var(--purple)}
+.node .label{background:#fff;border-radius:12px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px;white-space:nowrap}
+.node .nstars{font-size:14px;letter-spacing:1px;min-height:18px}
+.node.locked .stadium{background:#d7dee8;border-color:#a9b4c4;filter:grayscale(.6)}
+.node.current .stadium{animation:ring 1.3s ease-in-out infinite}
+@keyframes ring{50%{box-shadow:0 6px 0 rgba(0,0,0,.18),0 0 0 10px rgba(255,255,255,.55)}}
+.node.done .stadium::after{content:"✓";position:absolute;top:-8px;right:-8px;background:#2ec46b;color:#fff;border-radius:50%;
+  width:28px;height:28px;font-size:18px;display:flex;align-items:center;justify-content:center}
+.node.unlocking .stadium{animation:unlockShake .5s}
+@keyframes unlockShake{20%,60%{transform:rotate(-12deg)}40%,80%{transform:rotate(12deg)}}
+.node.popped .stadium{animation:popIn .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes popIn{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.node.trophy .stadium{border-color:#f4c430;font-size:42px}
+.node.trophy.locked .stadium{opacity:.6}
+.token{position:absolute;width:46px;height:69px;transform:translate(-50%,-100%);z-index:3;transition:left 1s ease-in-out,top 1s ease-in-out;pointer-events:none}
+.map-bubble{position:absolute;z-index:4;background:#fff;border-radius:14px;padding:6px 12px;font-size:17px;font-weight:bold;
+  transform:translate(-50%,-100%);box-shadow:0 3px 8px rgba(0,0,0,.2);white-space:nowrap;pointer-events:none}
+
+/* ===================== מנהרה ===================== */
+#tunnel{justify-content:center;align-items:center;overflow:hidden;cursor:pointer;
+  background:radial-gradient(ellipse at 50% 42%,#fffbe0 0 9%,#ffe98a 13%,#5d6b88 30%,#2a3147 55%,#141824 100%)}
+.tunnel-wall{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 42%,rgba(255,255,255,.05) 0 10deg,transparent 10deg 20deg)}
+#tunnelPlayer{width:96px;height:144px;z-index:2}
+#tunnelPlayer.go{animation:outTunnel 2.1s ease-in forwards}
+@keyframes outTunnel{from{transform:translateY(-60px) scale(.22);opacity:.5}to{transform:translateY(90px) scale(1.5);opacity:1}}
+.tunnel-banner{position:absolute;top:13%;z-index:3;background:var(--sun);color:var(--ink);font-size:28px;font-weight:bold;
+  padding:12px 22px;border-radius:22px;text-align:center;box-shadow:0 6px 0 #d9a600;transform:translateY(-260px)}
+.tunnel-banner small{display:block;font-size:18px;font-weight:normal}
+.tunnel-banner.go{animation:dropIn .6s .6s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes dropIn{to{transform:translateY(0)}}
+.tunnel-skip{position:absolute;bottom:max(24px,env(safe-area-inset-bottom));color:#fff;font-size:18px;opacity:.85;z-index:3}
 #done h2{font-size:34px;margin:6px}
 #done .big-stars{font-size:46px;letter-spacing:6px}
 #done .earned{font-size:26px;background:#fff;border-radius:16px;padding:8px 18px;margin:10px}
 #done .big-btn{width:85%}
+/* מסך נמוך (אייפון בתוך ספארי): מקטינים את הטקס והכפתורים */
+@media (max-height:720px){
+  .ceremony{height:160px;width:110px;margin-top:46px}
+  #donePlayer{width:96px;height:144px;left:7px}
+  .cup{font-size:50px;top:-44px}
+  #done h2{font-size:28px} #done .big-stars{font-size:38px}
+  #done .earned{font-size:21px;margin:6px} #done .big-btn{padding:11px 16px;font-size:21px;margin:5px 0}
+}
 
 /* ===================== מסכי הורה ===================== */
 .parent{background:#f3f6fa;overflow-y:auto}
@@ -203,6 +258,79 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .word-row .src{font-size:13px;color:#5a6b86}
 .rec-on{background:#ffd6d6 !important;animation:pulse .8s infinite}
 #gate{justify-content:center;align-items:center;text-align:center}
+/* ===================== הדמות: חלקים זזים =====================
+   כל חלק מסתובב סביב "מפרק": ירך, כתף או צוואר.
+   transform-box:view-box = המספרים של המפרק הם בקואורדינטות של הציור */
+.pl svg{width:100%;height:100%;overflow:visible}
+.pl svg g{transform-box:view-box}
+.pl .p-legL{transform-origin:34px 74px} .pl .p-legR{transform-origin:46px 74px}
+.pl .p-armL{transform-origin:24px 42px;transition:transform .25s} .pl .p-armR{transform-origin:56px 42px;transition:transform .25s}
+.pl .p-head{transform-origin:40px 38px} .pl .p-up{transform-origin:40px 70px}
+/* עמידה רגילה: נושם ומניע קצת ידיים */
+.pl.idle .p-up{animation:breathe 2.4s ease-in-out infinite}
+.pl.idle .p-armL{animation:swayL 2.4s ease-in-out infinite} .pl.idle .p-armR{animation:swayR 2.4s ease-in-out infinite}
+.pl.idle .p-eyes{animation:blinkEye 4s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes breathe{50%{transform:translateY(-1.5px)}}
+@keyframes swayL{50%{transform:rotate(6deg)}} @keyframes swayR{50%{transform:rotate(-6deg)}}
+@keyframes blinkEye{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+/* ריצה: רגליים וידיים מתחלפות */
+.pl.run .p-legL{animation:legA .32s ease-in-out infinite alternate} .pl.run .p-legR{animation:legB .32s ease-in-out infinite alternate}
+.pl.run .p-armL{animation:legB .32s ease-in-out infinite alternate} .pl.run .p-armR{animation:legA .32s ease-in-out infinite alternate}
+.pl.run .p-up{animation:runBob .16s ease-in-out infinite alternate}
+@keyframes legA{from{transform:rotate(28deg)}to{transform:rotate(-28deg)}}
+@keyframes legB{from{transform:rotate(-28deg)}to{transform:rotate(28deg)}}
+@keyframes runBob{to{transform:translateY(-2px)}}
+/* בעיטה: הרגל נמשכת אחורה ואז קדימה, הגוף נוטה */
+.pl.kick .p-legR{animation:kickLeg .45s ease-out}
+.pl.kick .p-armL{transform:rotate(45deg)} .pl.kick .p-armR{transform:rotate(-30deg)}
+.pl.kick .p-up{animation:lean .45s ease-out}
+@keyframes kickLeg{0%{transform:rotate(0)}35%{transform:rotate(40deg)}70%{transform:rotate(-80deg)}100%{transform:rotate(0)}}
+@keyframes lean{40%{transform:rotate(-6deg)}}
+/* חגיגה: קפיצה עם שתי ידיים למעלה */
+.pl.celebrate .p-armL{animation:armUpL .5s ease-in-out 3 forwards} .pl.celebrate .p-armR{animation:armUpR .5s ease-in-out 3 forwards}
+@keyframes armUpL{0%{transform:rotate(0)}40%,100%{transform:rotate(160deg)}70%{transform:rotate(140deg)}}
+@keyframes armUpR{0%{transform:rotate(0)}40%,100%{transform:rotate(-160deg)}70%{transform:rotate(-140deg)}}
+/* עידוד אחרי פספוס: אגרוף באוויר והנהון */
+.pl.encourage .p-armR{animation:pump .3s ease-in-out 4 alternate}
+.pl.encourage .p-head{animation:nod .3s ease-in-out 4 alternate}
+@keyframes pump{from{transform:rotate(-110deg)}to{transform:rotate(-150deg)}}
+@keyframes nod{to{transform:rotate(8deg)}}
+/* מחזיק גביע / שוער מושיט ידיים */
+.pl.hold .p-armL,.pl.reach .p-armL{transform:rotate(165deg)} .pl.hold .p-armR,.pl.reach .p-armR{transform:rotate(-165deg)}
+.pl.hold{animation:bob 1s ease-in-out infinite}
+#ball svg{width:100%;height:100%}
+
+/* ===================== חדר הלבשה ===================== */
+.wr-stage{position:relative;height:190px;flex-shrink:0;display:flex;justify-content:center;align-items:flex-end;gap:4px;
+  border-radius:22px;background:radial-gradient(ellipse at 50% 100%,#fff6c9 0 30%,#ffe08a 60%,#ffd23f 100%);padding-bottom:6px}
+#wrPlayer{width:116px;height:174px}
+#wrBall{width:34px;height:34px;margin-bottom:4px}
+.wr-buy{min-height:50px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:19px;font-weight:bold;
+  background:#fff;border-radius:16px;margin:6px 0;padding:4px 10px;text-align:center}
+.wr-buy .buy{background:#2ec46b;color:#fff;font-size:20px;font-weight:bold;border-radius:14px;padding:8px 16px;box-shadow:0 4px 0 #1f8f4c}
+.wr-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;flex-shrink:0;scrollbar-width:none}
+.wr-tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;font-size:26px;width:54px;height:54px;border-radius:16px;background:#fff;box-shadow:0 3px 0 #c9d6e3}
+.tab.on{background:var(--sun);box-shadow:0 3px 0 #d9a600}
+.wr-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 2px 12px;align-content:start}
+.item{position:relative;background:#fff;border-radius:18px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;
+  font-size:14px;box-shadow:0 4px 0 #c9d6e3;font-family:var(--font)}
+.item .thumb{width:64px;height:64px;display:flex;align-items:center;justify-content:center}
+.item .thumb svg{width:100%;height:100%}
+.item .price{font-weight:bold;font-size:15px;margin-top:2px}
+.item.eq{outline:4px solid #2ec46b}
+.item.eq::after{content:"✓";position:absolute;top:4px;left:8px;color:#1f8f4c;font-weight:bold;font-size:18px}
+.item.trying{outline:4px dashed var(--orange)}
+.item .sw{width:48px;height:48px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #c9d6e3}
+.free-sec{grid-column:1/-1;background:#fff;border-radius:18px;padding:10px}
+.free-sec h4{margin:0 0 8px;font-size:18px}
+.sw-row{display:flex;gap:10px;flex-wrap:wrap}
+.sw-row button{width:46px;height:46px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #c9d6e3}
+.sw-row button.on{box-shadow:0 0 0 4px #2ec46b}
+.num-row{display:flex;align-items:center;gap:14px;justify-content:center;font-size:34px;font-weight:bold}
+.num-row button{width:56px;height:56px;border-radius:50%;background:var(--sun);font-size:30px;box-shadow:0 4px 0 #d9a600}
+.wardrobe-btn{margin-top:6px;font-size:18px;padding:8px 14px}
+
 #gate .dots{font-size:40px;letter-spacing:10px;min-height:56px}
 .pad{display:grid;grid-template-columns:repeat(3,80px);gap:10px;justify-content:center}
 .pad button{height:70px;border-radius:18px;background:#fff;font-size:30px;box-shadow:0 4px 0 #c9d6e3}
@@ -236,6 +364,22 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
     <button id="parentBtn" aria-label="מסך הורה"><div class="fill" id="parentFill"></div><span>⚙️</span></button>
   </section>
 
+  <!-- ========== חדר הלבשה (חנות) ========== -->
+  <section id="wardrobe" class="screen">
+    <div class="topbar">
+      <button class="icon-btn" id="wrBack">🏠</button>
+      <div style="font-size:22px;font-weight:bold">👕 חדר הלבשה</div>
+      <div class="coins" id="wrCoins">🪙 0</div>
+    </div>
+    <div class="wr-stage">
+      <div class="pl idle" id="wrPlayer"></div>
+      <div id="wrBall"></div>
+    </div>
+    <div class="wr-buy" id="wrBuy"></div>
+    <div class="wr-tabs" id="wrTabs"></div>
+    <div class="wr-grid" id="wrGrid"></div>
+  </section>
+
   <!-- ========== מסך בחירת שלב ========== -->
   <section id="levels" class="screen">
     <div class="topbar">
@@ -243,7 +387,16 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <div class="coins" id="levelsCoins">🪙 0</div>
     </div>
     <h2 id="levelsTitle"></h2>
-    <div class="list" id="levelList"></div>
+    <!-- מפת הליגה: שביל עם אצטדיונים. הצמתים והשחקן נבנים ב-JavaScript -->
+    <div class="map" id="map"></div>
+  </section>
+
+  <!-- ========== מנהרה: יציאה למגרש לפני שלב ========== -->
+  <section id="tunnel" class="screen">
+    <div class="tunnel-wall"></div>
+    <div class="tunnel-banner" id="tunnelBanner"></div>
+    <div class="pl run" id="tunnelPlayer"></div>
+    <div class="tunnel-skip">הקש כדי להתחיל ▶</div>
   </section>
 
   <!-- ========== מסך המשחק ========== -->
@@ -255,10 +408,10 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
     </div>
     <div class="scene" id="scene">
       <div class="crowd" id="crowd">🙂🙂😃🙂😀🙂🙂😃🙂😀🙂🙂😃🙂😀🙂</div>
-      <div class="goal" id="goal"><div id="keeper"></div></div>
-      <div id="kicker"></div>
+      <div class="goal" id="goal"><div id="keeper" class="pl idle"></div></div>
+      <div id="kicker" class="pl idle"></div>
       <div id="bubble" class="bubble"></div>
-      <div id="ball">⚽</div>
+      <div id="ball"></div>
     </div>
     <div class="ask">
       <div class="ask-row">
@@ -273,7 +426,9 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 
   <!-- ========== מסך סיום שלב ========== -->
   <section id="done" class="screen">
-    <div class="trophy">🏆</div>
+    <div class="coins done-total" id="doneTotal">🪙 0</div>
+    <!-- טקס סיום: השחקן מרים גביע -->
+    <div class="ceremony"><div class="cup" id="doneCup">🏆</div><div class="pl hold" id="donePlayer"></div></div>
     <h2 id="doneTitle">כל הכבוד!</h2>
     <div class="big-stars" id="doneStars"></div>
     <div class="earned" id="doneCoins"></div>
@@ -391,9 +546,10 @@ const CONFIG = {
   TTS_RATE: 0.8,          // מהירות הקול הממוחשב (1 = רגיל)
   TTS_SLOW_RATE: 0.45,    // מהירות בכפתור הצב 🐢
   REC_SLOW_RATE: 0.65,    // מהירות הקלטה בכפתור הצב
-  PARENT_HOLD_MS: 2000,   // כמה זמן מחזיקים את ⚙️ כדי להיכנס למסך הורה
+  PARENT_HOLD_MS: 1000,   // כמה זמן מחזיקים את ⚙️ כדי להיכנס למסך הורה (1000 = שנייה אחת)
   MAX_REC_MS: 5000,       // הקלטה נעצרת לבד אחרי 5 שניות
-  IMPROVE_BONUS_PER_STAR: 5, // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
+  IMPROVE_BONUS_PER_STAR: 5,
+  SPEAK_PRAISE: true,     // השחקן אומר בקול "אַלּוּף!" / "כִּמְעַט!" (false = רק כתוב) // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
   STORAGE_KEY: "ligat-milim-v1"
 };
 
@@ -483,6 +639,7 @@ let S; // כל המצב של המשחק
 function defaultState(){
   return {
     childName:"", playerName:"", coins:0, parentCode:"",
+    look: JSON.parse(JSON.stringify(DEFAULT_LOOK)), // המראה של השחקן + מה שנקנה בחנות
     dictations:[ sampleDictation() ]
   };
 }
@@ -497,6 +654,12 @@ function loadState(){
     const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
     S = raw ? Object.assign(defaultState(), JSON.parse(raw)) : defaultState();
   }catch(e){ S = defaultState(); }
+  fixLook();
+}
+// משלים שדות חסרים במראה (למשל שמירה מגרסה 1, שלא היה בה מראה)
+function fixLook(){
+  S.look = Object.assign(JSON.parse(JSON.stringify(DEFAULT_LOOK)), S.look || {});
+  S.look.eq = Object.assign({}, DEFAULT_LOOK.eq, S.look.eq || {});
 }
 function save(){
   try{ localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(S)); }
@@ -626,22 +789,120 @@ function speak(text, slow=false){
 /* =========================================================
    ציור הדמויות (SVG) — דמויות מקוריות
    ========================================================= */
-function playerSVG({shirt="var(--shirt)", shorts="#1d4e89", hair="#4a2c17", skin="#f1c27d", gloves=null, num=""}={}){
-  return `<svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
-    <rect x="19" y="62" width="8" height="20" rx="3" fill="${skin}"/><rect x="33" y="62" width="8" height="20" rx="3" fill="${skin}"/>
-    <rect x="16" y="80" width="13" height="7" rx="3" fill="#222"/><rect x="31" y="80" width="13" height="7" rx="3" fill="#222"/>
-    <rect x="17" y="52" width="26" height="14" rx="4" fill="${shorts}"/>
-    <rect x="14" y="30" width="32" height="26" rx="9" fill="${shirt}"/>
-    <rect x="6" y="32" width="10" height="20" rx="5" fill="${shirt}"/><rect x="44" y="32" width="10" height="20" rx="5" fill="${shirt}"/>
-    <circle cx="11" cy="54" r="5" fill="${gloves||skin}"/><circle cx="49" cy="54" r="5" fill="${gloves||skin}"/>
-    <text x="30" y="49" font-size="13" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Arial">${num}</text>
-    <circle cx="30" cy="18" r="13" fill="${skin}"/>
-    <path d="M17 16 Q18 3 30 4 Q43 3 43 16 Q38 9 30 10 Q22 9 17 16Z" fill="${hair}"/>
-    <circle cx="25" cy="19" r="2" fill="#222"/><circle cx="35" cy="19" r="2" fill="#222"/>
-    <path d="M24 24 Q30 29 36 24" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+/* ---------- קטלוג החנות ----------
+   price = מחיר במטבעות (0 = מקבלים בחינם מההתחלה). קל להוסיף פריטים חדשים כאן. */
+const SHOP = {
+  shirt:[ {id:"orange",name:"כתום",price:0,c:"#ff6b35"}, {id:"red",name:"אדום",price:15,c:"#e63946"},
+          {id:"blue",name:"כחול",price:15,c:"#3a86ff"}, {id:"green",name:"ירוק",price:15,c:"#2ec46b"},
+          {id:"yellow",name:"צהוב",price:15,c:"#ffd23f",dark:true}, {id:"purple",name:"סגול",price:20,c:"#8e5cf7"},
+          {id:"black",name:"שחור",price:25,c:"#2b2d42"}, {id:"stripes1",name:"פסים אדום־כחול",price:40,c:"#e63946",c2:"#3a86ff"},
+          {id:"stripes2",name:"פסים ירוק־לבן",price:40,c:"#2ec46b",c2:"#ffffff"}, {id:"gold",name:"זהב ✨",price:80,c:"#f4c430",dark:true} ],
+  shorts:[ {id:"navy",name:"כחול כהה",price:0,c:"#1d4e89"}, {id:"white",name:"לבן",price:10,c:"#f4f4f4"},
+           {id:"black",name:"שחור",price:10,c:"#2b2d42"}, {id:"red",name:"אדום",price:15,c:"#e63946"}, {id:"green",name:"ירוק",price:15,c:"#2ec46b"} ],
+  shoes:[ {id:"black",name:"שחורות",price:0,c:"#222"}, {id:"white",name:"לבנות",price:15,c:"#f4f4f4"},
+          {id:"red",name:"אדומות",price:20,c:"#e63946"}, {id:"neon",name:"זוהרות",price:30,c:"#39e639"}, {id:"gold",name:"זהב",price:60,c:"#f4c430"} ],
+  hair:[ {id:"short",name:"קצר",price:0}, {id:"buzz",name:"קצוץ",price:15}, {id:"spiky",name:"קוצים",price:20},
+         {id:"curly",name:"מתולתל",price:20}, {id:"ponytail",name:"קוקו",price:20}, {id:"long",name:"ארוך",price:25} ],
+  hat:[ {id:"none",name:"בלי",price:0}, {id:"band",name:"סרט ראש",price:15}, {id:"cap",name:"כובע מצחייה",price:25},
+        {id:"beanie",name:"כובע גרב",price:30}, {id:"crown",name:"כתר 👑",price:100} ],
+  ball:[ {id:"classic",name:"קלאסי",price:0,c:"#ffffff",c2:"#222"}, {id:"blue",name:"כחול",price:20,c:"#7fb2ff",c2:"#1d4e89"},
+         {id:"fire",name:"אש",price:30,c:"#ffb347",c2:"#d62828"}, {id:"star",name:"כוכב",price:40,c:"#fff4b0",c2:"#8e5cf7",star:true},
+         {id:"gold",name:"זהב",price:60,c:"#ffe066",c2:"#b8860b"} ],
+  char:[ {id:"player",name:"שחקן",price:0}, {id:"cat",name:"חתול כדורגלן",price:120}, {id:"robot",name:"רובוט",price:150} ]
+};
+// דברים שבוחרים בחינם (לא בחנות)
+const SKINS = ["#ffe0bd","#f1c27d","#e0ac69","#c68642","#8d5524"];
+const HAIR_COLORS = ["#4a2c17","#1b1b1b","#d4a017","#b5502a","#8a8a8a","#ff5d8f"];
+const DEFAULT_LOOK = { eq:{shirt:"orange",shorts:"navy",shoes:"black",hair:"short",hat:"none",ball:"classic",char:"player"},
+                       owned:[], skin:1, hairColor:0, num:10 };
+const findItem = (cat, id) => SHOP[cat].find(x => x.id === id) || SHOP[cat][0];
+const isOwned = (cat, id) => findItem(cat,id).price === 0 || S.look.owned.includes(cat + ":" + id);
+
+/* ---------- ציור הכדור ---------- */
+function ballSVG(id){
+  const b = findItem("ball", id);
+  const center = b.star
+    ? `<polygon points="20,9 23,17 31,17 25,22 27,30 20,25 13,30 15,22 9,17 17,17" fill="${b.c2}"/>`
+    : `<polygon points="20,13 26,17 24,24 16,24 14,17" fill="${b.c2}"/>`;
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="20" r="18" fill="${b.c}" stroke="${b.c2}" stroke-width="2"/>${center}
+    <path d="M20 13 L20 3 M26 17 L35 13 M24 24 L30 33 M16 24 L10 33 M14 17 L5 13" stroke="${b.c2}" stroke-width="2"/>
+    <circle cx="13" cy="11" r="3" fill="#fff" opacity=".6"/></svg>`;
+}
+
+/* ---------- ציור השחקן ----------
+   הדמות בנויה מחלקים נפרדים (רגליים, ידיים, ראש) — כל חלק הוא קבוצה (g) עם class,
+   וכך ה-CSS יכול לסובב כל חלק סביב "המפרק" שלו ולייצר תנועה של בעיטה, ריצה וחגיגה.
+   vb = איזה חלק מהציור להראות (לתמונות הקטנות בחנות) */
+let svgCounter = 0;
+function playerSVG(L, {vb="0 0 80 120", gloves=null}={}){
+  const id = "s" + (++svgCounter); // מזהה ייחודי לדוגמת הפסים
+  const shirt = findItem("shirt", L.eq.shirt), shorts = findItem("shorts", L.eq.shorts).c, shoes = findItem("shoes", L.eq.shoes).c;
+  const ch = L.eq.char, hairC = HAIR_COLORS[L.hairColor] || HAIR_COLORS[0];
+  // לחתול: הפרווה בצבע השיער. לרובוט: מתכת
+  const skin = ch === "cat" ? hairC : ch === "robot" ? "#b8c4d6" : (SKINS[L.skin] || SKINS[1]);
+  const shirtFill = shirt.c2 ? `url(#${id})` : shirt.c;
+  const numColor = shirt.dark ? "#24324a" : "#fff";
+  const hand = gloves || skin;
+  // --- שיער (רק לשחקן) ---
+  let hairBack = "", hairFront = "";
+  if (ch === "player"){
+    const h = L.eq.hair;
+    const base = `<path d="M26 24 Q27 9 40 10 Q53 9 54 24 Q49 16 40 17 Q31 16 26 24Z" fill="${hairC}"/>`;
+    if (h === "short") hairFront = base;
+    if (h === "buzz") hairFront = `<path d="M27 21 Q29 11 40 11 Q51 11 53 21 Q47 15 40 15 Q33 15 27 21Z" fill="${hairC}" opacity=".85"/>`;
+    if (h === "spiky") hairFront = `<path d="M26 24 L26 13 L31 17 L32 7 L37 14 L40 4 L43 14 L48 7 L49 17 L54 13 L54 24 Q49 16 40 17 Q31 16 26 24Z" fill="${hairC}"/>`;
+    if (h === "curly") hairFront = base + [28,33,38,43,48,52].map((x,i)=>`<circle cx="${x}" cy="${i%2?13:15}" r="5.5" fill="${hairC}"/>`).join("");
+    if (h === "ponytail"){ hairBack = `<ellipse cx="57" cy="30" rx="5" ry="10" fill="${hairC}"/>`;
+      hairFront = base + `<circle cx="54" cy="21" r="2.5" fill="#ff5d8f"/>`; }
+    if (h === "long"){ hairBack = `<path d="M25 20 Q22 44 30 47 L31 26Z M55 20 Q58 44 50 47 L49 26Z" fill="${hairC}"/>`; hairFront = base; }
+  }
+  // --- ראש ופנים לפי הדמות ---
+  let head;
+  if (ch === "robot"){
+    head = `<line x1="40" y1="12" x2="40" y2="4" stroke="#7d8ba1" stroke-width="2"/><circle cx="40" cy="4" r="3" fill="#ff5d8f"/>
+      <rect x="26" y="12" width="28" height="26" rx="6" fill="${skin}" stroke="#7d8ba1" stroke-width="1.5"/>
+      <rect x="30" y="19" width="7" height="6" rx="2" fill="#3af0ff"/><rect x="43" y="19" width="7" height="6" rx="2" fill="#3af0ff"/>
+      <rect x="32" y="30" width="16" height="4" rx="2" fill="#7d8ba1"/>`;
+  } else if (ch === "cat"){
+    head = `<path d="M27 18 L28 4 L37 13Z M53 18 L52 4 L43 13Z" fill="${skin}"/><path d="M29 14 L29.5 8 L34 12Z M51 14 L50.5 8 L46 12Z" fill="#ffb3c7"/>
+      <circle cx="40" cy="26" r="14" fill="${skin}"/><ellipse cx="40" cy="31" rx="7" ry="5" fill="#fff"/>
+      <circle cx="34" cy="24" r="2.2" fill="#222"/><circle cx="46" cy="24" r="2.2" fill="#222"/>
+      <path d="M38 28 L42 28 L40 30.5Z" fill="#ff5d8f"/>
+      <path d="M33 31 L24 29 M33 33 L24 34 M47 31 L56 29 M47 33 L56 34" stroke="#555" stroke-width=".8"/>`;
+  } else {
+    head = `<circle cx="40" cy="26" r="14" fill="${skin}"/><circle cx="26" cy="27" r="3" fill="${skin}"/><circle cx="54" cy="27" r="3" fill="${skin}"/>
+      <g class="p-eyes"><circle cx="35" cy="26" r="2" fill="#222"/><circle cx="45" cy="26" r="2" fill="#222"/></g>
+      <path d="M34 31 Q40 36 46 31" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  }
+  // --- כובע ---
+  const hats = {
+    none:"",
+    band:`<rect x="25.5" y="15" width="29" height="4.5" rx="2" fill="#ff5d8f"/>`,
+    cap:`<path d="M25 21 Q26 7 40 7 Q54 7 55 21Z" fill="#3a86ff"/><path d="M50 19 L66 21 Q64 24 50 22Z" fill="#1d4e89"/>`,
+    beanie:`<path d="M25 22 Q25 6 40 6 Q55 6 55 22Z" fill="#8e5cf7"/><rect x="24" y="18" width="32" height="6" rx="3" fill="#6a3fd0"/><circle cx="40" cy="5" r="4" fill="#fff"/>`,
+    crown:`<path d="M27 15 L27 3 L33 9 L40 1 L47 9 L53 3 L53 15Z" fill="#f4c430" stroke="#b8860b" stroke-width="1"/><circle cx="40" cy="10" r="2" fill="#e63946"/>`
+  };
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="${id}" width="8" height="10" patternUnits="userSpaceOnUse"><rect width="8" height="10" fill="${shirt.c}"/><rect width="4" height="10" fill="${shirt.c2||shirt.c}"/></pattern></defs>
+    ${hairBack}
+    <g class="p-legL"><rect x="30" y="72" width="8" height="28" rx="4" fill="${skin}"/><rect x="30" y="91" width="8" height="9" fill="#fff"/><ellipse cx="33" cy="103" rx="7" ry="4" fill="${shoes}"/></g>
+    <g class="p-legR"><rect x="42" y="72" width="8" height="28" rx="4" fill="${skin}"/><rect x="42" y="91" width="8" height="9" fill="#fff"/><ellipse cx="47" cy="103" rx="7" ry="4" fill="${shoes}"/></g>
+    <rect x="26" y="64" width="28" height="15" rx="5" fill="${shorts}"/>
+    <g class="p-up">
+      <rect x="24" y="38" width="32" height="30" rx="10" fill="${shirtFill}"/>
+      <text x="40" y="59" font-size="13" font-weight="bold" text-anchor="middle" fill="${numColor}" font-family="Arial">${L.num}</text>
+      <g class="p-armL"><rect x="18" y="38" width="10" height="12" rx="5" fill="${shirtFill}"/><rect x="19" y="46" width="8" height="18" rx="4" fill="${skin}"/><circle cx="23" cy="65" r="5" fill="${hand}"/></g>
+      <g class="p-armR"><rect x="52" y="38" width="10" height="12" rx="5" fill="${shirtFill}"/><rect x="53" y="46" width="8" height="18" rx="4" fill="${skin}"/><circle cx="57" cy="65" r="5" fill="${hand}"/></g>
+      <rect x="36" y="34" width="8" height="6" fill="${skin}"/>
+      <g class="p-head">${head}${hairFront}${hats[L.eq.hat]||""}</g>
+    </g>
   </svg>`;
 }
-const keeperSVG = () => playerSVG({shirt:"#8e5cf7", shorts:"#333", hair:"#222", skin:"#c68642", gloves:"#3ad16a", num:"1"});
+// השוער: מראה קבוע, עם כפפות ירוקות
+const KEEPER_LOOK = { eq:{shirt:"purple",shorts:"black",shoes:"black",hair:"buzz",hat:"none",ball:"classic",char:"player"}, skin:3, hairColor:1, num:1 };
+const keeperSVG = () => playerSVG(KEEPER_LOOK, {gloves:"#3ad16a"});
+const myPlayer = () => playerSVG(S.look);
 
 /* =========================================================
    ניווט בין מסכים
@@ -652,7 +913,7 @@ function show(id){
   if (id === "home") renderHome();
 }
 function updateCoins(pop=false){
-  ["homeCoins","levelsCoins","gameCoins"].forEach(id => {
+  ["homeCoins","levelsCoins","gameCoins","wrCoins"].forEach(id => {
     const el = $(id); el.textContent = "🪙 " + S.coins;
     if (pop){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
   });
@@ -663,7 +924,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 
 /* ===================== מסך שם לשחקן ===================== */
 function renderNaming(){
-  $("namingHero").innerHTML = playerSVG({num:"10"});
+  $("namingHero").innerHTML = `<div class="pl idle">${myPlayer()}</div>`;
   $("suggBox").innerHTML = ["טורבו","רוקט","ברק","כוכבי","זריז"].map(n=>`<button class="small-btn">${n}</button>`).join("");
   $("suggBox").querySelectorAll("button").forEach(b => b.onclick = () => { SFX.tap(); $("playerNameInput").value = b.textContent; });
 }
@@ -679,7 +940,10 @@ function dictStars(d){ return [1,2,3].reduce((s,l)=> s + ((d.progress[l]&&d.prog
 function renderHome(){
   updateCoins();
   $("greet").textContent = S.childName ? `שלום ${S.childName}! 👋` : "שלום! 👋";
-  $("homeHero").innerHTML = playerSVG({num:"10"}) + `<div class="player-name">${esc(S.playerName||"השחקן שלי")}</div>`;
+  $("homeHero").innerHTML = `<div class="pl idle" id="homePl">${myPlayer()}</div><div class="player-name">${esc(S.playerName||"השחקן שלי")}</div>`;
+  $("homePl").onclick = () => { SFX.tap(); openWardrobe(); };
+  $("homeHero").insertAdjacentHTML("beforeend", `<button class="small-btn wardrobe-btn" id="wrOpen">👕 חדר הלבשה</button>`);
+  $("wrOpen").onclick = () => { SFX.tap(); openWardrobe(); };
   const list = $("dictList");
   if (!S.dictations.length){
     list.innerHTML = `<div class="empty-note">עוד אין מחזורים 🙂<br>בקשו מההורה להוסיף הכתבה</div>`;
@@ -690,6 +954,89 @@ function renderHome(){
   list.innerHTML = ds.map(d => `<button class="dict-card" data-id="${d.id}">
       <span>⚽ ${esc(d.name)}</span><span class="stars">⭐ ${dictStars(d)}/9</span></button>`).join("");
   list.querySelectorAll(".dict-card").forEach(b => b.onclick = () => { SFX.tap(); openLevels(b.dataset.id); });
+}
+
+/* ===================== חדר הלבשה (חנות) ===================== */
+const TABS = [["shirt","👕"],["shorts","🩳"],["shoes","👟"],["hair","💇"],["hat","🧢"],["ball","⚽"],["char","🦸"],["free","🎨"]];
+let WR = { tab:"shirt", trying:null }; // trying = פריט שמודדים ועוד לא קנינו
+// המראה שמוצג: המראה של הילד + הפריט שמודדים עכשיו
+function previewLook(){
+  const L = JSON.parse(JSON.stringify(S.look));
+  if (WR.trying) L.eq[WR.trying.cat] = WR.trying.id;
+  return L;
+}
+function openWardrobe(){ WR.trying = null; renderWardrobe(); updateCoins(); show("wardrobe"); }
+$("wrBack").onclick = () => { SFX.tap(); show("home"); };
+
+function renderWardrobe(){
+  const L = previewLook();
+  $("wrPlayer").innerHTML = playerSVG(L);
+  $("wrBall").innerHTML = ballSVG(L.eq.ball);
+  // לשוניות
+  $("wrTabs").innerHTML = TABS.map(([c,ico]) => `<button class="tab ${c===WR.tab?"on":""}" data-c="${c}">${ico}</button>`).join("");
+  $("wrTabs").querySelectorAll(".tab").forEach(b => b.onclick = () => { SFX.tap(); WR.tab = b.dataset.c; WR.trying = null; renderWardrobe(); });
+  // שורת קנייה
+  const bar = $("wrBuy");
+  if (WR.trying){
+    const it = findItem(WR.trying.cat, WR.trying.id);
+    if (S.coins >= it.price){
+      bar.innerHTML = `<span>${it.name} · 🪙${it.price}</span><button class="buy" id="buyBtn">קנה!</button>`;
+      $("buyBtn").onclick = buyTrying;
+    } else bar.innerHTML = `<span>${it.name} · חסרים עוד 🪙${it.price - S.coins}<br><small>שחק עוד ותרוויח מטבעות ⚽</small></span>`;
+  } else bar.innerHTML = WR.tab === "free" ? "🎨 צבעים ומספר — בחינם!" : "לחץ על פריט כדי למדוד 👆";
+  // הפריטים
+  const grid = $("wrGrid");
+  if (WR.tab === "free") return renderFreeTab(grid);
+  grid.innerHTML = SHOP[WR.tab].map(it => {
+    const own = isOwned(WR.tab, it.id), eq = S.look.eq[WR.tab] === it.id;
+    const tr = WR.trying && WR.trying.id === it.id;
+    return `<button class="item ${eq?"eq":""} ${tr?"trying":""}" data-id="${it.id}">
+      <div class="thumb">${thumbFor(WR.tab, it)}</div><div>${it.name}</div>
+      <div class="price">${own ? (eq ? "לבוש" : "שלי ✓") : "🪙 " + it.price}</div></button>`;
+  }).join("");
+  grid.querySelectorAll(".item").forEach(b => b.onclick = () => tapItem(WR.tab, b.dataset.id));
+}
+// תמונה קטנה לכל פריט
+function thumbFor(cat, it){
+  if (cat === "ball") return ballSVG(it.id);
+  if (cat === "shirt" || cat === "shorts" || cat === "shoes"){
+    const bg = it.c2 ? `repeating-linear-gradient(90deg,${it.c} 0 8px,${it.c2} 8px 16px)` : it.c;
+    return `<div class="sw" style="background:${bg}"></div>`;
+  }
+  // שיער / כובע / דמות: מציירים רק את הראש
+  const L = JSON.parse(JSON.stringify(S.look));
+  L.eq[cat] = it.id;
+  if (cat === "hair") L.eq.char = "player", L.eq.hat = "none";
+  return playerSVG(L, {vb:"14 -4 52 50"});
+}
+function tapItem(cat, id){
+  SFX.tap();
+  if (isOwned(cat, id)){ S.look.eq[cat] = id; WR.trying = null; save(); }
+  else WR.trying = {cat, id};
+  renderWardrobe();
+}
+function buyTrying(){
+  const {cat, id} = WR.trying, it = findItem(cat, id);
+  if (S.coins < it.price) return;
+  S.coins -= it.price;
+  S.look.owned.push(cat + ":" + id);
+  S.look.eq[cat] = id;
+  WR.trying = null; save();
+  SFX.win(); confetti(24); updateCoins(true);
+  renderWardrobe();
+  setAction($("wrPlayer"), "celebrate");
+  setTimeout(() => setAction($("wrPlayer"), "idle"), 1700);
+}
+// לשונית חינמית: צבע עור, צבע שיער/פרווה, ומספר על החולצה
+function renderFreeTab(grid){
+  grid.innerHTML = `
+    <div class="free-sec"><h4>צבע עור</h4><div class="sw-row" id="skinRow">${SKINS.map((c,i)=>`<button data-i="${i}" class="${S.look.skin===i?"on":""}" style="background:${c}"></button>`).join("")}</div></div>
+    <div class="free-sec"><h4>צבע שיער / פרווה</h4><div class="sw-row" id="hairRow">${HAIR_COLORS.map((c,i)=>`<button data-i="${i}" class="${S.look.hairColor===i?"on":""}" style="background:${c}"></button>`).join("")}</div></div>
+    <div class="free-sec"><h4>המספר שלי</h4><div class="num-row"><button id="numMinus">−</button><span>${S.look.num}</span><button id="numPlus">+</button></div></div>`;
+  grid.querySelectorAll("#skinRow button").forEach(b => b.onclick = () => { SFX.tap(); S.look.skin = +b.dataset.i; save(); renderWardrobe(); });
+  grid.querySelectorAll("#hairRow button").forEach(b => b.onclick = () => { SFX.tap(); S.look.hairColor = +b.dataset.i; save(); renderWardrobe(); });
+  $("numMinus").onclick = () => { SFX.tap(); S.look.num = S.look.num <= 1 ? 99 : S.look.num - 1; save(); renderWardrobe(); };
+  $("numPlus").onclick = () => { SFX.tap(); S.look.num = S.look.num >= 99 ? 1 : S.look.num + 1; save(); renderWardrobe(); };
 }
 
 /* ===================== בחירת שלב ===================== */
@@ -710,25 +1057,96 @@ function levelOpen(d, level){
   const prev = level === 3 && !wordsFor(d,2).length ? 1 : level - 1;
   return !!(d.progress[prev] && d.progress[prev].done);
 }
+/* ---------- מפת הליגה ----------
+   כל שלב הוא "אצטדיון" על שביל. בסוף השביל — גביע "אלוף המחזור".
+   כשנפתח שלב חדש: המנעול רועד, נפתח, והשחקן רץ לאצטדיון הבא. */
+const SPOTS = { 1:[[50,50]], 2:[[68,80],[32,48]], 3:[[70,84],[30,60],[68,36]] }; // מיקום באחוזים [x,y]
+const TROPHY_SPOT = { 1:[50,14], 2:[62,16], 3:[34,13] };
+let mapTimers = [];
 function openLevels(id){
   curDict = S.dictations.find(d => d.id === id);
   loadRecs(curDict); // טוענים הקלטות מראש — כדי שההקראה תהיה מיידית
   $("levelsTitle").textContent = "⚽ " + curDict.name;
-  const box = $("levelList"); box.innerHTML = "";
-  [1,2,3].forEach(l => {
-    const n = wordsFor(curDict, l).length;
-    if (!n) return; // אין מילים מתאימות לשלב (למשל בלי ניקוד) — מדלגים
-    const open = levelOpen(curDict, l), p = curDict.progress[l];
-    const b = document.createElement("button");
-    b.className = "big-btn level-btn " + (open ? (l===3?"purple":l===2?"blue":"") : "");
-    b.disabled = !open;
-    b.innerHTML = `<span class="ico">${open?LEVELS[l].ico:"🔒"}</span>
-      <span class="txt">${l}. ${LEVELS[l].name}<small>${LEVELS[l].desc}</small></span>
-      <span>${p&&p.done ? starsText(p.stars) : ""}</span>`;
-    b.onclick = () => { SFX.tap(); startLevel(l); };
-    box.appendChild(b);
+  mapTimers.forEach(clearTimeout); mapTimers = [];
+  const levels = [1,2,3].filter(l => wordsFor(curDict, l).length); // רק שלבים שיש להם מילים
+  const pts = SPOTS[levels.length], tp = TROPHY_SPOT[levels.length];
+  const prog = l => curDict.progress[l] || (curDict.progress[l] = {});
+  // שלב "שנפתח עכשיו" = פתוח, אבל הילד עוד לא ראה את אנימציית הפתיחה שלו
+  const fresh = levels.find((l,i) => i > 0 && levelOpen(curDict,l) && !prog(l).seen && !prog(l).done);
+  const current = levels.find(l => levelOpen(curDict,l) && !prog(l).done) || levels[levels.length-1];
+  const allDone = levels.every(l => prog(l).done);
+  // השביל: קו מקווקו שעובר בין כל הנקודות
+  const all = [...pts, tp];
+  let d = `M${all[0][0]} ${all[0][1]}`;
+  for (let i=1;i<all.length;i++){ const a = all[i-1], b = all[i], my = (a[1]+b[1])/2; d += ` C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}`; }
+  let h = `<svg class="path" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#fff" stroke-width="6"
+    stroke-dasharray="2 12" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity=".85"/></svg>`;
+  // קישוטים
+  h += [["🌳",8,20],["🌳",88,58],["🚩",12,74],["🌲",86,14],["🌳",10,44],["🎪",84,92]].map(([e,x,y])=>`<span class="deco" style="left:${x}%;top:${y}%">${e}</span>`).join("");
+  levels.forEach((l,i) => {
+    const p = prog(l), open = levelOpen(curDict,l) && l !== fresh;
+    const cls = ["node","l"+l, open?"":"locked", p.done?"done":"", l===current&&open?"current":""].join(" ");
+    h += `<button class="${cls}" id="node${l}" style="left:${pts[i][0]}%;top:${pts[i][1]}%">
+      <div class="stadium">${open ? LEVELS[l].ico : "🔒"}</div>
+      <div class="label">${LEVELS[l].name}</div><div class="nstars">${p.done ? starsText(p.stars) : ""}</div></button>`;
   });
+  h += `<button class="node trophy ${allDone?"":"locked"}" id="nodeT" style="left:${tp[0]}%;top:${tp[1]}%">
+    <div class="stadium">🏆</div><div class="label">אלוף המחזור</div></button>`;
+  // השחקן הקטן על המפה
+  const startL = fresh ? levels[levels.indexOf(fresh)-1] : current;
+  const sp = pts[levels.indexOf(startL)];
+  h += `<div class="token pl idle" id="token" style="left:${sp[0]-17}%;top:${sp[1]+4}%">${myPlayer()}</div>`;
+  $("map").innerHTML = h;
+  levels.forEach(l => $("node"+l).onclick = () => tapNode(l, l === fresh));
+  $("nodeT").onclick = () => tapTrophy(allDone);
   updateCoins(); show("levels");
+  if (fresh) playUnlock(fresh, pts[levels.indexOf(fresh)]);
+}
+// אנימציית פתיחת שלב: המנעול רועד → נפתח → השחקן רץ אליו
+function playUnlock(l, spot){
+  const node = $("node"+l), tok = $("token");
+  mapTimers.push(setTimeout(() => { node.classList.add("unlocking"); tone(400,.1,"square",.08); tone(300,.1,"square",.08,.15); }, 600));
+  mapTimers.push(setTimeout(() => {
+    node.classList.remove("unlocking","locked"); node.classList.add("popped","current");
+    node.querySelector(".stadium").textContent = LEVELS[l].ico;
+    [523,784,1046].forEach((f,i)=>tone(f,.15,"triangle",.12,i*.08)); confetti(16);
+    curDict.progress[l].seen = true; save();
+  }, 1150));
+  mapTimers.push(setTimeout(() => { setAction(tok, "run"); tok.style.left = (spot[0]-17)+"%"; tok.style.top = (spot[1]+4)+"%"; }, 1500));
+  mapTimers.push(setTimeout(() => setAction(tok, "idle"), 2550));
+}
+function mapBubble(nodeId, text){
+  document.querySelectorAll(".map-bubble").forEach(b => b.remove());
+  const n = $(nodeId), b = document.createElement("div");
+  b.className = "map-bubble"; b.textContent = text;
+  b.style.left = n.style.left; b.style.top = `calc(${n.style.top} - 54px)`;
+  $("map").appendChild(b); setTimeout(() => b.remove(), 1800);
+}
+function tapNode(l, isFresh){
+  const n = $("node"+l);
+  if (n.classList.contains("locked") || (isFresh && !curDict.progress[l].seen)){
+    wiggle(n.querySelector(".stadium")); SFX.miss(); mapBubble("node"+l, "קודם מסיימים את השלב הקודם 🙂"); return;
+  }
+  SFX.tap(); enterLevel(l);
+}
+function tapTrophy(allDone){
+  if (!allDone){ wiggle($("nodeT").querySelector(".stadium")); mapBubble("nodeT", "מסיימים את כל השלבים ← גביע! 🏆"); return; }
+  SFX.win(); confetti(40); mapBubble("nodeT", "אלוף המחזור! 🏆");
+}
+
+/* ---------- מנהרה: השחקן יוצא למגרש לפני השלב ---------- */
+let tunnelTimer = null;
+function enterLevel(l){
+  audio(); unlockSpeech();
+  mapTimers.forEach(clearTimeout);
+  $("tunnelPlayer").innerHTML = myPlayer();
+  $("tunnelBanner").innerHTML = `${LEVELS[l].ico} שלב ${l}: ${LEVELS[l].name}<small>${LEVELS[l].desc}</small>`;
+  ["tunnelPlayer","tunnelBanner"].forEach(id => { const e = $(id); e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); });
+  show("tunnel");
+  setTimeout(() => noise(1.6,.22), 900); // הקהל מריע
+  clearTimeout(tunnelTimer);
+  tunnelTimer = setTimeout(() => startLevel(l), 2500);
+  $("tunnel").onclick = () => { clearTimeout(tunnelTimer); $("tunnel").onclick = null; startLevel(l); };
 }
 $("levelsBack").onclick = () => show("home");
 
@@ -748,7 +1166,8 @@ function startLevel(level){
   p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(w.text)) : []);
   G.prevStars = p.stars || 0;
   G.replay = !!p.done;
-  $("kicker").innerHTML = playerSVG({num:"10"});
+  $("kicker").innerHTML = myPlayer();
+  $("ball").innerHTML = ballSVG(S.look.eq.ball);
   $("keeper").innerHTML = keeperSVG();
   $("scene").classList.toggle("short", level === 3); // בשלב 3 צריך מקום למקלדת
   $("game").classList.toggle("typing", level === 3);
@@ -779,6 +1198,7 @@ function resetScene(){
   $("keeper").style.transform = "translateX(-50%)";
   $("kicker").style.transform = "";
   $("kicker").classList.remove("celebrate","encourage");
+  setAction($("kicker"), "idle"); setAction($("keeper"), "idle");
   $("bubble").classList.remove("show");
   void ball.offsetWidth; ball.style.transition = "";
 }
@@ -1052,19 +1472,23 @@ function giveCoins(n){
 function shoot(goal){
   const ball = $("ball"), keeper = $("keeper"), kicker = $("kicker"), scene = $("scene");
   SFX.kick();
-  kicker.style.transform = "translateX(14px) rotate(-8deg)";
-  setTimeout(() => kicker.style.transform = "", 250);
+  // השחקן רץ צעד קדימה ובועט (האנימציה של הרגל נמצאת ב-CSS: .pl.kick)
+  setAction(kicker, "kick");
+  kicker.style.transform = "translateX(12px)";
+  setTimeout(() => { kicker.style.transform = ""; }, 450);
   const H = scene.clientHeight;
   const side = Math.random() < .5 ? -1 : 1;
   if (goal){
     ball.style.left = (50 + side*15) + "%";
     ball.style.bottom = (H*0.52) + "px";
     ball.style.transform = "scale(.6) rotate(720deg)";
-    keeper.style.transform = `translateX(${-50 - side*60}%) rotate(${-side*25}deg)`; // השוער קופץ לצד הלא נכון
+    keeper.style.transform = `translateX(${-50 - side*70}%) rotate(${-side*55}deg)`; // השוער קופץ לצד הלא נכון
+    setAction(keeper, "reach");
     setTimeout(() => { SFX.goal(); $("goal").classList.remove("shake"); void $("goal").offsetWidth; $("goal").classList.add("shake");
       $("crowd").classList.remove("cheer"); void $("crowd").offsetWidth; $("crowd").classList.add("cheer"); confetti(18); react(true); }, 500);
   } else {
     ball.style.left = "50%"; ball.style.bottom = (H*0.42) + "px"; ball.style.transform = "scale(.7) rotate(360deg)";
+    setTimeout(() => setAction(keeper, "reach"), 250); // השוער מושיט ידיים ותופס
     setTimeout(() => { SFX.miss(); react(false); ball.style.bottom = (H*0.1) + "px"; ball.style.left = "55%"; ball.style.transform = ""; }, 550);
     setTimeout(() => { if (!G.busy) resetScene(); }, 1300);
   }
@@ -1072,11 +1496,22 @@ function shoot(goal){
 // תגובה של השחקן: אנימציה + בועת דיבור
 const CHEERS = ["יֵשׁ! 🙌","גּוֹל! 🎉","אַלּוּף! 🌟"];
 const PEPS = ["עוֹד פַּעַם! 💪","אֲנִי אִתְּךָ! 🤝","כִּמְעַט! 🙂"];
+// מחליף את "הפעולה" של דמות: idle (עומד) / run / kick / celebrate / encourage / hold / reach
+function setAction(el, action){
+  el.classList.remove("idle","run","kick","celebrate","encourage","hold","reach");
+  void el.offsetWidth; // "מאפס" את האנימציה כדי שתתחיל מחדש
+  el.classList.add(action);
+}
+// הילד בקושי קורא — אז השחקן גם אומר את המילים בקול (בלי האימוג'י)
+function sayPraise(text){
+  if (!CONFIG.SPEAK_PRAISE) return;
+  speak(text.replace(/[^\u0590-\u05FF\s!?]/g, "").trim());
+}
 function react(goal){
   const k = $("kicker"), b = $("bubble");
-  k.classList.remove("celebrate","encourage"); void k.offsetWidth;
-  k.classList.add(goal ? "celebrate" : "encourage");
+  setAction(k, goal ? "celebrate" : "encourage");
   b.textContent = pick(goal ? CHEERS : PEPS); b.classList.add("show");
+  sayPraise(b.textContent);
   setTimeout(() => b.classList.remove("show"), 1500);
 }
 function confetti(n){
@@ -1100,17 +1535,53 @@ function finishLevel(){
   if (bonus) giveCoins(bonus);
   save();
   SFX.win(); confetti(40);
-  $("doneTitle").textContent = stars === 3 ? "אלוף הליגה! 🏆" : stars === 2 ? "משחק מצוין! ⚽" : "כל הכבוד על המאמץ! 💪";
-  $("doneStars").textContent = starsText(stars);
+  ceremony(stars, G.earned);
+  $("doneTitle").textContent = stars === 3 ? "אַלּוּף הַלִּיגָה! 🏆" : stars === 2 ? "מִשְׂחָק מְצֻיָּן! ⚽" : "כָּל הַכָּבוֹד עַל הַמַּאֲמָץ! 💪";
+  setTimeout(() => sayPraise($("doneTitle").textContent), 600);
   $("doneCoins").textContent = bonus ? `שיפרת את השיא! בונוס 🪙 ${bonus}`
     : G.earned ? `הרווחת 🪙 ${G.earned}`
-    : `אימון חוזר 💪 מטבעות מקבלים כששוברים שיא כוכבים`;
+    : `אימון חוזר 💪 שיא כוכבים חדש = מטבעות`;
   const nextL = [G.level+1, G.level+2].find(l => l<=3 && wordsFor(curDict,l).length);
-  $("doneNext").style.display = nextL ? "" : "none";
-  $("doneNext").onclick = () => startLevel(nextL);
+  $("doneNext").textContent = nextL ? "לשלב הבא ▶" : "למפה 🗺️";
+  // "לשלב הבא" חוזר למפה — שם רואים את המנעול נפתח והשחקן רץ לאצטדיון הבא
+  $("doneNext").onclick = () => { SFX.tap(); openLevels(curDict.id); };
   show("done");
 }
-$("doneAgain").onclick = () => startLevel(G.level);
+$("doneAgain").onclick = () => enterLevel(G.level);
+
+/* ---------- טקס סיום: גביע, כוכבים שקופצים, ומטבעות שעפים למונה ---------- */
+let cerTimers = [];
+function ceremony(stars, earnedTotal){
+  cerTimers.forEach(clearTimeout); cerTimers = [];
+  $("donePlayer").innerHTML = myPlayer();
+  // הכוכבים מופיעים אחד-אחד עם צליל
+  $("doneStars").innerHTML = [0,1,2].map(i => `<span>${i < stars ? "⭐" : "☆"}</span>`).join("");
+  $("doneStars").querySelectorAll("span").forEach((sp,i) => cerTimers.push(setTimeout(() => {
+    sp.classList.add("in"); if (i < stars) tone(660 + i*220, .15, "triangle", .12);
+  }, 500 + i*350)));
+  // המונה מתחיל מהסכום שלפני השלב, והמטבעות "עפים" אליו מהגביע
+  const startTotal = S.coins - earnedTotal;
+  $("doneTotal").textContent = "🪙 " + startTotal;
+  const n = Math.min(earnedTotal, 10);
+  if (!n) return;
+  cerTimers.push(setTimeout(() => {
+    const app = $("app").getBoundingClientRect();
+    const from = $("doneCup").getBoundingClientRect(), to = $("doneTotal").getBoundingClientRect();
+    for (let i=0;i<n;i++) cerTimers.push(setTimeout(() => {
+      const c = document.createElement("div"); c.className = "fly-coin"; c.textContent = "🪙";
+      c.style.left = (from.left - app.left + from.width/2 - 14) + "px"; c.style.top = (from.top - app.top + 10) + "px";
+      $("app").appendChild(c);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        c.style.left = (to.left - app.left + 10) + "px"; c.style.top = (to.top - app.top) + "px"; c.style.transform = "scale(.7)";
+      }));
+      setTimeout(() => { c.remove(); SFX.coin();
+        // כל מטבע שמגיע מוסיף חלק מהסכום; האחרון משלים בדיוק
+        $("doneTotal").textContent = "🪙 " + (i === n-1 ? S.coins : startTotal + Math.round(earnedTotal*(i+1)/n));
+        $("doneTotal").classList.remove("pop"); void $("doneTotal").offsetWidth; $("doneTotal").classList.add("pop");
+      }, 720);
+    }, i*110));
+  }, 1700));
+}
 $("doneHome").onclick = () => show("home");
 
 /* =========================================================
@@ -1202,7 +1673,7 @@ $("importFile").onchange = async e => {
   try{
     const data = JSON.parse(await f.text());
     if (data.app !== "ligat-milim" || !data.state) throw new Error("not a backup");
-    S = Object.assign(defaultState(), data.state); save();
+    S = Object.assign(defaultState(), data.state); fixLook(); save();
     for (const [k,v] of Object.entries(data.recordings||{})) await setRec(k, v);
     $("backupMsg").textContent = "✅ הגיבוי נטען בהצלחה!";
     openParent();
