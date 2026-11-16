@@ -577,11 +577,31 @@ function findVoice(){
 }
 if ("speechSynthesis" in window){ findVoice(); speechSynthesis.onvoiceschanged = findVoice; }
 
-let currentAudio = null;
-async function sayWord(text, dictId, slow=false){
+/* חשוב לאייפון: ספארי מרשה להקריא רק "בתוך" לחיצה של המשתמש.
+   אם מחכים לפני ההקראה (למשל לטעינת הקלטה מהזיכרון), ספארי חוסם אותה בשקט.
+   לכן: (1) טוענים את ההקלטות מראש לזיכרון (recCache) כדי שההקראה תקרה מיד,
+        (2) בנגיעה הראשונה במסך "פותחים" את מנוע הדיבור עם הקראה שקטה. */
+const recCache = {};
+async function loadRecs(d){
+  for (const w of d.words){ const k = recKey(d.id, w.text); recCache[k] = await getRec(k); }
+}
+let speechUnlocked = false;
+function unlockSpeech(){
   audio();
+  if (speechUnlocked || !("speechSynthesis" in window)) return;
+  speechUnlocked = true;
+  const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "he-IL";
+  speechSynthesis.speak(u);
+  findVoice(); // באייפון רשימת הקולות לפעמים מגיעה רק אחרי נגיעה
+}
+document.addEventListener("touchend", unlockSpeech, {once:false, passive:true});
+document.addEventListener("click", unlockSpeech);
+
+let currentAudio = null;
+function sayWord(text, dictId, slow=false){
+  unlockSpeech();
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  const rec = dictId ? await getRec(recKey(dictId, text)) : null;
+  const rec = dictId ? recCache[recKey(dictId, text)] : null;
   if (rec){
     currentAudio = new Audio(rec);
     currentAudio.playbackRate = slow ? CONFIG.REC_SLOW_RATE : 1;
@@ -592,11 +612,15 @@ async function sayWord(text, dictId, slow=false){
 }
 function speak(text, slow=false){
   if (!("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "he-IL"; if (heVoice) u.voice = heVoice;
-  u.rate = slow ? CONFIG.TTS_SLOW_RATE : CONFIG.TTS_RATE;
-  speechSynthesis.speak(u);
+  const go = () => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "he-IL"; if (heVoice) u.voice = heVoice;
+    u.rate = slow ? CONFIG.TTS_SLOW_RATE : CONFIG.TTS_RATE;
+    speechSynthesis.speak(u);
+  };
+  // באייפון: "עצור" ומיד "דבר" — לפעמים ההקראה נבלעת. לכן עוצרים רק אם צריך, ומחכים רגע
+  if (speechSynthesis.speaking || speechSynthesis.pending){ speechSynthesis.cancel(); setTimeout(go, 150); }
+  else go();
 }
 
 /* =========================================================
@@ -688,6 +712,7 @@ function levelOpen(d, level){
 }
 function openLevels(id){
   curDict = S.dictations.find(d => d.id === id);
+  loadRecs(curDict); // טוענים הקלטות מראש — כדי שההקראה תהיה מיידית
   $("levelsTitle").textContent = "⚽ " + curDict.name;
   const box = $("levelList"); box.innerHTML = "";
   [1,2,3].forEach(l => {
@@ -1267,7 +1292,9 @@ async function renderWordRows(){
   if (!d) return;
   const box = $("wordRows"); box.innerHTML = "";
   for (const w of d.words){
-    const has = !!(await getRec(recKey(d.id, w.text)));
+    const k = recKey(d.id, w.text);
+    recCache[k] = await getRec(k); // מעדכנים גם את הזיכרון של ההקראה
+    const has = !!recCache[k];
     const row = document.createElement("div"); row.className = "word-row";
     row.innerHTML = `<span class="w">${esc(w.text)}<br><span class="src">${has?"🎙️ הקלטה":"🤖 קול ממוחשב"}</span></span>
       <button class="small-btn" data-a="play">🔊</button><button class="small-btn" data-a="rec">🎙️</button>
