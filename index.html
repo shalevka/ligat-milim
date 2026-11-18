@@ -61,6 +61,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .dict-card{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff;
   border-radius:20px;padding:16px;font-size:23px;font-weight:bold;margin:8px 0;box-shadow:0 5px 0 #1f8f4c}
 .dict-card .stars{font-size:18px}
+.dict-card.cup-card{background:linear-gradient(90deg,#fff3c4,#ffd23f);box-shadow:0 5px 0 #d9a600}
 .empty-note{background:#fff;border-radius:18px;padding:16px;text-align:center;font-size:20px}
 /* כפתור ההורה: קטן, בפינה, צריך לחיצה ארוכה */
 #parentBtn{position:absolute;left:12px;bottom:max(12px,env(safe-area-inset-bottom));width:46px;height:46px;
@@ -142,6 +143,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .word .placeholder{color:#b0bccb;font-size:22px}
 
 .feedback{min-height:32px;font-size:21px;font-weight:bold;text-align:center;padding:2px 6px}
+.prompt-line{font-size:19px;background:#eef6ff;border-radius:12px;padding:3px 12px}
 .feedback:not(:empty){background:rgba(255,255,255,.92);border-radius:14px;margin-top:4px} /* רקע לבן כדי שיהיה קל לקרוא על הדשא */
 .feedback.good{color:#1f8f4c}
 .feedback.try{color:#c26a00}
@@ -418,6 +420,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
         <button class="hear" id="hearBtn">🔊 שמע</button>
         <button class="slow" id="slowBtn" aria-label="לאט">🐢</button>
       </div>
+      <div class="prompt-line" id="promptLine" style="display:none"></div>
       <div class="word" id="wordView"></div>
     </div>
     <div class="feedback" id="feedback"></div>
@@ -486,6 +489,19 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
     </div>
 
     <div class="card">
+      <h3>🐞 דיווח תקלות</h3>
+      <div id="errStatus" class="note"></div>
+      <label>מה קרה? (לא חובה)</label>
+      <textarea id="errNote" style="min-height:70px;font-size:18px" placeholder="למשל: הקול לא עבד בשלב 3"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="small-btn" id="errWa">💬 שליחה בוואטסאפ</button>
+        <button class="small-btn" id="errMail">✉️ שליחה במייל</button>
+        <button class="small-btn" id="errClear">ניקוי הרשימה</button>
+      </div>
+      <div class="note">ההודעה נפתחת מוכנה, ואתם לוחצים "שלח" בעצמכם. יש בה רק מידע טכני (סוג המכשיר ומה השתבש) — בלי שם הילד ובלי המילים.</div>
+    </div>
+
+    <div class="card">
       <h3>איפוס</h3>
       <div class="row">
         <button class="small-btn" id="resetProgress">איפוס מטבעות והתקדמות</button>
@@ -493,7 +509,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       </div>
       <div class="note" id="resetMsg"></div>
     </div>
-    <div class="note" style="text-align:center">ליגת המילים · גרסה 1 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
+    <div class="note" style="text-align:center">ליגת המילים · גרסה 3 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
   </section>
 
   <!-- ========== עריכת הכתבה (הורה) ========== -->
@@ -511,6 +527,12 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <div class="nq-bar" id="nqBar"></div>
       <button class="small-btn" id="dictaBtn">🔗 פתיחת הנקדן של דיקטה (באתר חיצוני)</button>
       <div class="note">בדיקטה: כותבים את המילים, מעתיקים את התוצאה המנוקדת ומדביקים כאן.</div>
+      <label>מה הילד כותב?</label>
+      <div class="row">
+        <label style="font-size:18px"><input type="radio" name="target" value="word" checked> את המילה ששמע</label>
+        <label style="font-size:18px"><input type="radio" name="target" value="syn"> את המילה הנרדפת</label>
+      </div>
+      <div class="note">מילים נרדפות: כותבים בכל שורה "מילה = נרדפת", למשל: חָבֵר = רֵעַ. הילד ישמע "חָבֵר" ויכתוב "רֵעַ".</div>
       <label>מה לבדוק כשהילד כותב?</label>
       <div class="row">
         <label style="font-size:18px"><input type="radio" name="checkMode" value="full" checked> אותיות + ניקוד</label>
@@ -535,6 +557,23 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 <script>
 "use strict";
 /* =========================================================
+   רישום תקלות — נשמר רק במכשיר, בלי שם הילד ובלי המילים.
+   נמצא בתחילת הקוד כדי לתפוס גם תקלות שקורות בזמן העלייה
+   ========================================================= */
+const APP_VERSION = "3";
+const ERR_KEY = "ligat-milim-errors";
+function logError(msg, where){
+  try{
+    const list = JSON.parse(localStorage.getItem(ERR_KEY) || "[]");
+    const active = document.querySelector(".screen.active");
+    list.push({ t:new Date().toISOString(), msg:String(msg).slice(0,300), where:where||"", screen: active ? active.id : "", v:APP_VERSION });
+    localStorage.setItem(ERR_KEY, JSON.stringify(list.slice(-20))); // שומרים רק את 20 האחרונות
+  }catch(e){}
+}
+const getErrors = () => { try{ return JSON.parse(localStorage.getItem(ERR_KEY) || "[]"); }catch(e){ return []; } };
+window.addEventListener("error", e => logError(e.message, (e.filename||"").split("/").pop() + ":" + e.lineno));
+window.addEventListener("unhandledrejection", e => logError(e.reason && (e.reason.message || e.reason), "promise"));
+/* =========================================================
    הגדרות שקל לשנות — כל המספרים החשובים נמצאים כאן
    ========================================================= */
 const CONFIG = {
@@ -549,7 +588,11 @@ const CONFIG = {
   PARENT_HOLD_MS: 1000,   // כמה זמן מחזיקים את ⚙️ כדי להיכנס למסך הורה (1000 = שנייה אחת)
   MAX_REC_MS: 5000,       // הקלטה נעצרת לבד אחרי 5 שניות
   IMPROVE_BONUS_PER_STAR: 5,
-  SPEAK_PRAISE: true,     // השחקן אומר בקול "אַלּוּף!" / "כִּמְעַט!" (false = רק כתוב) // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
+  SPEAK_PRAISE: true,
+  CUP_COIN_MULT: 2,       // גביע: פי כמה מטבעות
+  CUP_WEEKS: 4,           // גביע: מילים מההכתבות של כמה שבועות אחרונים
+  CUP_WORDS_PER_DICT: 3,  // גביע: כמה מילים לוקחים מכל הכתבה
+  CUP_MAX_WORDS: 12,      // גביע: כמה מילים לכל היותר בסיבוב     // השחקן אומר בקול "אַלּוּף!" / "כִּמְעַט!" (false = רק כתוב) // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
   STORAGE_KEY: "ligat-milim-v1"
 };
 
@@ -655,6 +698,7 @@ function loadState(){
     S = raw ? Object.assign(defaultState(), JSON.parse(raw)) : defaultState();
   }catch(e){ S = defaultState(); }
   fixLook();
+  S.cup = S.cup || { progress:{} }; // התקדמות בגביע (מטבעות ששולמו, כוכבים)
 }
 // משלים שדות חסרים במראה (למשל שמירה מגרסה 1, שלא היה בה מראה)
 function fixLook(){
@@ -746,7 +790,7 @@ if ("speechSynthesis" in window){ findVoice(); speechSynthesis.onvoiceschanged =
         (2) בנגיעה הראשונה במסך "פותחים" את מנוע הדיבור עם הקראה שקטה. */
 const recCache = {};
 async function loadRecs(d){
-  for (const w of d.words){ const k = recKey(d.id, w.text); recCache[k] = await getRec(k); }
+  for (const w of d.words){ const k = recKey(w._d || d.id, w.text); recCache[k] = await getRec(k); }
 }
 let speechUnlocked = false;
 function unlockSpeech(){
@@ -796,7 +840,7 @@ const SHOP = {
           {id:"blue",name:"כחול",price:15,c:"#3a86ff"}, {id:"green",name:"ירוק",price:15,c:"#2ec46b"},
           {id:"yellow",name:"צהוב",price:15,c:"#ffd23f",dark:true}, {id:"purple",name:"סגול",price:20,c:"#8e5cf7"},
           {id:"black",name:"שחור",price:25,c:"#2b2d42"}, {id:"stripes1",name:"פסים אדום־כחול",price:40,c:"#e63946",c2:"#3a86ff"},
-          {id:"stripes2",name:"פסים ירוק־לבן",price:40,c:"#2ec46b",c2:"#ffffff"}, {id:"gold",name:"זהב ✨",price:80,c:"#f4c430",dark:true} ],
+          {id:"stripes2",name:"פסים ירוק־לבן",price:40,c:"#2ec46b",c2:"#ffffff"}, {id:"gold",name:"זהב ✨",price:200,c:"#f4c430",dark:true} ],
   shorts:[ {id:"navy",name:"כחול כהה",price:0,c:"#1d4e89"}, {id:"white",name:"לבן",price:10,c:"#f4f4f4"},
            {id:"black",name:"שחור",price:10,c:"#2b2d42"}, {id:"red",name:"אדום",price:15,c:"#e63946"}, {id:"green",name:"ירוק",price:15,c:"#2ec46b"} ],
   shoes:[ {id:"black",name:"שחורות",price:0,c:"#222"}, {id:"white",name:"לבנות",price:15,c:"#f4f4f4"},
@@ -804,11 +848,11 @@ const SHOP = {
   hair:[ {id:"short",name:"קצר",price:0}, {id:"buzz",name:"קצוץ",price:15}, {id:"spiky",name:"קוצים",price:20},
          {id:"curly",name:"מתולתל",price:20}, {id:"ponytail",name:"קוקו",price:20}, {id:"long",name:"ארוך",price:25} ],
   hat:[ {id:"none",name:"בלי",price:0}, {id:"band",name:"סרט ראש",price:15}, {id:"cap",name:"כובע מצחייה",price:25},
-        {id:"beanie",name:"כובע גרב",price:30}, {id:"crown",name:"כתר 👑",price:100} ],
+        {id:"beanie",name:"כובע גרב",price:30}, {id:"crown",name:"כתר 👑",price:400} ],
   ball:[ {id:"classic",name:"קלאסי",price:0,c:"#ffffff",c2:"#222"}, {id:"blue",name:"כחול",price:20,c:"#7fb2ff",c2:"#1d4e89"},
          {id:"fire",name:"אש",price:30,c:"#ffb347",c2:"#d62828"}, {id:"star",name:"כוכב",price:40,c:"#fff4b0",c2:"#8e5cf7",star:true},
          {id:"gold",name:"זהב",price:60,c:"#ffe066",c2:"#b8860b"} ],
-  char:[ {id:"player",name:"שחקן",price:0}, {id:"cat",name:"חתול כדורגלן",price:120}, {id:"robot",name:"רובוט",price:150} ]
+  char:[ {id:"player",name:"שחקן",price:0}, {id:"cat",name:"חתול כדורגלן",price:250}, {id:"robot",name:"רובוט",price:350} ]
 };
 // דברים שבוחרים בחינם (לא בחנות)
 const SKINS = ["#ffe0bd","#f1c27d","#e0ac69","#c68642","#8d5524"];
@@ -951,9 +995,13 @@ function renderHome(){
   }
   // ההכתבה החדשה ביותר למעלה
   const ds = S.dictations.slice().sort((a,b)=>b.created-a.created);
-  list.innerHTML = ds.map(d => `<button class="dict-card" data-id="${d.id}">
+  // הגביע מופיע כשיש לפחות 2 הכתבות
+  const cupCard = S.dictations.length >= 2 ? `<button class="dict-card cup-card" id="cupCard">
+      <span>🏆 גביע הליגה</span><span class="stars">מטבעות כפולים ✨</span></button>` : "";
+  list.innerHTML = cupCard + ds.map(d => `<button class="dict-card" data-id="${d.id}">
       <span>⚽ ${esc(d.name)}</span><span class="stars">⭐ ${dictStars(d)}/9</span></button>`).join("");
-  list.querySelectorAll(".dict-card").forEach(b => b.onclick = () => { SFX.tap(); openLevels(b.dataset.id); });
+  list.querySelectorAll(".dict-card[data-id]").forEach(b => b.onclick = () => { SFX.tap(); openLevels(b.dataset.id); });
+  if ($("cupCard")) $("cupCard").onclick = () => { SFX.tap(); startCup(); };
 }
 
 /* ===================== חדר הלבשה (חנות) ===================== */
@@ -1048,8 +1096,8 @@ const LEVELS = {
 };
 // איזה מילים מתאימות לכל שלב
 function wordsFor(d, level){
-  if (level === 2) return d.mode === "letters" ? [] : d.words.filter(w => toClusters(w.text).some(vowelOf));
-  if (level === 1) return d.words.filter(w => toClusters(w.text).filter(c=>isLetter(c.base)).length >= 2);
+  if (level === 2) return d.mode === "letters" ? [] : d.words.filter(w => toClusters(targetOf(w,d)).some(vowelOf));
+  if (level === 1) return d.words.filter(w => toClusters(targetOf(w,d)).filter(c=>isLetter(c.base)).length >= 2);
   return d.words;
 }
 function levelOpen(d, level){
@@ -1140,7 +1188,9 @@ function enterLevel(l){
   audio(); unlockSpeech();
   mapTimers.forEach(clearTimeout);
   $("tunnelPlayer").innerHTML = myPlayer();
-  $("tunnelBanner").innerHTML = `${LEVELS[l].ico} שלב ${l}: ${LEVELS[l].name}<small>${LEVELS[l].desc}</small>`;
+  $("tunnelBanner").innerHTML = curDict.id === "cup"
+    ? `🏆 גביע הליגה<small>מילים מכל ההכתבות · מטבעות כפולים!</small>`
+    : `${LEVELS[l].ico} שלב ${l}: ${LEVELS[l].name}<small>${LEVELS[l].desc}</small>`;
   ["tunnelPlayer","tunnelBanner"].forEach(id => { const e = $(id); e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); });
   show("tunnel");
   setTimeout(() => noise(1.6,.22), 900); // הקהל מריע
@@ -1163,7 +1213,7 @@ function startLevel(level){
   // כדי לא לתת מטבעות פעמיים על אותה מילה באותו שלב, שומרים רשימה של מילים ש"כבר שולמו"
   const p = curDict.progress[level] || (curDict.progress[level] = {});
   // שלב שהסתיים בגרסה קודמת (בלי רשימה) — נחשב כאילו כל המילים כבר שולמו
-  p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(w.text)) : []);
+  p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(targetOf(w))) : []);
   G.prevStars = p.stars || 0;
   G.replay = !!p.done;
   $("kicker").innerHTML = myPlayer();
@@ -1174,6 +1224,17 @@ function startLevel(level){
   show("game"); updateCoins(); nextWord();
 }
 function curWord(){ return G.words[G.i]; }
+
+/* ---------- עזרים: מילים נרדפות והגביע ----------
+   לכל מילה יש "מה שומעים" (text) ו"מה כותבים" (היעד).
+   בהכתבה רגילה הם אותו דבר. בהכתבת מילים נרדפות: שומעים "חָבֵר" וכותבים "רֵעַ".
+   בגביע המילים מגיעות מכמה הכתבות, ולכן כל מילה "זוכרת" מאיזו הכתבה היא (_d) */
+const dictOfWord = w => (w && w._d) ? S.dictations.find(d => d.id === w._d) : curDict;
+const modeOf = w => (dictOfWord(w) || curDict).mode;
+const isSynMode = (w, d) => (d || dictOfWord(w) || {}).target === "syn" && !!w.syn;
+const targetOf = (w, d) => isSynMode(w, d) ? w.syn : w.text;
+const recDictId = w => (w && w._d) || curDict.id;
+const sayCur = slow => sayWord(curWord().text, recDictId(curWord()), slow);
 const inRetry = () => G.i >= G.origCount; // האם אנחנו בחלק של התרגול החוזר
 
 // מסך קטן בין הסיבוב הרגיל לתרגול החוזר
@@ -1219,11 +1280,18 @@ function nextWord(){
   else if (G.level === 2) setupMissingVowel(w);
   else setupTyping(w);
   // משמיעים את המילה אוטומטית (בחלק מהמכשירים צריך ללחוץ 🔊)
-  setTimeout(() => sayWord(w.text, curDict.id), 350);
+  showPrompt(w);
+  setTimeout(() => sayWord(w.text, recDictId(w)), 350);
 }
-$("hearBtn").onclick = () => sayWord(curWord().text, curDict.id, false);
-$("slowBtn").onclick = () => sayWord(curWord().text, curDict.id, true);
-$("gameBack").onclick = () => { speechSynthesis && speechSynthesis.cancel(); openLevels(curDict.id); };
+$("hearBtn").onclick = () => sayCur(false);
+$("slowBtn").onclick = () => sayCur(true);
+$("gameBack").onclick = () => { speechSynthesis && speechSynthesis.cancel(); curDict.id === "cup" ? show("home") : openLevels(curDict.id); };
+// שורה קטנה מעל המילה: במילים נרדפות מראים את המילה ששומעים
+function showPrompt(w){
+  const el = $("promptLine");
+  if (isSynMode(w)){ el.innerHTML = `🔄 מילה נרדפת ל: <b>${esc(w.text)}</b>`; el.style.display = ""; }
+  else el.style.display = "none";
+}
 
 /* ---------- שלב 1: אות חסרה ---------- */
 // אותיות שקל להתבלבל ביניהן — מהן נבחרות התשובות הלא נכונות
@@ -1241,7 +1309,7 @@ function swapLetter(c, newBase, isLast){
   return b + [...new Set(marks)].sort().join("");
 }
 function setupMissingLetter(w){
-  const cl = toClusters(w.text);
+  const cl = toClusters(targetOf(w));
   const idxs = cl.map((c,i)=>i).filter(i => isLetter(cl[i].base));
   // מעדיפים להסתיר אות שיש לה "אות מבלבלת" (ט/ת, כ/ק...)
   const good = idxs.filter(i => CONFUSE[UNFINAL[cl[i].base]||cl[i].base]);
@@ -1266,7 +1334,7 @@ function setupMissingLetter(w){
 
 /* ---------- שלב 2: ניקוד חסר ---------- */
 function setupMissingVowel(w){
-  const cl = toClusters(w.text);
+  const cl = toClusters(targetOf(w));
   const idxs = cl.map((c,i)=>i).filter(i => vowelOf(cl[i]));
   const hide = pick(idxs), target = cl[hide];
   const v = vowelOf(target);
@@ -1333,10 +1401,10 @@ function setupTyping(){
    כל פעם שהילד כותב את המילה נכון בניסיון ראשון — ההדגשה נחלשת:
    0 הצלחות = הדגשה חזקה, 1 = הדגשה קלה, 2 ומעלה = בלי הדגשה */
 function smartKeyboard(){
-  const wins = winsOf(curWord().text);
+  const wins = winsOf(targetOf(curWord()));
   const cls = wins === 0 ? "hl" : wins === 1 ? "hl-light" : "";
   if (!cls) return;
-  const letters = new Set(toClusters(curWord().text).map(c => c.base));
+  const letters = new Set(toClusters(targetOf(curWord())).map(c => c.base));
   document.querySelectorAll(".key[data-l]").forEach(k => { if (letters.has(k.dataset.l)) k.classList.add(cls); });
 }
 function winsOf(text){ const w = (curDict.progress[3] && curDict.progress[3].wins) || {}; return w[cleanWord(text)] || 0; }
@@ -1394,7 +1462,7 @@ function renderTyped(marks){
 function checkTyped(){
   if (!G.typed.length){ $("feedback").className="feedback try"; $("feedback").textContent = "קודם שמע 🔊 ואז כתוב 🙂"; return; }
   const w = curWord();
-  const r = compareWords(typedText(), w.text, curDict.mode);
+  const r = compareWords(typedText(), targetOf(w), modeOf(w));
   if (r.ok){ renderTyped(); $("wordView").querySelector(".cursor")?.remove(); return success(); }
   renderTyped(r.details);
   // הסבר עדין מה לא מתאים
@@ -1415,7 +1483,7 @@ function success(){
   G.busy = true;
   const coins = G.tries === 0 ? CONFIG.COINS_FIRST_TRY : CONFIG.COINS_RETRY;
   if (G.tries === 0 && !inRetry()) G.firstTry++; // הכוכבים נקבעים לפי הסיבוב הרגיל בלבד
-  if (G.level === 3 && G.tries === 0) addWin(curWord().text); // למקלדת החכמה
+  if (G.level === 3 && G.tries === 0) addWin(targetOf(curWord())); // למקלדת החכמה
   $("feedback").className = "feedback good"; $("feedback").textContent = pick(PRAISE);
   shoot(true);
   setTimeout(() => { payWord(coins); }, 600);
@@ -1434,7 +1502,7 @@ function miss(msg){
 }
 // רמז בשלב 3: מראים את האות הראשונה שלא מתאימה
 function hintText(){
-  const t = toClusters(curWord().text), a = toClusters(typedText());
+  const t = toClusters(targetOf(curWord())), a = toClusters(typedText());
   let i = 0; while (i < t.length && a[i] && clusterText(a[i]) === clusterText(t[i])) i++;
   if (i >= t.length) return "";
   return `💡 רמז: האות ה-${i+1} היא ${clusterText(t[i])}`;
@@ -1443,20 +1511,23 @@ function hintText(){
 function showAnswer(){
   G.busy = true;
   const w = curWord();
-  $("wordView").innerHTML = `<span style="color:#1d4e89">${esc(cleanWord(w.text))}</span>`;
+  $("wordView").innerHTML = `<span style="color:#1d4e89">${esc(cleanWord(targetOf(w)))}</span>`;
   $("feedback").className = "feedback good";
   $("feedback").textContent = "זו המילה 👆 בפעם הבאה זה יצליח! מטבע על המאמץ 🪙";
   $("controls").innerHTML = `<button class="big-btn green next-btn" style="width:100%" id="contBtn">המשך ▶</button>`;
-  sayWord(w.text, curDict.id, true);
+  sayWord(w.text, recDictId(w), true);
   $("contBtn").onclick = () => { payWord(CONFIG.COINS_SHOWN); G.i++; nextWord(); };
 }
 
 // נותן מטבעות על מילה — רק אם עוד לא קיבלו עליה מטבעות בשלב הזה
 function payWord(n){
-  const paid = curDict.progress[G.level].paid, key = cleanWord(curWord().text);
+  const w = curWord();
+  // בגביע: המפתח כולל את ההכתבה, ומקבלים פי CUP_COIN_MULT מטבעות
+  const key = (w._d ? w._d + "|" : "") + cleanWord(targetOf(w));
+  const paid = curDict.progress[G.level].paid;
   if (paid.includes(key)) return; // כבר שולם — בלי מטבעות (משחק חוזר)
   paid.push(key);
-  giveCoins(n);
+  giveCoins(curDict.id === "cup" ? n * CONFIG.CUP_COIN_MULT : n);
 }
 
 function giveCoins(n){
@@ -1543,11 +1614,30 @@ function finishLevel(){
     : `אימון חוזר 💪 שיא כוכבים חדש = מטבעות`;
   const nextL = [G.level+1, G.level+2].find(l => l<=3 && wordsFor(curDict,l).length);
   $("doneNext").textContent = nextL ? "לשלב הבא ▶" : "למפה 🗺️";
+  $("doneNext").style.display = curDict.id === "cup" ? "none" : ""; // לגביע אין מפה
   // "לשלב הבא" חוזר למפה — שם רואים את המנעול נפתח והשחקן רץ לאצטדיון הבא
   $("doneNext").onclick = () => { SFX.tap(); openLevels(curDict.id); };
   show("done");
 }
-$("doneAgain").onclick = () => enterLevel(G.level);
+$("doneAgain").onclick = () => { if (curDict.id === "cup") curDict = buildCup(); enterLevel(G.level); };
+
+/* ---------- הגביע: מילים מעורבבות מכמה הכתבות ----------
+   בונים "הכתבה מדומה" עם id="cup". כל מילה זוכרת מאיזו הכתבה הגיעה (_d),
+   כדי שההקלטה, סוג הבדיקה והמילה הנרדפת יילקחו מההכתבה המקורית. */
+function buildCup(){
+  const cutoff = Date.now() - CONFIG.CUP_WEEKS * 7 * 24 * 3600 * 1000;
+  const recent = S.dictations.slice().sort((a,b) => b.created - a.created);
+  let ds = recent.filter(d => d.created >= cutoff);
+  if (ds.length < 2) ds = recent.slice(0, 4); // אם אין מספיק הכתבות חדשות — לוקחים את האחרונות
+  let words = ds.flatMap(d => shuffle(d.words).slice(0, CONFIG.CUP_WORDS_PER_DICT).map(w => Object.assign({}, w, {_d:d.id})));
+  words = shuffle(words).slice(0, CONFIG.CUP_MAX_WORDS);
+  return { id:"cup", name:"גביע הליגה", mode:"full", target:"word", words, progress:S.cup.progress };
+}
+function startCup(){
+  curDict = buildCup();
+  loadRecs(curDict);
+  enterLevel(3); // הגביע הוא "המשחק הגדול": שומעים וכותבים מילה שלמה
+}
 
 /* ---------- טקס סיום: גביע, כוכבים שקופצים, ומטבעות שעפים למונה ---------- */
 let cerTimers = [];
@@ -1633,8 +1723,27 @@ $("gateCancel").onclick = () => show("home");
 /* ===================== מסך הורה ===================== */
 function openParent(){
   $("childName").value = S.childName; $("playerName2").value = S.playerName;
-  renderParentList(); renderVoiceStatus(); show("parent");
+  renderParentList(); renderVoiceStatus(); renderErrStatus(); show("parent");
 }
+/* ---------- דיווח תקלות ---------- */
+function renderErrStatus(){
+  const n = getErrors().length;
+  $("errStatus").textContent = n ? `⚠️ ${n === 1 ? "נרשמה תקלה אחת" : "נרשמו " + n + " תקלות"} במכשיר הזה. אפשר לשלוח לבדיקה.` : "✅ לא נרשמו תקלות. אם משהו לא עבד — כתבו מה קרה ושלחו.";
+}
+function errReport(){
+  const ua = navigator.userAgent.replace(/\(KHTML.*$/, "").slice(0, 120);
+  const errs = getErrors().slice(-8).map((e,i) => `${i+1}. ${e.t.slice(0,16).replace("T"," ")} | ${e.msg} | ${e.where} | מסך: ${e.screen}`).join("\n");
+  return `דיווח תקלה — ליגת המילים (גרסה ${APP_VERSION})\nמכשיר: ${ua}\nתיאור: ${$("errNote").value.trim() || "-"}\nתקלות אחרונות:\n${errs || "אין"}`;
+}
+// קישור חיצוני: פותח את וואטסאפ / המייל עם הודעה מוכנה. שום דבר לא נשלח בלי לחיצה של ההורה
+$("errWa").onclick = () => window.open("https://wa.me/?text=" + encodeURIComponent(errReport()), "_blank", "noopener");
+$("errMail").onclick = () => { location.href = "mailto:?subject=" + encodeURIComponent("ליגת המילים - דיווח תקלה") + "&body=" + encodeURIComponent(errReport()); };
+let errClearArmed = false;
+$("errClear").onclick = () => {
+  if (!errClearArmed){ errClearArmed = true; $("errStatus").textContent = "לחצו שוב כדי לנקות את רשימת התקלות"; setTimeout(()=>{ errClearArmed = false; renderErrStatus(); }, 4000); return; }
+  try{ localStorage.removeItem(ERR_KEY); }catch(e){}
+  errClearArmed = false; $("errNote").value = ""; renderErrStatus();
+};
 $("childName").oninput = e => { S.childName = e.target.value.trim(); save(); };
 $("playerName2").oninput = e => { S.playerName = e.target.value.trim(); save(); };
 $("parentExit").onclick = () => show("home");
@@ -1711,7 +1820,9 @@ function openEditor(id){
   const d = id ? S.dictations.find(x=>x.id===id) : null;
   $("editorTitle").textContent = d ? "עריכת הכתבה" : "הכתבה חדשה";
   $("dictName").value = d ? d.name : "הכתבה " + (S.dictations.length + 1);
-  $("dictWords").value = d ? d.words.map(w=>w.text).join("\n") : "";
+  // מילה נרדפת נשמרת ומוצגת שוב בפורמט "מילה = נרדפת"
+  $("dictWords").value = d ? d.words.map(w => w.syn ? `${w.text} = ${w.syn}` : w.text).join("\n") : "";
+  document.querySelector(`input[name=target][value=${d&&d.target==="syn"?"syn":"word"}]`).checked = true;
   document.querySelector(`input[name=checkMode][value=${d?d.mode:"full"}]`).checked = true;
   $("editorMsg").textContent = ""; $("deleteMsg").textContent = "";
   $("deleteCard").style.display = d ? "" : "none";
@@ -1722,7 +1833,7 @@ $("editorBack").onclick = () => { stopRec(); openParent(); };
 
 $("dictSave").onclick = () => {
   const name = $("dictName").value.trim() || "הכתבה";
-  // מילה בכל שורה. שורה עם "=" (מילה נרדפת) — בגרסה 1 לוקחים רק את המילה הראשונה
+  // מילה בכל שורה. שורה עם "=" = מילה ומילה נרדפת, למשל: חָבֵר = רֵעַ
   const lines = $("dictWords").value.split(/\n+/).map(l => l.trim()).filter(Boolean);
   const words = [];
   for (const line of lines){
@@ -1733,17 +1844,19 @@ $("dictSave").onclick = () => {
   }
   if (!words.length){ $("editorMsg").textContent = "צריך לפחות מילה אחת בעברית 🙂"; return; }
   const mode = document.querySelector("input[name=checkMode]:checked").value;
+  const target = document.querySelector("input[name=target]:checked").value; // word = המילה עצמה, syn = המילה הנרדפת
   const noNikud = words.every(w => !toClusters(w.text).some(c => c.marks.length));
   if (editId){
     const d = S.dictations.find(x=>x.id===editId);
-    d.name = name; d.words = words; d.mode = mode;
+    d.name = name; d.words = words; d.mode = mode; d.target = target;
   } else {
     editId = "d" + Date.now();
-    S.dictations.push({id:editId, name, created:Date.now(), mode, words, progress:{}});
+    S.dictations.push({id:editId, name, created:Date.now(), mode, target, words, progress:{}});
   }
   save();
   $("editorMsg").textContent = `✅ נשמר! ${words.length} מילים.` + (noNikud && mode==="full" ? " ⚠️ שימו לב: אין במילים ניקוד." : "")
-    + (words.some(w=>w.syn) ? " (מילים נרדפות יגיעו בגרסה הבאה — כרגע הילד כותב את המילה הראשונה.)" : "");
+    + (target === "syn" && !words.some(w=>w.syn) ? " ⚠️ בחרתם 'מילה נרדפת' אבל אין שורות עם =." : "")
+    + (target === "syn" && words.some(w=>!w.syn) && words.some(w=>w.syn) ? " (במילים בלי = הילד יכתוב את המילה עצמה.)" : "");
   $("editorTitle").textContent = "עריכת הכתבה"; $("deleteCard").style.display = "";
   renderWordRows();
 };
@@ -1798,6 +1911,7 @@ async function toggleRec(btn, dictId, text){
     rec = {mr, btn, timer: setTimeout(stopRec, CONFIG.MAX_REC_MS)};
   }catch(err){
     $("recMsg").textContent = "❌ אין גישה למיקרופון. צריך לאשר מיקרופון בדפדפן (וזה עובד רק בכתובת https).";
+    logError("mic: " + (err && err.name), "record");
   }
 }
 function stopRec(){
