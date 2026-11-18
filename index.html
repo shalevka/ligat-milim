@@ -51,18 +51,28 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .icon-btn{width:52px;height:52px;border-radius:50%;background:#fff;font-size:26px;box-shadow:0 3px 0 #c9d6e3}
 
 /* ===================== מסך הבית ===================== */
-#home h1{font-size:34px;margin:6px 0 0;text-align:center;color:#1d4e89;text-shadow:0 2px 0 #fff}
-.greet{text-align:center;font-size:22px;margin:4px 0}
 .hero{display:flex;flex-direction:column;align-items:center;margin:4px 0}
-.hero .pl{width:104px;height:156px;cursor:pointer}
-@keyframes bob{50%{transform:translateY(-6px)}}
-.player-name{background:#fff;border-radius:14px;padding:4px 14px;font-size:20px;font-weight:bold;margin-top:-6px}
-.list{flex:1;overflow-y:auto;padding:4px 2px 12px}
-.dict-card{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff;
-  border-radius:20px;padding:16px;font-size:23px;font-weight:bold;margin:8px 0;box-shadow:0 5px 0 #1f8f4c}
-.dict-card .stars{font-size:18px}
-.dict-card.cup-card{background:linear-gradient(90deg,#fff3c4,#ffd23f);box-shadow:0 5px 0 #d9a600}
-.empty-note{background:#fff;border-radius:18px;padding:16px;text-align:center;font-size:20px}
+.hero .pl{width:92px;height:208px}
+.home-screen{padding:0 !important;overflow:hidden}
+.home-bg{position:absolute;inset:0;width:100%;height:100%}
+.home-coins{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;background:linear-gradient(#2b3550,#141a2b) !important;
+  color:#ffd84d;border:2px solid #ffd84d;box-shadow:0 4px 10px rgba(0,0,0,.35) !important;z-index:2}
+.wr-btn{position:absolute;top:max(10px,env(safe-area-inset-top));right:14px;width:56px;height:56px;border-radius:16px;font-size:28px;z-index:2;
+  background:linear-gradient(#4f8dff,#2459d6);border:2px solid #9cc0ff;box-shadow:0 4px 0 #173a8f,0 6px 12px rgba(0,0,0,.3)}
+.home-title{position:relative;margin-top:max(74px,calc(env(safe-area-inset-top) + 64px));text-align:center;font-size:46px;font-weight:900;color:#fff;
+  text-shadow:0 2px 0 #f4a300,0 4px 0 #d98200,0 6px 0 #b86a00,0 10px 18px rgba(0,0,0,.45)}
+.home-sub{position:relative;align-self:center;margin-top:2px;font-size:21px;font-weight:bold;color:#fff;background:rgba(0,0,0,.35);padding:3px 14px;border-radius:14px}
+.home-hero{position:absolute;left:50%;bottom:150px;width:150px;height:340px;transform:translateX(-50%)}
+.home-hero .pl{position:absolute;inset:0;cursor:pointer}
+.home-hero .ball-el{position:absolute;width:34px;height:34px;left:104px;top:236px}
+.play-btn{position:absolute;bottom:max(44px,calc(env(safe-area-inset-bottom) + 30px));left:50%;transform:translateX(-50%);width:290px;height:80px;border-radius:24px;
+  font-size:36px;font-weight:900;color:#fff;overflow:hidden;background:linear-gradient(#5cf08f,#18b552 55%,#0f8f40);border:3px solid #b6ffd0;
+  box-shadow:0 7px 0 #0a6a2e,0 0 28px rgba(80,255,140,.55),0 14px 24px rgba(0,0,0,.35);text-shadow:0 3px 0 #0a6a2e;animation:playPulse 1.8s ease-in-out infinite}
+.play-btn::before{content:"";position:absolute;top:4px;left:12px;right:12px;height:30px;border-radius:18px;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0))}
+.play-btn:active{transform:translateX(-50%) translateY(5px);box-shadow:0 2px 0 #0a6a2e}
+@keyframes playPulse{50%{box-shadow:0 7px 0 #0a6a2e,0 0 40px rgba(80,255,140,.85),0 14px 24px rgba(0,0,0,.35)}}
+.home-note{position:absolute;bottom:136px;left:20px;right:20px;text-align:center;font-size:19px;font-weight:bold;color:#fff;
+  background:rgba(0,0,0,.55);border-radius:14px;padding:8px;display:none}
 /* כפתור ההורה: קטן, בפינה, צריך לחיצה ארוכה */
 #parentBtn{position:absolute;left:12px;bottom:max(12px,env(safe-area-inset-bottom));width:46px;height:46px;
   border-radius:50%;background:rgba(255,255,255,.7);font-size:22px;overflow:hidden}
@@ -89,39 +99,20 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .progress i.now{opacity:.8;filter:none;animation:pop 1s infinite}
 
 /* המגרש: שער, שוער, כדור ושחקן */
-.scene{position:relative;height:190px;border-radius:20px;overflow:hidden;margin:6px 0;flex-shrink:0;
-  background:repeating-linear-gradient(90deg,#43c067 0 40px,#3bb55e 40px 80px);transition:height .3s}
-.scene.short{height:100px}
-#game{overflow-y:auto} /* אם המסך קטן מאוד — אפשר לגלול ולא שום דבר נחתך */
-#game.typing .word{font-size:40px;min-height:56px}
-#game.typing .hear,#game.typing .slow{padding:7px 14px;font-size:20px}
-#game.typing .feedback{font-size:17px;min-height:26px}
-.crowd{position:absolute;top:0;left:0;right:0;height:26px;background:#5a6b86;font-size:15px;line-height:26px;
-  white-space:nowrap;overflow:hidden;text-align:center;letter-spacing:2px}
-.crowd.cheer{animation:jump .3s 4}
-@keyframes jump{50%{transform:translateY(-4px)}}
-.goal{position:absolute;top:34px;left:50%;width:62%;height:44%;transform:translateX(-50%);
-  border:6px solid #fff;border-bottom:none;border-radius:6px 6px 0 0;
-  background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 2px,transparent 2px 10px),
-             repeating-linear-gradient(-45deg,rgba(255,255,255,.35) 0 2px,transparent 2px 10px)}
+.scene{position:relative;height:230px;border-radius:20px;overflow:hidden;margin:6px 0;flex-shrink:0;background:#3bb55e}
+.scene.short{height:130px}
+#sceneBg{position:absolute;inset:0;width:100%;height:100%}
+.cheer-flash{position:absolute;left:0;right:0;top:0;height:45%;background:radial-gradient(ellipse at 50% 80%,rgba(255,255,255,.7),rgba(255,255,255,0) 70%);opacity:0;pointer-events:none}
+.cheer-flash.cheer{animation:flash .35s 3}
+@keyframes flash{50%{opacity:1}}
+/* שער: עמודים לבנים ורשת */
+.goal{position:absolute;border:5px solid #fff;border-bottom:none;border-radius:4px 4px 0 0;box-shadow:0 0 0 1px rgba(0,0,0,.15);
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.45) 0 1.5px,transparent 1.5px 8px),repeating-linear-gradient(-45deg,rgba(255,255,255,.45) 0 1.5px,transparent 1.5px 8px),rgba(0,0,0,.08)}
 .goal.shake{animation:shake .4s 2}
-@keyframes shake{25%{transform:translateX(-52%)}75%{transform:translateX(-48%)}}
-#keeper{position:absolute;bottom:-2px;left:50%;width:50px;height:75px;transform:translateX(-50%);transition:transform .35s}
-.scene.short #keeper{height:54px;width:36px}
-#ball{position:absolute;bottom:14px;left:58%;width:30px;height:30px;transition:all .55s cubic-bezier(.3,.6,.4,1);z-index:3}
-#kicker{position:absolute;bottom:4px;left:30%;width:54px;height:81px;transition:transform .25s}
-.scene.short #kicker{height:60px;width:40px}
-/* הדמות מגיבה: קופצת ומסתובבת אחרי גול, מתנדנדת ומעודדת אחרי פספוס */
-#kicker.celebrate{animation:celebrate .5s ease-in-out 3}
-@keyframes celebrate{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-28px) rotate(-12deg)}70%{transform:translateY(-14px) rotate(10deg)}}
-#kicker.encourage{animation:encourage .35s ease-in-out 3}
-@keyframes encourage{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
-.bubble{position:absolute;bottom:74px;left:14%;background:#fff;border-radius:14px;padding:3px 10px;font-size:17px;font-weight:bold;
-  white-space:nowrap;opacity:0;transform:scale(.5);transition:all .25s;z-index:4;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-.bubble.show{opacity:1;transform:scale(1)}
-.scene.short .bubble{bottom:56px;font-size:15px}
-.scene.short #ball{width:24px;height:24px;bottom:8px}
-
+@keyframes shake{25%{transform:translateX(-3px) scaleY(1.02)}75%{transform:translateX(3px)}}
+#keeper{position:absolute;transition:transform .35s ease-out;transform-origin:50% 90%}
+#ball{position:absolute;transition:left .55s cubic-bezier(.3,.6,.4,1),top .55s cubic-bezier(.3,.6,.4,1),transform .55s;z-index:3}
+#kicker{position:absolute;transition:transform .3s;z-index:4}
 /* אזור השאלה */
 .ask{background:#fff;border-radius:20px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
 .ask-row{display:flex;gap:10px;align-items:center;justify-content:center;width:100%}
@@ -140,6 +131,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 /* סימון טעויות: כתום/צהוב רך, בלי אדום מפחיד */
 .word .bad-l{background:#ffe0b3;border-radius:8px;border-bottom:4px solid var(--orange)}
 .word .bad-n{background:#fff3b0;border-radius:8px;border-bottom:4px dotted var(--hint)}
+.word .tl{cursor:pointer;border-radius:8px;padding:0 1px}
+.word .tl:active{background:#e7f0ff}
 .word .placeholder{color:#b0bccb;font-size:22px}
 
 .feedback{min-height:32px;font-size:21px;font-weight:bold;text-align:center;padding:2px 6px}
@@ -183,36 +176,46 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 #done{justify-content:center;align-items:center;text-align:center}
 #done{gap:2px}
 .done-total{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px}
-.ceremony{position:relative;width:130px;height:200px;margin-top:40px}
-#donePlayer{position:absolute;bottom:0;left:7px;width:116px;height:174px}
+.ceremony{position:relative;width:130px;height:220px;margin-top:40px}
+#donePlayer{position:absolute;bottom:0;left:20px;width:92px;height:208px}
 .cup{position:absolute;top:-52px;left:50%;font-size:62px;transform:translateX(-50%);animation:bob 1s ease-in-out infinite;z-index:2}
 #done .big-stars span{display:inline-block;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.8,.5,1)}
 #done .big-stars span.in{transform:scale(1)}
 .fly-coin{position:absolute;font-size:28px;z-index:20;pointer-events:none;transition:left .7s cubic-bezier(.4,0,.6,1),top .7s cubic-bezier(.4,-.6,.6,1),transform .7s}
 
 /* ===================== מפת הליגה ===================== */
-.map{position:relative;flex:1;border-radius:24px;overflow:hidden;margin:4px 0;
-  background:repeating-linear-gradient(0deg,#43c067 0 46px,#3bb55e 46px 92px)}
-.map > svg.path{position:absolute;inset:0;width:100%;height:100%}
+.map{position:relative;flex:1;border-radius:24px;overflow-y:auto;overflow-x:hidden;margin:4px 0;-webkit-overflow-scrolling:touch}
+.map-inner{position:relative;width:100%;background:repeating-linear-gradient(0deg,#43c067 0 46px,#3bb55e 46px 92px)}
+.map-inner > svg.path{position:absolute;left:0;top:0}
 .deco{position:absolute;font-size:26px;opacity:.9;pointer-events:none}
 .node{position:absolute;transform:translate(-50%,-50%);background:none;padding:0;display:flex;flex-direction:column;align-items:center;z-index:2}
-.stadium{width:88px;height:88px;border-radius:50%;background:#fff;border:6px solid var(--sun);font-size:36px;
-  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 rgba(0,0,0,.18);position:relative}
+.stadium{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8eef5);border:6px solid var(--sun);font-size:36px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 rgba(0,0,0,.2),0 10px 14px rgba(0,0,0,.18);position:relative}
 .node.l2 .stadium{border-color:var(--blue)} .node.l3 .stadium{border-color:var(--purple)}
-.node .label{background:#fff;border-radius:12px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px;white-space:nowrap}
-.node .nstars{font-size:14px;letter-spacing:1px;min-height:18px}
+.node.cup .stadium{width:100px;height:100px;font-size:46px;border-color:#f4c430;background:radial-gradient(circle at 35% 30%,#fffbe6,#ffe58a)}
+.node .label{background:#fff;border-radius:12px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.node .nstars{font-size:14px;letter-spacing:1px;min-height:18px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .node.locked .stadium{background:#d7dee8;border-color:#a9b4c4;filter:grayscale(.6)}
 .node.current .stadium{animation:ring 1.3s ease-in-out infinite}
-@keyframes ring{50%{box-shadow:0 6px 0 rgba(0,0,0,.18),0 0 0 10px rgba(255,255,255,.55)}}
+@keyframes ring{50%{box-shadow:0 6px 0 rgba(0,0,0,.2),0 0 0 12px rgba(255,255,255,.6)}}
 .node.done .stadium::after{content:"✓";position:absolute;top:-8px;right:-8px;background:#2ec46b;color:#fff;border-radius:50%;
   width:28px;height:28px;font-size:18px;display:flex;align-items:center;justify-content:center}
 .node.unlocking .stadium{animation:unlockShake .5s}
 @keyframes unlockShake{20%,60%{transform:rotate(-12deg)}40%,80%{transform:rotate(12deg)}}
 .node.popped .stadium{animation:popIn .45s cubic-bezier(.3,1.8,.5,1)}
-@keyframes popIn{0%{transform:scale(.6)}100%{transform:scale(1)}}
-.node.trophy .stadium{border-color:#f4c430;font-size:42px}
-.node.trophy.locked .stadium{opacity:.6}
-.token{position:absolute;width:46px;height:69px;transform:translate(-50%,-100%);z-index:3;transition:left 1s ease-in-out,top 1s ease-in-out;pointer-events:none}
+@keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}
+.hidden-intro{visibility:hidden}
+/* שלט של הכתבה: לוח עץ עם שם ומדליה */
+.sign{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;align-items:center;gap:8px;white-space:nowrap;
+  background:linear-gradient(#c98b52,#9a6233);color:#fff;font-size:19px;font-weight:900;padding:8px 18px;border-radius:12px;
+  border:3px solid #6d4120;box-shadow:0 5px 0 #5a3418,0 8px 12px rgba(0,0,0,.25);text-shadow:0 2px 0 #5a3418}
+.sign .medal{font-size:28px;filter:grayscale(1) opacity(.45)} .sign .medal.on{filter:none}
+.sign .medal.pop{animation:popIn .6s .4s cubic-bezier(.3,1.8,.5,1) both}
+.sign.drop-in{animation:signDrop .7s cubic-bezier(.3,1.5,.5,1)}
+@keyframes signDrop{from{transform:translate(-50%,-400%)}to{transform:translate(-50%,-50%)}}
+.new-banner{position:absolute;top:-38px;left:50%;transform:translateX(-50%);background:var(--sun);color:#24324a;font-size:18px;padding:4px 14px;
+  border-radius:14px;text-shadow:none;box-shadow:0 4px 0 #d9a600;animation:popIn .5s .5s both}
+.token{position:absolute;width:46px;height:104px;transform:translate(-50%,-100%);z-index:3;transition:left 1s ease-in-out,top 1s ease-in-out;pointer-events:none}
 .map-bubble{position:absolute;z-index:4;background:#fff;border-radius:14px;padding:6px 12px;font-size:17px;font-weight:bold;
   transform:translate(-50%,-100%);box-shadow:0 3px 8px rgba(0,0,0,.2);white-space:nowrap;pointer-events:none}
 
@@ -220,7 +223,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 #tunnel{justify-content:center;align-items:center;overflow:hidden;cursor:pointer;
   background:radial-gradient(ellipse at 50% 42%,#fffbe0 0 9%,#ffe98a 13%,#5d6b88 30%,#2a3147 55%,#141824 100%)}
 .tunnel-wall{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 42%,rgba(255,255,255,.05) 0 10deg,transparent 10deg 20deg)}
-#tunnelPlayer{width:96px;height:144px;z-index:2}
+#tunnelPlayer{width:96px;height:218px;z-index:2}
 #tunnelPlayer.go{animation:outTunnel 2.1s ease-in forwards}
 @keyframes outTunnel{from{transform:translateY(-60px) scale(.22);opacity:.5}to{transform:translateY(90px) scale(1.5);opacity:1}}
 .tunnel-banner{position:absolute;top:13%;z-index:3;background:var(--sun);color:var(--ink);font-size:28px;font-weight:bold;
@@ -235,8 +238,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 #done .big-btn{width:85%}
 /* מסך נמוך (אייפון בתוך ספארי): מקטינים את הטקס והכפתורים */
 @media (max-height:720px){
-  .ceremony{height:160px;width:110px;margin-top:46px}
-  #donePlayer{width:96px;height:144px;left:7px}
+  .ceremony{height:170px;width:110px;margin-top:46px}
+  #donePlayer{width:72px;height:163px;left:19px}
   .cup{font-size:50px;top:-44px}
   #done h2{font-size:28px} #done .big-stars{font-size:38px}
   #done .earned{font-size:21px;margin:6px} #done .big-btn{padding:11px 16px;font-size:21px;margin:5px 0}
@@ -261,51 +264,64 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .rec-on{background:#ffd6d6 !important;animation:pulse .8s infinite}
 #gate{justify-content:center;align-items:center;text-align:center}
 /* ===================== הדמות: חלקים זזים =====================
-   כל חלק מסתובב סביב "מפרק": ירך, כתף או צוואר.
-   transform-box:view-box = המספרים של המפרק הם בקואורדינטות של הציור */
+   כל חלק מסתובב סביב "מפרק" (מספרים בקואורדינטות של הציור 120×260):
+   ירך, ברך, כתף וצוואר. transform-box:view-box = המספרים הם של הציור */
 .pl svg{width:100%;height:100%;overflow:visible}
 .pl svg g{transform-box:view-box}
-.pl .p-legL{transform-origin:34px 74px} .pl .p-legR{transform-origin:46px 74px}
-.pl .p-armL{transform-origin:24px 42px;transition:transform .25s} .pl .p-armR{transform-origin:56px 42px;transition:transform .25s}
-.pl .p-head{transform-origin:40px 38px} .pl .p-up{transform-origin:40px 70px}
-/* עמידה רגילה: נושם ומניע קצת ידיים */
-.pl.idle .p-up{animation:breathe 2.4s ease-in-out infinite}
-.pl.idle .p-armL{animation:swayL 2.4s ease-in-out infinite} .pl.idle .p-armR{animation:swayR 2.4s ease-in-out infinite}
-.pl.idle .p-eyes{animation:blinkEye 4s infinite;transform-box:fill-box;transform-origin:center}
-@keyframes breathe{50%{transform:translateY(-1.5px)}}
-@keyframes swayL{50%{transform:rotate(6deg)}} @keyframes swayR{50%{transform:rotate(-6deg)}}
-@keyframes blinkEye{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
-/* ריצה: רגליים וידיים מתחלפות */
-.pl.run .p-legL{animation:legA .32s ease-in-out infinite alternate} .pl.run .p-legR{animation:legB .32s ease-in-out infinite alternate}
-.pl.run .p-armL{animation:legB .32s ease-in-out infinite alternate} .pl.run .p-armR{animation:legA .32s ease-in-out infinite alternate}
-.pl.run .p-up{animation:runBob .16s ease-in-out infinite alternate}
-@keyframes legA{from{transform:rotate(28deg)}to{transform:rotate(-28deg)}}
-@keyframes legB{from{transform:rotate(-28deg)}to{transform:rotate(28deg)}}
-@keyframes runBob{to{transform:translateY(-2px)}}
-/* בעיטה: הרגל נמשכת אחורה ואז קדימה, הגוף נוטה */
-.pl.kick .p-legR{animation:kickLeg .45s ease-out}
-.pl.kick .p-armL{transform:rotate(45deg)} .pl.kick .p-armR{transform:rotate(-30deg)}
-.pl.kick .p-up{animation:lean .45s ease-out}
-@keyframes kickLeg{0%{transform:rotate(0)}35%{transform:rotate(40deg)}70%{transform:rotate(-80deg)}100%{transform:rotate(0)}}
-@keyframes lean{40%{transform:rotate(-6deg)}}
-/* חגיגה: קפיצה עם שתי ידיים למעלה */
+.pl .p-legL{transform-origin:54px 146px} .pl .p-shinL{transform-origin:50px 188px}
+.pl .p-legR{transform-origin:70px 146px} .pl .p-shinR{transform-origin:76px 188px}
+.pl .p-armL{transform-origin:36px 74px;transition:transform .25s} .pl .p-armR{transform-origin:87px 74px;transition:transform .25s}
+.pl .p-head{transform-origin:64px 52px} .pl .p-up{transform-origin:62px 132px}
+/* עמידה: נושם, מזיז קצת ידיים, ממצמץ */
+.pl.idle .p-up{animation:breathe 2.6s ease-in-out infinite}
+.pl.idle .p-armL{animation:swayL 2.6s ease-in-out infinite} .pl.idle .p-armR{animation:swayR 2.6s ease-in-out infinite}
+.pl .p-eyes{transform-box:fill-box;transform-origin:center;animation:blinkEye 4.5s infinite}
+@keyframes breathe{50%{transform:translateY(-1.6px)}}
+@keyframes swayL{50%{transform:rotate(4deg)}} @keyframes swayR{50%{transform:rotate(-4deg)}}
+@keyframes blinkEye{0%,95%,100%{transform:scaleY(1)}97.5%{transform:scaleY(.1)}}
+/* הקפצת כדור: הברך עולה, השוק מתכופפת — בתיאום עם הכדור (.juggle-ball) */
+.pl.juggle .p-legR{animation:jugThigh 1.1s ease-in-out infinite} .pl.juggle .p-shinR{animation:jugShin 1.1s ease-in-out infinite}
+.pl.juggle .p-armL{animation:swayL 1.1s ease-in-out infinite} .pl.juggle .p-armR{animation:swayR 1.1s ease-in-out infinite}
+.pl.juggle .p-head{animation:lookDown 1.1s ease-in-out infinite}
+@keyframes jugThigh{0%,100%{transform:rotate(-38deg)}50%{transform:rotate(-6deg)}}
+@keyframes jugShin{0%,100%{transform:rotate(48deg)}50%{transform:rotate(8deg)}}
+@keyframes lookDown{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-2deg)}}
+.juggle-ball{animation:jugBall 1.1s ease-in-out infinite}
+@keyframes jugBall{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-95px) rotate(200deg)}}
+/* ריצה */
+.pl.run .p-legL{animation:legA .34s ease-in-out infinite alternate} .pl.run .p-legR{animation:legB .34s ease-in-out infinite alternate}
+.pl.run .p-shinL{animation:shinA .34s ease-in-out infinite alternate} .pl.run .p-shinR{animation:shinB .34s ease-in-out infinite alternate}
+.pl.run .p-armL{animation:legB .34s ease-in-out infinite alternate} .pl.run .p-armR{animation:legA .34s ease-in-out infinite alternate}
+.pl.run .p-up{animation:runBob .17s ease-in-out infinite alternate}
+@keyframes legA{from{transform:rotate(26deg)}to{transform:rotate(-26deg)}} @keyframes legB{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+@keyframes shinA{from{transform:rotate(0)}to{transform:rotate(40deg)}} @keyframes shinB{from{transform:rotate(40deg)}to{transform:rotate(0)}}
+@keyframes runBob{to{transform:translateY(-3px)}}
+/* בעיטה: הרגל נמשכת אחורה (העקב עולה) ואז נזרקת קדימה */
+.pl.kick .p-legR{animation:kickThigh .5s ease-out} .pl.kick .p-shinR{animation:kickShin .5s ease-out}
+.pl.kick .p-armL{transform:rotate(40deg)} .pl.kick .p-armR{transform:rotate(-40deg)}
+.pl.kick .p-up{animation:lean .5s ease-out}
+@keyframes kickThigh{0%{transform:rotate(0)}35%{transform:rotate(22deg)}70%{transform:rotate(-34deg)}100%{transform:rotate(0)}}
+@keyframes kickShin{0%{transform:rotate(0)}35%{transform:rotate(75deg)}70%{transform:rotate(-5deg)}100%{transform:rotate(0)}}
+@keyframes lean{40%{transform:rotate(-5deg)}}
+/* חגיגה: שתי ידיים למעלה */
 .pl.celebrate .p-armL{animation:armUpL .5s ease-in-out 3 forwards} .pl.celebrate .p-armR{animation:armUpR .5s ease-in-out 3 forwards}
-@keyframes armUpL{0%{transform:rotate(0)}40%,100%{transform:rotate(160deg)}70%{transform:rotate(140deg)}}
-@keyframes armUpR{0%{transform:rotate(0)}40%,100%{transform:rotate(-160deg)}70%{transform:rotate(-140deg)}}
+@keyframes armUpL{0%{transform:rotate(0)}40%,100%{transform:rotate(155deg)}70%{transform:rotate(135deg)}}
+@keyframes armUpR{0%{transform:rotate(0)}40%,100%{transform:rotate(-155deg)}70%{transform:rotate(-135deg)}}
 /* עידוד אחרי פספוס: אגרוף באוויר והנהון */
-.pl.encourage .p-armR{animation:pump .3s ease-in-out 4 alternate}
+.pl.encourage .p-armL{animation:pump .3s ease-in-out 4 alternate}
 .pl.encourage .p-head{animation:nod .3s ease-in-out 4 alternate}
-@keyframes pump{from{transform:rotate(-110deg)}to{transform:rotate(-150deg)}}
-@keyframes nod{to{transform:rotate(8deg)}}
+@keyframes pump{from{transform:rotate(100deg)}to{transform:rotate(140deg)}}
+@keyframes nod{to{transform:rotate(7deg)}}
 /* מחזיק גביע / שוער מושיט ידיים */
-.pl.hold .p-armL,.pl.reach .p-armL{transform:rotate(165deg)} .pl.hold .p-armR,.pl.reach .p-armR{transform:rotate(-165deg)}
+.pl.hold .p-armL{transform:rotate(165deg)} .pl.hold .p-armR{transform:rotate(-165deg)}
 .pl.hold{animation:bob 1s ease-in-out infinite}
-#ball svg{width:100%;height:100%}
+.pl.reach .p-armL{transform:rotate(125deg)} .pl.reach .p-armR{transform:rotate(-125deg)}
+#ball svg,.ball-el svg{width:100%;height:100%}
 
 /* ===================== חדר הלבשה ===================== */
-.wr-stage{position:relative;height:190px;flex-shrink:0;display:flex;justify-content:center;align-items:flex-end;gap:4px;
+.wr-stage{position:relative;height:220px;flex-shrink:0;display:flex;justify-content:center;align-items:flex-end;gap:4px;
   border-radius:22px;background:radial-gradient(ellipse at 50% 100%,#fff6c9 0 30%,#ffe08a 60%,#ffd23f 100%);padding-bottom:6px}
-#wrPlayer{width:116px;height:174px}
+#wrPlayer{width:92px;height:208px}
 #wrBall{width:34px;height:34px;margin-bottom:4px}
 .wr-buy{min-height:50px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:19px;font-weight:bold;
   background:#fff;border-radius:16px;margin:6px 0;padding:4px 10px;text-align:center}
@@ -329,6 +345,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .sw-row{display:flex;gap:10px;flex-wrap:wrap}
 .sw-row button{width:46px;height:46px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 2px #c9d6e3}
 .sw-row button.on{box-shadow:0 0 0 4px #2ec46b}
+.sw-row .badge-b{background:#fff;padding:4px}
+.sw-row .badge-b svg{width:100%;height:100%}
 .num-row{display:flex;align-items:center;gap:14px;justify-content:center;font-size:34px;font-weight:bold}
 .num-row button{width:56px;height:56px;border-radius:50%;background:var(--sun);font-size:30px;box-shadow:0 4px 0 #d9a600}
 .wardrobe-btn{margin-top:6px;font-size:18px;padding:8px 14px}
@@ -352,17 +370,18 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
   </section>
 
   <!-- ========== מסך הבית ========== -->
-  <section id="home" class="screen">
-    <div class="topbar">
-      <div class="coins" id="homeCoins">🪙 0</div>
-      <div></div>
-    </div>
-    <h1>ליגת המילים</h1>
-    <div class="greet" id="greet"></div>
-    <div class="hero" id="homeHero"></div>
-    <div style="text-align:center;font-size:19px;margin:6px 0 0">בחר מחזור 👇</div>
-    <div class="list" id="dictList"></div>
-    <!-- כפתור הורה: לחיצה ארוכה של 2 שניות -->
+  <section id="home" class="screen home-screen">
+    <!-- רקע: אצטדיון (יום או ערב לפי השעה) -->
+    <svg class="home-bg" id="homeBg" viewBox="0 0 390 700" preserveAspectRatio="xMidYMax slice"></svg>
+    <div class="coins home-coins" id="homeCoins">🪙 0</div>
+    <button class="wr-btn" id="wrOpen" aria-label="חדר הלבשה">👕</button>
+    <div class="home-title">ליגת המילים</div>
+    <div class="home-sub" id="greet"></div>
+    <!-- השחקן מקפיץ כדור -->
+    <div class="home-hero"><div class="pl juggle" id="homePl"></div><div class="ball-el juggle-ball" id="homeBall"></div></div>
+    <button class="play-btn" id="playBtn">▶ שחק</button>
+    <div class="home-note" id="homeNote"></div>
+    <!-- כפתור הורה: לחיצה ארוכה -->
     <button id="parentBtn" aria-label="מסך הורה"><div class="fill" id="parentFill"></div><span>⚙️</span></button>
   </section>
 
@@ -388,9 +407,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <button class="icon-btn" id="levelsBack">🏠</button>
       <div class="coins" id="levelsCoins">🪙 0</div>
     </div>
-    <h2 id="levelsTitle"></h2>
-    <!-- מפת הליגה: שביל עם אצטדיונים. הצמתים והשחקן נבנים ב-JavaScript -->
-    <div class="map" id="map"></div>
+    <!-- מפת הליגה: שביל אחד ארוך עם כל ההכתבות. גוללים למטה להכתבות ישנות -->
+    <div class="map" id="map"><div class="map-inner" id="mapInner"></div></div>
   </section>
 
   <!-- ========== מנהרה: יציאה למגרש לפני שלב ========== -->
@@ -408,12 +426,15 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <div class="progress" id="progress"></div>
       <div class="coins" id="gameCoins">🪙 0</div>
     </div>
+    <!-- המגרש: מצלמה מאחורי השחקן, לכיוון השער. המיקומים מחושבים ב-JavaScript (layoutScene) -->
     <div class="scene" id="scene">
-      <div class="crowd" id="crowd">🙂🙂😃🙂😀🙂🙂😃🙂😀🙂🙂😃🙂😀🙂</div>
-      <div class="goal" id="goal"><div id="keeper" class="pl idle"></div></div>
+      <svg id="sceneBg"></svg>
+      <div class="cheer-flash" id="crowd"></div>
+      <div class="goal" id="goal"></div>
+      <div id="keeper" class="pl idle"></div>
+      <div id="ball" class="ball-el"></div>
       <div id="kicker" class="pl idle"></div>
       <div id="bubble" class="bubble"></div>
-      <div id="ball"></div>
     </div>
     <div class="ask">
       <div class="ask-row">
@@ -509,7 +530,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       </div>
       <div class="note" id="resetMsg"></div>
     </div>
-    <div class="note" style="text-align:center">ליגת המילים · גרסה 3 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
+    <div class="note" style="text-align:center">ליגת המילים · גרסה 4 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
   </section>
 
   <!-- ========== עריכת הכתבה (הורה) ========== -->
@@ -560,7 +581,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
    רישום תקלות — נשמר רק במכשיר, בלי שם הילד ובלי המילים.
    נמצא בתחילת הקוד כדי לתפוס גם תקלות שקורות בזמן העלייה
    ========================================================= */
-const APP_VERSION = "3";
+const APP_VERSION = "4";
 const ERR_KEY = "ligat-milim-errors";
 function logError(msg, where){
   try{
@@ -590,8 +611,7 @@ const CONFIG = {
   IMPROVE_BONUS_PER_STAR: 5,
   SPEAK_PRAISE: true,
   CUP_COIN_MULT: 2,       // גביע: פי כמה מטבעות
-  CUP_WEEKS: 4,           // גביע: מילים מההכתבות של כמה שבועות אחרונים
-  CUP_WORDS_PER_DICT: 3,  // גביע: כמה מילים לוקחים מכל הכתבה
+  CUP_WORDS_PER_DICT: 5,  // גביע: כמה מילים לוקחים מכל אחת משתי ההכתבות
   CUP_MAX_WORDS: 12,      // גביע: כמה מילים לכל היותר בסיבוב     // השחקן אומר בקול "אַלּוּף!" / "כִּמְעַט!" (false = רק כתוב) // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
   STORAGE_KEY: "ligat-milim-v1"
 };
@@ -858,95 +878,325 @@ const SHOP = {
 const SKINS = ["#ffe0bd","#f1c27d","#e0ac69","#c68642","#8d5524"];
 const HAIR_COLORS = ["#4a2c17","#1b1b1b","#d4a017","#b5502a","#8a8a8a","#ff5d8f"];
 const DEFAULT_LOOK = { eq:{shirt:"orange",shorts:"navy",shoes:"black",hair:"short",hat:"none",ball:"classic",char:"player"},
-                       owned:[], skin:1, hairColor:0, num:10 };
+                       owned:[], skin:1, hairColor:0, num:10, badge:"star" };
 const findItem = (cat, id) => SHOP[cat].find(x => x.id === id) || SHOP[cat][0];
 const isOwned = (cat, id) => findItem(cat,id).price === 0 || S.look.owned.includes(cat + ":" + id);
 
-/* ---------- ציור הכדור ---------- */
-function ballSVG(id){
-  const b = findItem("ball", id);
-  const center = b.star
-    ? `<polygon points="20,9 23,17 31,17 25,22 27,30 20,25 13,30 15,22 9,17 17,17" fill="${b.c2}"/>`
-    : `<polygon points="20,13 26,17 24,24 16,24 14,17" fill="${b.c2}"/>`;
-  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="20" cy="20" r="18" fill="${b.c}" stroke="${b.c2}" stroke-width="2"/>${center}
-    <path d="M20 13 L20 3 M26 17 L35 13 M24 24 L30 33 M16 24 L10 33 M14 17 L5 13" stroke="${b.c2}" stroke-width="2"/>
-    <circle cx="13" cy="11" r="3" fill="#fff" opacity=".6"/></svg>`;
+/* =========================================================
+   ציור (גרסה 4): סגנון "תלת-ממד מצויר"
+   - כל צבע מקבל הצללה: בהיר משמאל-למעלה (משם מגיע האור), כהה מימין.
+   - השחקן בנוי מקבוצות (g) עם class — הרגליים, הברכיים, הידיים והראש —
+     וכך ה-CSS יכול לסובב כל חלק סביב "המפרק" שלו (בעיטה, ריצה, חגיגה).
+   - קואורדינטות הציור: 120 רוחב × 260 גובה.
+   ========================================================= */
+
+// --- צבעים: הבהרה/הכהיה של צבע (f חיובי = בהיר יותר, שלילי = כהה יותר) ---
+function shade(hex, f){
+  const n = parseInt(hex.slice(1), 16);
+  let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const t = f < 0 ? 0 : 255, p = Math.abs(f);
+  r = Math.round((t - r) * p + r); g = Math.round((t - g) * p + g); b = Math.round((t - b) * p + b);
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+// מספרים אקראיים "קבועים" (אותו קהל בכל פעם שמציירים)
+function seeded(seed){ let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+
+// --- "צינור": צורה חלקה דרך נקודות עם עובי משתנה (זרוע עם שריר, מרפק, שורש כף יד) ---
+function tube(pts, fill, extra=""){
+  const L = [], R = [];
+  pts.forEach((p,i) => {
+    const a = pts[Math.max(i-1,0)], b = pts[Math.min(i+1,pts.length-1)];
+    const ang = Math.atan2(b[1]-a[1], b[0]-a[0]) + Math.PI/2, h = p[2]/2;
+    L.push([p[0]+Math.cos(ang)*h, p[1]+Math.sin(ang)*h]); R.push([p[0]-Math.cos(ang)*h, p[1]-Math.sin(ang)*h]);
+  });
+  const smooth = arr => { let d = ""; for (let i=1;i<arr.length-1;i++){ const m = [(arr[i][0]+arr[i+1][0])/2, (arr[i][1]+arr[i+1][1])/2]; d += ` Q${arr[i][0].toFixed(1)},${arr[i][1].toFixed(1)} ${m[0].toFixed(1)},${m[1].toFixed(1)}`; } const e = arr[arr.length-1]; return d + ` L${e[0].toFixed(1)},${e[1].toFixed(1)}`; };
+  const last = pts[pts.length-1], first = pts[0], Rr = R.slice().reverse();
+  const d = `M${L[0][0].toFixed(1)},${L[0][1].toFixed(1)}` + smooth(L) + ` A${last[2]/2},${last[2]/2} 0 0 0 ${R[R.length-1][0].toFixed(1)},${R[R.length-1][1].toFixed(1)}` + smooth(Rr) + ` A${first[2]/2},${first[2]/2} 0 0 0 ${L[0][0].toFixed(1)},${L[0][1].toFixed(1)}Z`;
+  return `<path d="${d}" fill="${fill}" ${extra}/>`;
 }
 
-/* ---------- ציור השחקן ----------
-   הדמות בנויה מחלקים נפרדים (רגליים, ידיים, ראש) — כל חלק הוא קבוצה (g) עם class,
-   וכך ה-CSS יכול לסובב כל חלק סביב "המפרק" שלו ולייצר תנועה של בעיטה, ריצה וחגיגה.
-   vb = איזה חלק מהציור להראות (לתמונות הקטנות בחנות) */
-let svgCounter = 0;
-function playerSVG(L, {vb="0 0 80 120", gloves=null}={}){
-  const id = "s" + (++svgCounter); // מזהה ייחודי לדוגמת הפסים
-  const shirt = findItem("shirt", L.eq.shirt), shorts = findItem("shorts", L.eq.shorts).c, shoes = findItem("shoes", L.eq.shoes).c;
-  const ch = L.eq.char, hairC = HAIR_COLORS[L.hairColor] || HAIR_COLORS[0];
-  // לחתול: הפרווה בצבע השיער. לרובוט: מתכת
-  const skin = ch === "cat" ? hairC : ch === "robot" ? "#b8c4d6" : (SKINS[L.skin] || SKINS[1]);
-  const shirtFill = shirt.c2 ? `url(#${id})` : shirt.c;
-  const numColor = shirt.dark ? "#24324a" : "#fff";
-  const hand = gloves || skin;
-  // --- שיער (רק לשחקן) ---
-  let hairBack = "", hairFront = "";
-  if (ch === "player"){
-    const h = L.eq.hair;
-    const base = `<path d="M26 24 Q27 9 40 10 Q53 9 54 24 Q49 16 40 17 Q31 16 26 24Z" fill="${hairC}"/>`;
-    if (h === "short") hairFront = base;
-    if (h === "buzz") hairFront = `<path d="M27 21 Q29 11 40 11 Q51 11 53 21 Q47 15 40 15 Q33 15 27 21Z" fill="${hairC}" opacity=".85"/>`;
-    if (h === "spiky") hairFront = `<path d="M26 24 L26 13 L31 17 L32 7 L37 14 L40 4 L43 14 L48 7 L49 17 L54 13 L54 24 Q49 16 40 17 Q31 16 26 24Z" fill="${hairC}"/>`;
-    if (h === "curly") hairFront = base + [28,33,38,43,48,52].map((x,i)=>`<circle cx="${x}" cy="${i%2?13:15}" r="5.5" fill="${hairC}"/>`).join("");
-    if (h === "ponytail"){ hairBack = `<ellipse cx="57" cy="30" rx="5" ry="10" fill="${hairC}"/>`;
-      hairFront = base + `<circle cx="54" cy="21" r="2.5" fill="#ff5d8f"/>`; }
-    if (h === "long"){ hairBack = `<path d="M25 20 Q22 44 30 47 L31 26Z M55 20 Q58 44 50 47 L49 26Z" fill="${hairC}"/>`; hairFront = base; }
-  }
-  // --- ראש ופנים לפי הדמות ---
-  let head;
-  if (ch === "robot"){
-    head = `<line x1="40" y1="12" x2="40" y2="4" stroke="#7d8ba1" stroke-width="2"/><circle cx="40" cy="4" r="3" fill="#ff5d8f"/>
-      <rect x="26" y="12" width="28" height="26" rx="6" fill="${skin}" stroke="#7d8ba1" stroke-width="1.5"/>
-      <rect x="30" y="19" width="7" height="6" rx="2" fill="#3af0ff"/><rect x="43" y="19" width="7" height="6" rx="2" fill="#3af0ff"/>
-      <rect x="32" y="30" width="16" height="4" rx="2" fill="#7d8ba1"/>`;
-  } else if (ch === "cat"){
-    head = `<path d="M27 18 L28 4 L37 13Z M53 18 L52 4 L43 13Z" fill="${skin}"/><path d="M29 14 L29.5 8 L34 12Z M51 14 L50.5 8 L46 12Z" fill="#ffb3c7"/>
-      <circle cx="40" cy="26" r="14" fill="${skin}"/><ellipse cx="40" cy="31" rx="7" ry="5" fill="#fff"/>
-      <circle cx="34" cy="24" r="2.2" fill="#222"/><circle cx="46" cy="24" r="2.2" fill="#222"/>
-      <path d="M38 28 L42 28 L40 30.5Z" fill="#ff5d8f"/>
-      <path d="M33 31 L24 29 M33 33 L24 34 M47 31 L56 29 M47 33 L56 34" stroke="#555" stroke-width=".8"/>`;
-  } else {
-    head = `<circle cx="40" cy="26" r="14" fill="${skin}"/><circle cx="26" cy="27" r="3" fill="${skin}"/><circle cx="54" cy="27" r="3" fill="${skin}"/>
-      <g class="p-eyes"><circle cx="35" cy="26" r="2" fill="#222"/><circle cx="45" cy="26" r="2" fill="#222"/></g>
-      <path d="M34 31 Q40 36 46 31" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
-  }
-  // --- כובע ---
-  const hats = {
-    none:"",
-    band:`<rect x="25.5" y="15" width="29" height="4.5" rx="2" fill="#ff5d8f"/>`,
-    cap:`<path d="M25 21 Q26 7 40 7 Q54 7 55 21Z" fill="#3a86ff"/><path d="M50 19 L66 21 Q64 24 50 22Z" fill="#1d4e89"/>`,
-    beanie:`<path d="M25 22 Q25 6 40 6 Q55 6 55 22Z" fill="#8e5cf7"/><rect x="24" y="18" width="32" height="6" rx="3" fill="#6a3fd0"/><circle cx="40" cy="5" r="4" fill="#fff"/>`,
-    crown:`<path d="M27 15 L27 3 L33 9 L40 1 L47 9 L53 3 L53 15Z" fill="#f4c430" stroke="#b8860b" stroke-width="1"/><circle cx="40" cy="10" r="2" fill="#e63946"/>`
-  };
-  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">
-    <defs><pattern id="${id}" width="8" height="10" patternUnits="userSpaceOnUse"><rect width="8" height="10" fill="${shirt.c}"/><rect width="4" height="10" fill="${shirt.c2||shirt.c}"/></pattern></defs>
-    ${hairBack}
-    <g class="p-legL"><rect x="30" y="72" width="8" height="28" rx="4" fill="${skin}"/><rect x="30" y="91" width="8" height="9" fill="#fff"/><ellipse cx="33" cy="103" rx="7" ry="4" fill="${shoes}"/></g>
-    <g class="p-legR"><rect x="42" y="72" width="8" height="28" rx="4" fill="${skin}"/><rect x="42" y="91" width="8" height="9" fill="#fff"/><ellipse cx="47" cy="103" rx="7" ry="4" fill="${shoes}"/></g>
-    <rect x="26" y="64" width="28" height="15" rx="5" fill="${shorts}"/>
-    <g class="p-up">
-      <rect x="24" y="38" width="32" height="30" rx="10" fill="${shirtFill}"/>
-      <text x="40" y="59" font-size="13" font-weight="bold" text-anchor="middle" fill="${numColor}" font-family="Arial">${L.num}</text>
-      <g class="p-armL"><rect x="18" y="38" width="10" height="12" rx="5" fill="${shirtFill}"/><rect x="19" y="46" width="8" height="18" rx="4" fill="${skin}"/><circle cx="23" cy="65" r="5" fill="${hand}"/></g>
-      <g class="p-armR"><rect x="52" y="38" width="10" height="12" rx="5" fill="${shirtFill}"/><rect x="53" y="46" width="8" height="18" rx="4" fill="${skin}"/><circle cx="57" cy="65" r="5" fill="${hand}"/></g>
-      <rect x="36" y="34" width="8" height="6" fill="${skin}"/>
-      <g class="p-head">${head}${hairFront}${hats[L.eq.hat]||""}</g>
-    </g>
-  </svg>`;
+// --- כף יד רפויה: כף, אצבעות כפופות ואגודל. dir = 1 ימינה, -1 שמאלה ---
+function hand(x, y, s, dir, rot, fill, line){
+  return `<g transform="translate(${x},${y}) rotate(${rot}) scale(${s*dir},${s})">
+    <path d="M-4,-2 Q-5,6 -3.5,10 Q-1,13.5 2.5,12.5 Q5.5,11 5.5,6 L5,-1 Q1,-3.5 -4,-2Z" fill="${fill}"/>
+    <path d="M-3.5,4.5 Q-1,5.5 1.5,4.8 M-3.4,7.3 Q-1,8.3 1.8,7.6 M-2.6,10 Q-.4,10.8 2.2,10.2" stroke="${line}" stroke-width=".8" fill="none" stroke-linecap="round"/>
+    <path d="M4.5,1 Q8,3 7.5,7 Q6.5,9 5,8" fill="${fill}" stroke="${line}" stroke-width=".6"/></g>`;
 }
+
+// --- נעל פקקים (מצביעה ימינה; flip = שמאלה) ---
+function bootSVG(x, y, s, flip, id, accent){
+  return `<g transform="translate(${x},${y}) scale(${flip?-s:s},${s})">
+    <path d="M-9,-7 Q-10,-14 -3,-14 L3,-13 Q7,-12 9,-8 L17,-5 Q23,-3.5 23,0 L23,2 L-10,2Z" fill="url(#${id}bo)"/>
+    <path d="M-7,-13.5 Q-2,-16 3,-13.5" stroke="#00000055" stroke-width="2" fill="none"/>
+    <path d="M1,-12 L8,-8 M7,-12 L2,-8.5 M5,-10.5 L12,-6.5 M11,-10 L6,-7" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+    <path d="M-8,-4 Q-2,-8 4,-4.5 Q10,-1 19,-3" stroke="${accent}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <rect x="-11" y="2" width="35" height="3.2" rx="1.6" fill="#f2f2f2"/>
+    <path d="M-8,5 L-7,8.5 L-4.5,8.5 L-3.5,5Z M0,5 L1,8.5 L3.5,8.5 L4.5,5Z M10,5 L11,8.5 L13.5,8.5 L14.5,5Z M17,5 L18,8.5 L20.5,8.5 L21.5,5Z" fill="#c9ccd2"/></g>`;
+}
+
+/* ---------- סמל הקבוצה (הילד בוחר בחדר ההלבשה, בחינם) ---------- */
+const BADGES = {
+  star:  `<path d="M0,-3.6 L1.1,-.9 L3.9,-.9 L1.6,.8 L2.4,3.6 L0,2 L-2.4,3.6 L-1.6,.8 L-3.9,-.9 L-1.1,-.9Z" fill="#ffc300"/>`,
+  bolt:  `<path d="M1.2,-4 L-2.6,.6 L-.2,.6 L-1.2,4 L2.6,-.8 L.2,-.8Z" fill="#ffc300"/>`,
+  heart: `<path d="M0,3.4 Q-4,0 -3,-2 Q-1.8,-3.8 0,-1.6 Q1.8,-3.8 3,-2 Q4,0 0,3.4Z" fill="#ff4d6d"/>`,
+  ball:  `<circle r="3.2" fill="#fff" stroke="#222" stroke-width=".6"/><path d="M0,-1.3 L1.2,-.4 L.8,1 L-.8,1 L-1.2,-.4Z" fill="#222"/>`,
+  flame: `<path d="M0,-4 Q3,-1 2.4,1.6 Q2,3.6 0,3.8 Q-2,3.6 -2.4,1.6 Q-2.6,-.6 -.6,-1.6 Q-.6,.4 .4,.8 Q1,-1.6 0,-4Z" fill="#ff7b29"/>`,
+  crown: `<path d="M-3.6,2.4 L-3.6,-2.4 L-1.8,-.6 L0,-3.2 L1.8,-.6 L3.6,-2.4 L3.6,2.4Z" fill="#ffc300"/>`
+};
+const BADGE_LIST = Object.keys(BADGES);
+const badgeSVG = sym => `<path d="M-5,-6 L5,-6 L5,0 Q5,5 0,7 Q-5,5 -5,0Z" fill="#fff" stroke="#1f4c92" stroke-width="1.1"/><g transform="translate(0,.3) scale(.95)">${BADGES[sym]||BADGES.star}</g>`;
+
+/* ---------- הגדרות צבע לכל ציור (מזהה ייחודי לכל ציור, כדי שלא יתנגשו) ---------- */
+let artId = 0;
+function lookColors(L, gloves){
+  const ch = L.eq.char, hairC = HAIR_COLORS[L.hairColor] || HAIR_COLORS[0];
+  const skin = ch === "cat" ? hairC : ch === "robot" ? "#b8c4d6" : (SKINS[L.skin] || SKINS[1]);
+  const shirt = findItem("shirt", L.eq.shirt), shorts = findItem("shorts", L.eq.shorts).c, shoes = findItem("shoes", L.eq.shoes).c;
+  return { ch, hairC, skin, shirt, shorts, shoes, gloves, line: shade(skin,-.35) };
+}
+function artDefs(id, C){
+  const g = (n, c, a=.28, b=-.32) => `<linearGradient id="${id}${n}" x1="0" y1="0" x2="1" y2=".35"><stop offset="0" stop-color="${shade(c,a)}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,b)}"/></linearGradient>`;
+  const bootDark = C.shoes === "#222";
+  return `<defs>${g("sk",C.skin,.22,-.3)}${g("sh",C.shirt.c,.25,-.35)}${g("so",C.shirt.c,.2,-.38)}${g("pa",C.shorts,.2,-.4)}${g("ha",C.hairC,.22,-.45)}
+    ${g("gl",C.gloves||C.skin,.25,-.35)}
+    <linearGradient id="${id}bo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bootDark?"#4b4f58":shade(C.shoes,.2)}"/><stop offset=".55" stop-color="${bootDark?"#1d2026":C.shoes}"/><stop offset="1" stop-color="${shade(C.shoes,-.55)}"/></linearGradient>
+    <pattern id="${id}st" width="9" height="12" patternUnits="userSpaceOnUse"><rect width="9" height="12" fill="${C.shirt.c}"/><rect width="4.5" height="12" fill="${C.shirt.c2||C.shirt.c}"/></pattern>
+    <linearGradient id="${id}ov" x1="0" y1="0" x2="1" y2=".3"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></linearGradient>
+    <radialGradient id="${id}shd"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>`;
+}
+
+/* ---------- רגליים (משותף לחזית ולגב) ---------- */
+function legsSVG(id, C, back){
+  const sk = `url(#${id}sk)`, so = `url(#${id}so)`;
+  const accent = C.shoes === "#39e639" ? "#fff" : "#3ae07a";
+  const shin = (x1,y1,x2,y2) => tube([[x1,y1,13],[ (x1+x2)/2 - .5, (y1+y2)/2, 13.5],[x2,y2,9]], so)
+    + `<path d="M${x1-6.5},${y1-2} L${x1+6.5},${y1-2} L${x1+6.3},${y1+4} L${x1-6.3},${y1+4}Z" fill="#fff"/><path d="M${x1-6.3},${y1+6} L${x1+6.3},${y1+6} L${x1+6.2},${y1+8} L${x1-6.2},${y1+8}Z" fill="#fff" opacity=".9"/>`
+    + (back ? "" : `<path d="M${x1-4},${y1+12} Q${x1+.5},${y1+9} ${x1+5},${y1+12} L${x2+4},${y2-8} Q${x2},${y2-5} ${x2-4},${y2-8}Z" fill="#fff" opacity=".2"/>`); // מגן שוקיים
+  return `
+    <g class="p-legL">${tube([[54,146,18],[52,168,16],[50,188,12.5]], sk)}
+      <g class="p-shinL">${shin(50,188,48,224)}${bootSVG(46,236,1,true,id,accent)}</g></g>
+    <g class="p-legR">${tube([[70,146,18],[73,168,16],[76,188,12.5]], sk)}
+      <g class="p-shinR">${shin(76,188,79,224)}${bootSVG(80,236,1,false,id,accent)}</g></g>`;
+}
+
+/* ---------- ראש מקדימה (שלושת-רבעי) לפי הדמות, התסרוקת והכובע ---------- */
+function headFront(id, C, L){
+  const sk = `url(#${id}sk)`, ha = `url(#${id}ha)`, ln = C.line;
+  let h = "";
+  if (C.ch === "robot"){
+    h += `<line x1="70" y1="4" x2="70" y2="-6" stroke="#7d8ba1" stroke-width="2"/><circle cx="70" cy="-7" r="3" fill="#ff5d8f"/>
+      <rect x="51" y="4" width="36" height="46" rx="11" fill="${sk}" stroke="#7d8ba1" stroke-width="1.5"/>
+      <rect x="57" y="18" width="28" height="12" rx="6" fill="#1b2438"/><circle cx="65" cy="24" r="3" fill="#3af0ff"/><circle cx="78" cy="24" r="2.6" fill="#3af0ff"/>
+      <rect x="62" y="37" width="18" height="4" rx="2" fill="#7d8ba1"/><circle cx="53" cy="28" r="3" fill="#7d8ba1"/>`;
+  } else if (C.ch === "cat"){
+    h += `<path d="M55,16 L56,-4 L67,8Z M73,7 L83,-5 L85,16Z" fill="${sk}"/><path d="M57.5,12 L58,1 L64,8Z M75.5,7 L82,0 L83,11Z" fill="#ffb3c7"/>
+      <path d="M53,34 Q49,22 54,13 Q60,4 70,4.5 Q81,5.5 85,16 Q88,26 85,36 Q82,47 74,52 Q67,55 61,51 Q55,46 53,34Z" fill="${sk}"/>
+      <ellipse cx="76" cy="40" rx="9" ry="7" fill="#fff"/>
+      <path d="M62,25 Q66,22 70,25 Q66,28 62,25Z M75,24.5 Q78.5,21.8 82,24.4 Q78.6,27 75,24.5Z" fill="#9be15d"/>
+      <ellipse cx="66.3" cy="25" rx="1" ry="2.2" fill="#111"/><ellipse cx="78.6" cy="24.5" rx=".9" ry="2" fill="#111"/>
+      <path d="M74,35 L79,35 L76.5,38Z" fill="#ff5d8f"/><path d="M76.5,38 Q74.5,41.5 72,40.5 M76.5,38 Q78.5,41.5 81,40.5" stroke="#333" stroke-width=".9" fill="none"/>
+      <path d="M68,38 L56,35 M68,40 L56,41 M85,38 L95,35 M85,40 L95,41" stroke="#555" stroke-width=".7"/>`;
+  } else {
+    // אוזן, פנים בשלושת-רבעי, צל לסת
+    h += `<path d="M56,27 Q51,26 51,32 Q51,39 56,41 Q58,40 58,36Z" fill="${sk}"/><path d="M55,29.5 Q53,31 54,35 Q55,37.5 56.5,37" stroke="${ln}" stroke-width="1" fill="none"/>`;
+    h += `<path d="M53,36 Q49,24 53,15 Q59,5 70,5.5 Q81,6.5 84,17 Q86,25 84.5,31 Q84,37 82,41 Q80,47 76,51 Q72,54.5 67,54 Q62,53 59,49 Q55,44 53,36Z" fill="${sk}"/>`;
+    h += `<path d="M82,41 Q80,47 76,51 Q72,54.5 67,54 Q71,51 74,47 Q78,43 79,37Z" fill="#000" opacity=".12"/>`;
+    h += `<path d="M56,27 Q51,26 51,32 Q51,39 56,41 Q58,40 58,36Z" fill="${sk}"/><path d="M55,29.5 Q53,31 54,35 Q55,37.5 56.5,37" stroke="${ln}" stroke-width="1" fill="none"/>`;
+    // עיניים וגבות (מוגדלות קצת כדי שייראו גם במסך קטן)
+    h += `<g transform="translate(72 26) scale(1.22) translate(-72 -26)"><g class="p-eyes">
+      <path d="M62,21.5 Q66,19.6 71,21 L70.6,22.6 Q66.5,21.5 62.4,23Z M75,20.8 Q79,19.8 82.5,21.4 L82,22.8 Q79,21.6 75.4,22.4Z" fill="${shade(C.hairC,-.35)}"/>
+      <path d="M62.5,27 Q66.5,23.8 71,26.6 Q66.8,29.6 62.5,27Z M75.5,26.4 Q78.7,24 82,26 Q78.8,28.6 75.5,26.4Z" fill="#fff"/>
+      <circle cx="67.6" cy="26.7" r="1.9" fill="#6b4423"/><circle cx="79.4" cy="26.3" r="1.6" fill="#6b4423"/>
+      <circle cx="67.8" cy="26.7" r=".95" fill="#111"/><circle cx="79.6" cy="26.3" r=".8" fill="#111"/>
+      <circle cx="68.4" cy="26" r=".55" fill="#fff"/><circle cx="80.1" cy="25.7" r=".45" fill="#fff"/>
+      <path d="M62.3,27 Q66.5,23.4 71.2,26.5 M75.3,26.4 Q78.7,23.6 82.2,25.9" stroke="#2a160a" stroke-width="1.1" fill="none" stroke-linecap="round"/></g></g>`;
+    // אף, פה, לחי
+    h += `<path d="M74.5,26 Q76.5,32 79.5,37.5 Q79.6,40 77,40.4 Q75,40.8 73.6,39.6 Q75.6,38.6 76.2,36.4 Q75,31 74.5,26Z" fill="${shade(C.skin,-.2)}" opacity=".8"/>
+      <path d="M73.4,39.7 Q74.6,41 76.4,40.4" stroke="${shade(C.skin,-.5)}" stroke-width=".9" fill="none" stroke-linecap="round"/><ellipse cx="77.4" cy="37.6" rx="1.4" ry="1" fill="#fff" opacity=".35"/>
+      <path d="M68.5,45.2 Q73,46.8 79,44.6" stroke="#8a3a26" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <path d="M69.5,45.8 Q73.5,48.6 77.6,45.6 Q73.6,47.2 69.5,45.8Z" fill="#c76a58" opacity=".8"/>
+      <ellipse cx="64" cy="38" rx="4" ry="2.2" fill="#ff8a7a" opacity=".18"/>`;
+    // תסרוקות
+    const hs = L.eq.hair;
+    const base = `<path d="M52.5,27 Q50.5,19 54,14 Q55.5,20 56.5,24 Q54.5,24.5 52.5,27Z" fill="${C.hairC}" opacity=".45"/>
+      <path d="M53,17 Q55,6 66,3.5 Q77,2 83,8 Q86.5,12 85,19 Q82,13.5 77,13 Q74,10.5 69,12.2 Q64,10 60,13.5 Q56.5,14.5 55.5,20 Q54,19 53,17Z" fill="${ha}"/>
+      <path d="M58,10 Q65,4.5 73,5 M64,11 Q71,7 79,8.5 M56.5,16 Q58,11 62,9" stroke="${shade(C.hairC,.35)}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <path d="M55.5,19 Q57.5,24 58.2,30 Q56.8,28 55.6,24Z" fill="${shade(C.hairC,-.3)}" opacity=".75"/>`;
+    let back = "", front = base;
+    if (hs === "buzz") front = `<path d="M53,21 Q54,7 67,5.5 Q80,5 84.5,16 Q79,11.5 68,11 Q58,11.5 54.5,22Z" fill="${ha}" opacity=".9"/><path d="M58,9 Q66,6 76,8" stroke="${shade(C.hairC,.3)}" stroke-width=".8" fill="none"/>`;
+    if (hs === "spiky") front = base + `<path d="M56,10 L57,-3 L62,7 L66,-6 L70,5 L76,-5 L77,6 L84,1 L83,10Z" fill="${ha}"/>`;
+    if (hs === "curly") front = base + [55,60,65,70,75,80,84].map((x,i)=>`<circle cx="${x}" cy="${i%2?4:7}" r="5" fill="${ha}"/><circle cx="${x-1.2}" cy="${(i%2?4:7)-1.3}" r="1.6" fill="${shade(C.hairC,.35)}" opacity=".7"/>`).join("");
+    if (hs === "ponytail"){ back = `<ellipse cx="47" cy="26" rx="6" ry="12" fill="${ha}" transform="rotate(-20 47 26)"/>`; front = base + `<circle cx="51.5" cy="17" r="2.4" fill="#ff5d8f"/>`; }
+    if (hs === "long"){ back = `<path d="M52,14 Q44,30 47,50 Q51,56 56,52 Q53,40 56,24Z" fill="${ha}"/>`; front = base; }
+    h = back + h + front;
+  }
+  // כובעים
+  const hats = {
+    none: "",
+    band: `<path d="M52,16 Q68,9 85,14 L85.5,19 Q68,14 52.5,21Z" fill="#ff5d8f"/><path d="M53,18 Q68,12 85,16" stroke="#fff" stroke-width=".8" opacity=".5" fill="none"/>`,
+    cap: `<path d="M51,19 Q51,1 69,1 Q86,1 86,18 Q69,12 51,19Z" fill="#3a86ff"/><path d="M83,15 Q93,15 100,19 Q96,22 84,20Z" fill="#1d4e89"/><path d="M58,6 Q66,2.5 76,4" stroke="#fff" stroke-width="1.2" opacity=".4" fill="none"/><circle cx="69" cy="1.5" r="1.6" fill="#1d4e89"/>`,
+    beanie: `<path d="M51,21 Q50,-1 69,-1 Q88,-1 87,20Z" fill="#8e5cf7"/><path d="M50,15 Q69,8 88,14 L88,22 Q69,15 50,22Z" fill="#6a3fd0"/><circle cx="69" cy="-3" r="5" fill="#fff"/>`,
+    crown: `<path d="M55,12 L55,-3 L61,4 L68,-6 L75,4 L82,-3 L82,12Z" fill="#f4c430" stroke="#b8860b" stroke-width="1"/><circle cx="68" cy="5" r="2" fill="#e63946"/><circle cx="59" cy="8" r="1.4" fill="#3a86ff"/><circle cx="77" cy="8" r="1.4" fill="#2ec46b"/>`
+  };
+  return `<g class="p-head">${h}${hats[L.eq.hat]||""}</g>`;
+}
+
+/* ---------- ראש מאחור ---------- */
+function headBack(id, C, L){
+  const sk = `url(#${id}sk)`, ha = `url(#${id}ha)`;
+  let h = "";
+  if (C.ch === "robot") h = `<line x1="60" y1="6" x2="60" y2="-4" stroke="#7d8ba1" stroke-width="2"/><circle cx="60" cy="-5" r="3" fill="#ff5d8f"/><rect x="43" y="6" width="34" height="46" rx="11" fill="${sk}" stroke="#7d8ba1" stroke-width="1.5"/><circle cx="44" cy="30" r="3" fill="#7d8ba1"/><circle cx="76" cy="30" r="3" fill="#7d8ba1"/><path d="M50,20 L70,20 M50,26 L70,26" stroke="#7d8ba1" stroke-width="1.4"/>`;
+  else if (C.ch === "cat") h = `<path d="M45,18 L46,-2 L56,10Z M64,10 L74,-2 L75,18Z" fill="${sk}"/><path d="M44,34 Q43,8 60,7 Q77,8 76,34 Q76,52 60,54 Q44,52 44,34Z" fill="${sk}"/><path d="M52,14 Q60,10 68,14" stroke="${shade(C.hairC,-.3)}" stroke-width="2" fill="none"/>`;
+  else {
+    h = `<ellipse cx="44" cy="34" rx="4" ry="6" fill="${sk}"/><ellipse cx="76" cy="34" rx="4" ry="6" fill="${sk}"/>`;
+    const hs = L.eq.hair;
+    const bald = hs === "buzz";
+    h += `<path d="M44,30 Q43,6 60,6 Q77,6 76,30 Q76,48 60,52 Q44,48 44,30Z" fill="${bald ? sk : ha}"/>`;
+    if (bald) h += `<path d="M45,26 Q45,8 60,8 Q75,8 75,26 Q68,20 60,20 Q52,20 45,26Z" fill="${ha}" opacity=".9"/>`;
+    else h += `<path d="M47,46 Q60,52 73,46 Q70,50 60,52 Q50,50 47,46Z" fill="${shade(C.hairC,-.4)}"/><path d="M50,16 Q56,10 63,11 M58,9 Q66,9 71,15 M47,28 Q48,20 52,16" stroke="${shade(C.hairC,.3)}" stroke-width="1.2" fill="none"/>`;
+    if (hs === "spiky") h += `<path d="M47,14 L48,0 L53,9 L57,-3 L61,7 L66,-3 L68,8 L73,1 L73,14Z" fill="${ha}"/>`;
+    if (hs === "curly") h += [46,51,56,61,66,71,75].map((x,i)=>`<circle cx="${x}" cy="${i%2?8:11}" r="5" fill="${ha}"/>`).join("");
+    if (hs === "ponytail") h += `<path d="M56,34 Q52,52 58,62 Q64,52 62,34Z" fill="${ha}"/><circle cx="59" cy="34" r="2.6" fill="#ff5d8f"/>`;
+    if (hs === "long") h += `<path d="M44,28 Q42,52 52,58 L68,58 Q78,52 76,28Z" fill="${ha}"/>`;
+  }
+  const hats = {
+    none: "",
+    band: `<path d="M44,18 Q60,12 76,18 L76,23 Q60,17 44,23Z" fill="#ff5d8f"/>`,
+    cap: `<path d="M43,22 Q42,2 60,2 Q78,2 77,22 Q60,16 43,22Z" fill="#3a86ff"/><path d="M54,20 Q60,23 66,20" stroke="#1d4e89" stroke-width="2" fill="none"/>`,
+    beanie: `<path d="M43,22 Q42,0 60,0 Q78,0 77,22Z" fill="#8e5cf7"/><path d="M42,16 Q60,10 78,16 L78,24 Q60,18 42,24Z" fill="#6a3fd0"/><circle cx="60" cy="-2" r="5" fill="#fff"/>`,
+    crown: `<path d="M47,14 L47,-1 L53,6 L60,-4 L67,6 L73,-1 L73,14Z" fill="#f4c430" stroke="#b8860b" stroke-width="1"/>`
+  };
+  return `<g class="p-head">${h}${hats[L.eq.hat]||""}</g>`;
+}
+
+/* ========== השחקן מקדימה (שלושת-רבעי) ========== */
+function playerSVG(L, {vb="0 -12 120 272", gloves=null}={}){
+  const id = "a" + (++artId), C = lookColors(L, gloves);
+  const sk = `url(#${id}sk)`, shirtFill = C.shirt.c2 ? `url(#${id}st)` : `url(#${id}sh)`;
+  const handFill = gloves ? `url(#${id}gl)` : sk, handLine = gloves ? shade(gloves,-.45) : C.line;
+  const numColor = C.shirt.dark ? "#24324a" : "#fff";
+  let s = artDefs(id, C);
+  s += `<ellipse cx="64" cy="250" rx="44" ry="8" fill="url(#${id}shd)"/>`;
+  s += legsSVG(id, C, false);
+  // מכנסיים עם קפלים ופס לבן
+  s += `<path d="M40,124 Q62,119 86,124 L90,152 Q80,158 70,154 L63,141 L56,157 Q46,159 37,154Z" fill="url(#${id}pa)"/>
+    <path d="M40,128 L38,153 M86,126 L90,151" stroke="#fff" stroke-width="2.2" opacity=".9"/>
+    <path d="M62,128 Q63,135 62,141 M76,140 Q80,146 79,152 M47,142 Q46,148 48,154" stroke="#000" stroke-width="1.2" fill="none" opacity=".25"/>`;
+  s += `<g class="p-up">`;
+  // יד רחוקה (מאחורי הגוף)
+  s += `<g class="p-armR">${tube([[86,74,13],[91,90,13.5],[94,104,10],[95,118,10.5],[95,132,7.5]], sk)}
+    <path d="M85,68 Q96,72 99,88 Q92,91 86,89Z" fill="${shirtFill}"/><path d="M85,68 Q96,72 99,88 Q92,91 86,89Z" fill="url(#${id}ov)"/>
+    ${hand(95,133,1.05,1,-4,handFill,handLine)}</g>`;
+  // גוף: חולצה, הצללה, קמטים, צווארון, סמל ומספר
+  s += `<path d="M36,70 Q60,60 88,68 Q94,90 89,128 Q62,134 38,128 Q33,100 36,70Z" fill="${shirtFill}"/>
+    <path d="M36,70 Q60,60 88,68 Q94,90 89,128 Q62,134 38,128 Q33,100 36,70Z" fill="url(#${id}ov)"/>
+    <path d="M50,92 Q56,102 52,116 M66,104 Q70,114 67,126 M74,82 Q79,92 77,100" stroke="#000" stroke-width="1.5" fill="none" opacity=".18"/>
+    <path d="M44,80 Q52,74 58,80" stroke="#fff" stroke-width="1.4" fill="none" opacity=".3"/>
+    <path d="M53,64 Q63,71 73,64" stroke="#fff" stroke-width="3" fill="none"/>
+    <g transform="translate(77,84) scale(.95)">${badgeSVG(L.badge)}</g>
+    <text x="58" y="112" font-size="20" font-weight="900" text-anchor="middle" fill="${numColor}" font-family="Arial">${L.num}</text>`;
+  // יד קרובה
+  s += `<g class="p-armL">${tube([[36,76,14],[31,92,14.5],[29,106,10.5],[29,118,11],[31,134,7.5]], sk)}
+    <path d="M27,104 Q29,107 32,105" stroke="${C.line}" stroke-width="1" fill="none" opacity=".6"/>
+    <path d="M37,68 Q26,72 24,90 Q31,93 40,90 Q41,78 42,70Z" fill="${shirtFill}"/><path d="M37,68 Q26,72 24,90 Q31,93 40,90 Q41,78 42,70Z" fill="url(#${id}ov)"/>
+    <path d="M24,88 Q31,91.5 40,88.5" stroke="#fff" stroke-width="2.2" fill="none"/>
+    ${hand(31,135,1.1,-1,6,handFill,handLine)}</g>`;
+  // צוואר
+  s += `<path d="M59,46 L73,48 L74.5,66 Q66,70 57.5,66Z" fill="${sk}"/><path d="M57,46 Q66,56 75,50 L75,57 Q66,61 57,55Z" fill="#000" opacity=".2"/>`;
+  s += headFront(id, C, L);
+  s += `</g>`;
+  return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ========== השחקן מאחור (למסך הבעיטה): שם ומספר על הגב ========== */
+function playerBackSVG(L){
+  const id = "a" + (++artId), C = lookColors(L), sk = `url(#${id}sk)`;
+  const shirtFill = C.shirt.c2 ? `url(#${id}st)` : `url(#${id}sh)`, numColor = C.shirt.dark ? "#24324a" : "#fff";
+  let s = artDefs(id, C);
+  s += `<ellipse cx="62" cy="250" rx="42" ry="8" fill="url(#${id}shd)"/>`;
+  s += legsSVG(id, C, true);
+  s += `<path d="M38,124 Q62,119 86,124 L90,154 Q76,158 63,150 Q50,158 36,154Z" fill="url(#${id}pa)"/><path d="M38,126 L36,154 M86,126 L90,154" stroke="#fff" stroke-width="2.4"/>`;
+  s += `<g class="p-up">`;
+  s += `<g class="p-armL">${tube([[34,76,14],[27,92,14.5],[24,106,10.5],[23,118,11],[23,132,7.5]], sk)}<path d="M36,68 Q24,72 22,90 Q29,93 37,90Z" fill="${shirtFill}"/><path d="M22,88 Q29,91 37,88" stroke="#fff" stroke-width="2"/>${hand(23,133,1.1,-1,4,sk,C.line)}</g>`;
+  s += `<g class="p-armR">${tube([[88,76,14],[95,92,14.5],[98,106,10.5],[99,118,11],[99,132,7.5]], sk)}<path d="M86,68 Q98,72 100,90 Q93,93 85,90Z" fill="${shirtFill}"/><path d="M100,88 Q93,91 85,88" stroke="#fff" stroke-width="2"/>${hand(99,133,1.1,1,-4,sk,C.line)}</g>`;
+  s += `<path d="M34,70 Q60,60 86,70 Q92,96 88,130 Q60,136 36,130 Q30,100 34,70Z" fill="${shirtFill}"/><path d="M34,70 Q60,60 86,70 Q92,96 88,130 Q60,136 36,130 Q30,100 34,70Z" fill="url(#${id}ov)"/>
+    <path d="M48,90 Q52,110 48,126 M74,92 Q70,110 74,126" stroke="#000" stroke-width="1.5" fill="none" opacity=".18"/>
+    <text x="61" y="88" font-size="10" font-weight="900" text-anchor="middle" fill="${numColor}" font-family="Arial">${esc(S.playerName||"")}</text>
+    <text x="61" y="121" font-size="32" font-weight="900" text-anchor="middle" fill="${numColor}" font-family="Arial">${L.num}</text>`;
+  s += `<path d="M53,46 L69,46 L70,66 Q61,70 52,66Z" fill="${sk}"/><path d="M53,52 Q61,56 69,52 L69,58 Q61,61 53,58Z" fill="#000" opacity=".15"/>`;
+  s += headBack(id, C, L);
+  s += `</g>`;
+  return `<svg viewBox="0 -12 120 272" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+}
+
+/* ========== כדור עם נפח (הצבעים מהחנות) ========== */
+function ballSVG(id){
+  const b = findItem("ball", id), u = "b" + (++artId);
+  const patch = b.star ? `<path d="M0,-6 L1.8,-1.8 L6.2,-1.8 L2.7,.9 L4,5.4 L0,2.8 L-4,5.4 L-2.7,.9 L-6.2,-1.8 L-1.8,-1.8Z" fill="${b.c2}"/>`
+    : `<path d="M1,-5 L6,-1.5 L4,4.5 L-2.5,4.8 L-4.5,-1Z" fill="${b.c2}"/>`;
+  return `<svg viewBox="-17 -17 34 34" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="${u}" cx="32%" cy="28%" r="80%">
+    <stop offset="0" stop-color="${shade(b.c,.6)}"/><stop offset=".45" stop-color="${b.c}"/><stop offset=".8" stop-color="${shade(b.c,-.25)}"/><stop offset="1" stop-color="${shade(b.c,-.5)}"/></radialGradient></defs>
+    <circle r="15" fill="url(#${u})"/>${patch}
+    <path d="M-7,-12 L-1,-13.5 L1,-9 L-4,-7Z M9,-10 L13,-5 L10,-3 L6,-6Z M12,4 L13.5,8 L9,11 L7.5,7Z M-4,10 L1,13.5 L-4,14.5 L-9,11Z M-13,1 L-14.5,-4 L-11,-6 L-9,-1Z" fill="${b.c2}" opacity=".85"/>
+    <path d="M1,-5 L1,-9 M6,-1.5 L10,-3 M4,4.5 L7.5,7 M-2.5,4.8 L-4,10 M-4.5,-1 L-9,-1" stroke="${shade(b.c2,.2)}" stroke-width=".8" opacity=".6"/>
+    <ellipse cx="-5" cy="-7" rx="5" ry="3" fill="#fff" opacity=".8" transform="rotate(-25 -5 -7)"/></svg>`;
+}
+
 // השוער: מראה קבוע, עם כפפות ירוקות
-const KEEPER_LOOK = { eq:{shirt:"purple",shorts:"black",shoes:"black",hair:"buzz",hat:"none",ball:"classic",char:"player"}, skin:3, hairColor:1, num:1 };
-const keeperSVG = () => playerSVG(KEEPER_LOOK, {gloves:"#3ad16a"});
+const KEEPER_LOOK = { eq:{shirt:"yellow",shorts:"black",shoes:"black",hair:"buzz",hat:"none",ball:"classic",char:"player"}, skin:3, hairColor:1, num:1, badge:"star" };
+const keeperSVG = () => playerSVG(KEEPER_LOOK, {gloves:"#2ee07a"});
 const myPlayer = () => playerSVG(S.look);
+const myPlayerBack = () => playerBackSVG(S.look);
+
+/* =========================================================
+   אצטדיון בפרספקטיבה: גג, פנסים, שלוש קומות יציעים עם קהל של דמויות,
+   שלטים מקוריים ודשא עם פסי כיסוח. יום או ערב — לפי השעה.
+   התוצאה נשמרת בזיכרון (cache) כדי לא לצייר אלפי צופים בכל פעם.
+   ========================================================= */
+const NIGHT_FROM = 17.5, DAY_FROM = 6;   // ערב מ-17:30, יום מ-6:00
+function isNight(){ const d = new Date(), h = d.getHours() + d.getMinutes()/60; return h >= NIGHT_FROM || h < DAY_FROM; }
+const stadiumCache = {};
+function stadiumSVG(night, horizon, W=390, H=700){
+  const key = [night,horizon,W,H].join("|");
+  if (stadiumCache[key]) return stadiumCache[key];
+  const r = seeded(7 + horizon), pick = a => a[Math.floor(r()*a.length)];
+  const u = "st" + (++artId);
+  let s = `<defs><linearGradient id="${u}sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night?"#050d26":"#2f8cf0"}"/><stop offset="1" stop-color="${night?"#1d3a78":"#bfe4ff"}"/></linearGradient>
+    <linearGradient id="${u}gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night?"#2a9c4f":"#4fd16f"}"/><stop offset="1" stop-color="${night?"#0f4f26":"#228a3e"}"/></linearGradient>
+    <linearGradient id="${u}bm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <radialGradient id="${u}sun"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="${u}lt"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#cfe4ff" stop-opacity=".8"/><stop offset="1" stop-color="#cfe4ff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${u}sd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${night?"#10182c":"#2a3550"}"/><stop offset="1" stop-color="${night?"#1c2742":"#4a5878"}"/></linearGradient></defs>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#${u}sky)"/>`;
+  if (night) for (let i=0;i<30;i++) s += `<circle cx="${(r()*W).toFixed(0)}" cy="${(r()*horizon*.45).toFixed(0)}" r="${(.5+r()).toFixed(1)}" fill="#fff" opacity="${(.3+r()*.6).toFixed(2)}"/>`;
+  else s += `<circle cx="${W*.85}" cy="${horizon-230}" r="110" fill="url(#${u}sun)"/>`;
+  const arc = x => Math.sin(Math.PI*(x+20)/(W+40));
+  s += `<path d="M-20,${horizon-150} Q${W/2},${horizon-215} ${W+20},${horizon-150} L${W+20},${horizon-132} Q${W/2},${horizon-195} -20,${horizon-132}Z" fill="${night?"#0b1222":"#3c4866"}"/>`;
+  for (let x=-10; x<=W+10; x+=26){ const y = horizon-150 - 65*arc(x); s += `<path d="M${x},${y.toFixed(0)} L${x+13},${(y+16).toFixed(0)} L${x+26},${y.toFixed(0)}" stroke="${night?"#26324f":"#7d8bab"}" stroke-width="1.2" fill="none"/>`; }
+  [.1,.3,.7,.9].forEach(f => { const x = W*f, y = horizon-160 - 60*arc(x);
+    s += `<rect x="${x-14}" y="${(y-8).toFixed(0)}" width="28" height="9" rx="2" fill="#e9f1ff"/>`;
+    if (night) s += `<circle cx="${x}" cy="${(y-4).toFixed(0)}" r="40" fill="url(#${u}lt)"/><path d="M${x-10},${y.toFixed(0)} L${x-70},${horizon+60} L${x+70},${horizon+60} L${x+10},${y.toFixed(0)}Z" fill="url(#${u}bm)" opacity=".35"/>`; });
+  const tiers = [[horizon-132,horizon-80,.55],[horizon-74,horizon-30,.8],[horizon-26,horizon-6,1.05]];
+  const shirts = night ? ["#ff6b35","#3a86ff","#ffd23f","#e8eef8","#2ec46b","#ff5d8f","#7d8bab"] : ["#ff6b35","#3a86ff","#ffd23f","#fff","#2ec46b","#ff5d8f","#e04040"];
+  const skins = ["#f1c27d","#e0ac69","#c68642","#8d5524","#ffe0bd"];
+  tiers.forEach(([y0,y1,sc]) => {
+    s += `<path d="M-20,${y0+18} Q${W/2},${y0-24} ${W+20},${y0+18} L${W+20},${y1+10} Q${W/2},${y1-14} -20,${y1+10}Z" fill="url(#${u}sd)"/>`;
+    for (let y=y0+6; y<y1; y+=7*sc) for (let x=-10; x<W+10; x+=6.5*sc + r()*2){
+      const yy = (y + 18 - 23*arc(x)*((y1-y)/(y1-y0))).toFixed(1);
+      s += `<rect x="${x.toFixed(1)}" y="${yy}" width="${(4.2*sc).toFixed(1)}" height="${(3.4*sc).toFixed(1)}" rx="${(1.4*sc).toFixed(1)}" fill="${pick(shirts)}" opacity="${night?.75:.95}"/><circle cx="${(x+2.1*sc).toFixed(1)}" cy="${(yy-1.3*sc).toFixed(1)}" r="${(1.5*sc).toFixed(1)}" fill="${pick(skins)}" opacity="${night?.7:.95}"/>`;
+      if (night && r()<.02) s += `<circle cx="${(x+2).toFixed(1)}" cy="${(yy-2).toFixed(1)}" r="2.2" fill="#fff"/>`;
+      if (!night && r()<.012) s += `<rect x="${x.toFixed(1)}" y="${(yy-7*sc).toFixed(1)}" width="${(7*sc).toFixed(1)}" height="${(4*sc).toFixed(1)}" fill="${pick(["#ff6b35","#3a86ff","#ffd23f"])}"/>`;
+    }
+  });
+  s += `<rect x="-5" y="${horizon-8}" width="${W+10}" height="16" fill="${night?"#0e1a3a":"#1d4e89"}"/>`;
+  ["ליגת המילים","⚽ קוראים ובועטים","ליגת המילים","⭐ אלופי ההכתבה"].forEach((t,i) => { const bw = W/4;
+    s += `<rect x="${i*bw+4}" y="${horizon-6}" width="${bw-8}" height="12" rx="2" fill="${["#ff6b35","#ffd23f","#2ec46b","#3a86ff"][i]}"/><text x="${i*bw+bw/2}" y="${horizon+3.5}" font-size="8.5" font-weight="bold" text-anchor="middle" fill="${i===1?"#24324a":"#fff"}" font-family="Arial">${t}</text>`; });
+  s += `<rect y="${horizon+8}" width="${W}" height="${H-horizon}" fill="url(#${u}gr)"/>`;
+  let y = horizon+8, h = 10, k = 0;
+  while (y < H){ if (k%2===0) s += `<rect y="${y.toFixed(0)}" width="${W}" height="${h.toFixed(0)}" fill="#fff" opacity=".06"/>`; y += h; h *= 1.35; k++; }
+  return (stadiumCache[key] = s);
+}
+
 
 /* =========================================================
    ניווט בין מסכים
@@ -983,26 +1233,19 @@ function starsText(n){ return "⭐".repeat(n) + "☆".repeat(3-n); }
 function dictStars(d){ return [1,2,3].reduce((s,l)=> s + ((d.progress[l]&&d.progress[l].stars)||0), 0); }
 function renderHome(){
   updateCoins();
+  $("homeBg").innerHTML = stadiumSVG(isNight(), 330);
   $("greet").textContent = S.childName ? `שלום ${S.childName}! 👋` : "שלום! 👋";
-  $("homeHero").innerHTML = `<div class="pl idle" id="homePl">${myPlayer()}</div><div class="player-name">${esc(S.playerName||"השחקן שלי")}</div>`;
-  $("homePl").onclick = () => { SFX.tap(); openWardrobe(); };
-  $("homeHero").insertAdjacentHTML("beforeend", `<button class="small-btn wardrobe-btn" id="wrOpen">👕 חדר הלבשה</button>`);
-  $("wrOpen").onclick = () => { SFX.tap(); openWardrobe(); };
-  const list = $("dictList");
-  if (!S.dictations.length){
-    list.innerHTML = `<div class="empty-note">עוד אין מחזורים 🙂<br>בקשו מההורה להוסיף הכתבה</div>`;
-    return;
-  }
-  // ההכתבה החדשה ביותר למעלה
-  const ds = S.dictations.slice().sort((a,b)=>b.created-a.created);
-  // הגביע מופיע כשיש לפחות 2 הכתבות
-  const cupCard = S.dictations.length >= 2 ? `<button class="dict-card cup-card" id="cupCard">
-      <span>🏆 גביע הליגה</span><span class="stars">מטבעות כפולים ✨</span></button>` : "";
-  list.innerHTML = cupCard + ds.map(d => `<button class="dict-card" data-id="${d.id}">
-      <span>⚽ ${esc(d.name)}</span><span class="stars">⭐ ${dictStars(d)}/9</span></button>`).join("");
-  list.querySelectorAll(".dict-card[data-id]").forEach(b => b.onclick = () => { SFX.tap(); openLevels(b.dataset.id); });
-  if ($("cupCard")) $("cupCard").onclick = () => { SFX.tap(); startCup(); };
+  $("homePl").innerHTML = myPlayer();
+  $("homeBall").innerHTML = ballSVG(S.look.eq.ball);
+  $("homeNote").style.display = "none";
 }
+$("homePl").onclick = () => { SFX.tap(); openWardrobe(); };
+$("wrOpen").onclick = () => { SFX.tap(); openWardrobe(); };
+$("playBtn").onclick = () => {
+  audio(); unlockSpeech(); SFX.tap();
+  if (!S.dictations.length){ $("homeNote").textContent = "עוד אין הכתבות 🙂 בקשו מההורה להוסיף"; $("homeNote").style.display = ""; return; }
+  openMap();
+};
 
 /* ===================== חדר הלבשה (חנות) ===================== */
 const TABS = [["shirt","👕"],["shorts","🩳"],["shoes","👟"],["hair","💇"],["hat","🧢"],["ball","⚽"],["char","🦸"],["free","🎨"]];
@@ -1055,7 +1298,7 @@ function thumbFor(cat, it){
   const L = JSON.parse(JSON.stringify(S.look));
   L.eq[cat] = it.id;
   if (cat === "hair") L.eq.char = "player", L.eq.hat = "none";
-  return playerSVG(L, {vb:"14 -4 52 50"});
+  return playerSVG(L, {vb:"40 -16 56 72"});
 }
 function tapItem(cat, id){
   SFX.tap();
@@ -1080,9 +1323,11 @@ function renderFreeTab(grid){
   grid.innerHTML = `
     <div class="free-sec"><h4>צבע עור</h4><div class="sw-row" id="skinRow">${SKINS.map((c,i)=>`<button data-i="${i}" class="${S.look.skin===i?"on":""}" style="background:${c}"></button>`).join("")}</div></div>
     <div class="free-sec"><h4>צבע שיער / פרווה</h4><div class="sw-row" id="hairRow">${HAIR_COLORS.map((c,i)=>`<button data-i="${i}" class="${S.look.hairColor===i?"on":""}" style="background:${c}"></button>`).join("")}</div></div>
+    <div class="free-sec"><h4>סמל הקבוצה</h4><div class="sw-row" id="badgeRow">${BADGE_LIST.map(k=>`<button data-k="${k}" class="badge-b ${S.look.badge===k?"on":""}"><svg viewBox="-7 -8 14 16">${badgeSVG(k)}</svg></button>`).join("")}</div></div>
     <div class="free-sec"><h4>המספר שלי</h4><div class="num-row"><button id="numMinus">−</button><span>${S.look.num}</span><button id="numPlus">+</button></div></div>`;
   grid.querySelectorAll("#skinRow button").forEach(b => b.onclick = () => { SFX.tap(); S.look.skin = +b.dataset.i; save(); renderWardrobe(); });
   grid.querySelectorAll("#hairRow button").forEach(b => b.onclick = () => { SFX.tap(); S.look.hairColor = +b.dataset.i; save(); renderWardrobe(); });
+  grid.querySelectorAll("#badgeRow button").forEach(b => b.onclick = () => { SFX.tap(); S.look.badge = b.dataset.k; save(); renderWardrobe(); });
   $("numMinus").onclick = () => { SFX.tap(); S.look.num = S.look.num <= 1 ? 99 : S.look.num - 1; save(); renderWardrobe(); };
   $("numPlus").onclick = () => { SFX.tap(); S.look.num = S.look.num >= 99 ? 1 : S.look.num + 1; save(); renderWardrobe(); };
 }
@@ -1105,81 +1350,139 @@ function levelOpen(d, level){
   const prev = level === 3 && !wordsFor(d,2).length ? 1 : level - 1;
   return !!(d.progress[prev] && d.progress[prev].done);
 }
-/* ---------- מפת הליגה ----------
-   כל שלב הוא "אצטדיון" על שביל. בסוף השביל — גביע "אלוף המחזור".
-   כשנפתח שלב חדש: המנעול רועד, נפתח, והשחקן רץ לאצטדיון הבא. */
-const SPOTS = { 1:[[50,50]], 2:[[68,80],[32,48]], 3:[[70,84],[30,60],[68,36]] }; // מיקום באחוזים [x,y]
-const TROPHY_SPOT = { 1:[50,14], 2:[62,16], 3:[34,13] };
+/* ---------- מפת הליגה: שביל אחד ארוך ----------
+   מלמטה למעלה: לכל הכתבה יש שלט (עם מדליה כשמסיימים), ואחריו האצטדיונים של השלבים שלה.
+   אחרי כל 2 הכתבות יש תחנת "גביע הליגה". ההכתבה החדשה ביותר בראש השביל. */
+const MAP_STEP = 128, SIGN_STEP = 96;    // רווח אנכי בין תחנות (פיקסלים)
 let mapTimers = [];
-function openLevels(id){
-  curDict = S.dictations.find(d => d.id === id);
-  loadRecs(curDict); // טוענים הקלטות מראש — כדי שההקראה תהיה מיידית
-  $("levelsTitle").textContent = "⚽ " + curDict.name;
+const prog = (d, l) => d.progress[l] || (d.progress[l] = {});
+const dictLevels = d => [1,2,3].filter(l => wordsFor(d, l).length);
+const dictDone = d => dictLevels(d).every(l => prog(d,l).done);
+function cupState(key){ S.cups = S.cups || {}; return S.cups[key] || (S.cups[key] = { progress:{} }); }
+
+function openLevels(id){ openMap(id); } // שם ישן — עכשיו הכל במפה אחת
+function openMap(){
   mapTimers.forEach(clearTimeout); mapTimers = [];
-  const levels = [1,2,3].filter(l => wordsFor(curDict, l).length); // רק שלבים שיש להם מילים
-  const pts = SPOTS[levels.length], tp = TROPHY_SPOT[levels.length];
-  const prog = l => curDict.progress[l] || (curDict.progress[l] = {});
-  // שלב "שנפתח עכשיו" = פתוח, אבל הילד עוד לא ראה את אנימציית הפתיחה שלו
-  const fresh = levels.find((l,i) => i > 0 && levelOpen(curDict,l) && !prog(l).seen && !prog(l).done);
-  const current = levels.find(l => levelOpen(curDict,l) && !prog(l).done) || levels[levels.length-1];
-  const allDone = levels.every(l => prog(l).done);
-  // השביל: קו מקווקו שעובר בין כל הנקודות
-  const all = [...pts, tp];
-  let d = `M${all[0][0]} ${all[0][1]}`;
-  for (let i=1;i<all.length;i++){ const a = all[i-1], b = all[i], my = (a[1]+b[1])/2; d += ` C${a[0]} ${my} ${b[0]} ${my} ${b[0]} ${b[1]}`; }
-  let h = `<svg class="path" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#fff" stroke-width="6"
-    stroke-dasharray="2 12" stroke-linecap="round" vector-effect="non-scaling-stroke" opacity=".85"/></svg>`;
-  // קישוטים
-  h += [["🌳",8,20],["🌳",88,58],["🚩",12,74],["🌲",86,14],["🌳",10,44],["🎪",84,92]].map(([e,x,y])=>`<span class="deco" style="left:${x}%;top:${y}%">${e}</span>`).join("");
-  levels.forEach((l,i) => {
-    const p = prog(l), open = levelOpen(curDict,l) && l !== fresh;
-    const cls = ["node","l"+l, open?"":"locked", p.done?"done":"", l===current&&open?"current":""].join(" ");
-    h += `<button class="${cls}" id="node${l}" style="left:${pts[i][0]}%;top:${pts[i][1]}%">
-      <div class="stadium">${open ? LEVELS[l].ico : "🔒"}</div>
-      <div class="label">${LEVELS[l].name}</div><div class="nstars">${p.done ? starsText(p.stars) : ""}</div></button>`;
+  show("levels"); updateCoins();
+  const map = $("map"), inner = $("mapInner"), W = map.clientWidth || 360;
+  const ds = S.dictations.slice().sort((a,b) => a.created - b.created); // הישנה למטה
+  // --- בונים רשימת פריטים מלמטה למעלה ---
+  const items = []; let i = 0;
+  ds.forEach((d, di) => {
+    items.push({type:"sign", d});
+    dictLevels(d).forEach(l => items.push({type:"lvl", d, l, k:i++}));
+    if (di % 2 === 1) items.push({type:"cup", d1:ds[di-1], d2:d, key:"cup:" + ds[di-1].id + "|" + d.id, k:i++});
   });
-  h += `<button class="node trophy ${allDone?"":"locked"}" id="nodeT" style="left:${tp[0]}%;top:${tp[1]}%">
-    <div class="stadium">🏆</div><div class="label">אלוף המחזור</div></button>`;
-  // השחקן הקטן על המפה
-  const startL = fresh ? levels[levels.indexOf(fresh)-1] : current;
-  const sp = pts[levels.indexOf(startL)];
-  h += `<div class="token pl idle" id="token" style="left:${sp[0]-17}%;top:${sp[1]+4}%">${myPlayer()}</div>`;
-  $("map").innerHTML = h;
-  levels.forEach(l => $("node"+l).onclick = () => tapNode(l, l === fresh));
-  $("nodeT").onclick = () => tapTrophy(allDone);
-  updateCoins(); show("levels");
-  if (fresh) playUnlock(fresh, pts[levels.indexOf(fresh)]);
+  // --- מיקומים: גובה מצטבר, ותחנות בזיגזג ---
+  let h = 120; items.forEach(it => { it.y = h; h += it.type === "sign" ? SIGN_STEP : MAP_STEP; });
+  const total = h + 90;
+  items.forEach(it => { it.y = total - it.y; it.x = it.type === "sign" ? W/2 : W * (0.5 + 0.27 * Math.sin(it.k * 1.25)); });
+  // --- מצב כל תחנה ---
+  const newest = ds[ds.length-1];
+  // הכתבה חדשה שעוד לא "הוצגה": אנימציה של אצטדיון חדש. הכתבות שכבר שיחקו בהן נחשבות מוצגות
+  ds.forEach(d => { if (!d.introduced && dictLevels(d).some(l => prog(d,l).done)) d.introduced = true; });
+  const intro = ds.find(d => !d.introduced);
+  ds.forEach(d => { if (d !== intro) d.introduced = true; });
+  let fresh = null; // שלב שנפתח עכשיו (אנימציית מנעול)
+  items.forEach(it => {
+    if (it.type === "lvl"){
+      const lv = dictLevels(it.d), idx = lv.indexOf(it.l);
+      it.open = levelOpen(it.d, it.l); it.done = !!prog(it.d,it.l).done;
+      if (idx > 0 && it.open && !it.done && !prog(it.d,it.l).seen && !fresh && it.d !== intro){ fresh = it; it.open = false; }
+    }
+    if (it.type === "cup"){
+      const c = cupState(it.key);
+      it.open = !!(prog(it.d1,1).done && prog(it.d2,1).done); it.done = !!(c.progress[3] && c.progress[3].done);
+    }
+  });
+  // התחנה הנוכחית: בהכתבה החדשה ביותר שיש בה שלב פתוח ולא גמור; אחרת הראשונה שלא נגמרה
+  const playable = items.filter(it => it.type !== "sign" && it.open && !it.done);
+  let current = playable.filter(it => (it.d || it.d2) === newest)[0] || playable[playable.length-1] || items.filter(it=>it.type!=="sign").pop();
+  if (fresh) current = fresh;
+  // --- ציור: שביל, קישוטים, שלטים, אצטדיונים ושחקן ---
+  const pts = items.map(it => [it.x, it.y]);
+  let d = `M${pts[0][0]},${pts[0][1]+60}`;
+  pts.forEach((p,j) => { const a = j ? pts[j-1] : [p[0], p[1]+60], my = (a[1]+p[1])/2; d += ` C${a[0]},${my} ${p[0]},${my} ${p[0]},${p[1]}`; });
+  let html = `<svg class="path" width="${W}" height="${total}"><path d="${d}" fill="none" stroke="#fff" stroke-width="7" stroke-dasharray="2 14" stroke-linecap="round" opacity=".85"/></svg>`;
+  const r = seeded(3);
+  for (let y = 60; y < total; y += 70){ const left = r() < .5; html += `<span class="deco" style="left:${left ? 4 + r()*10 : 84 + r()*10}%;top:${y + r()*30}px">${["🌳","🌲","🚩","🌳","🎪","🌼"][Math.floor(r()*6)]}</span>`; }
+  items.forEach(it => {
+    if (it.type === "sign"){
+      const full = dictDone(it.d);
+      html += `<div class="sign ${it.d===intro?"hidden-intro":""}" id="sg-${it.d.id}" style="left:${it.x}px;top:${it.y}px">
+        <span class="medal ${full?"on":""} ${full && !it.d.medalSeen ? "pop" : ""}">${full ? "🥇" : "🏅"}</span><span class="sname">${esc(it.d.name)}</span></div>`;
+      if (full) it.d.medalSeen = true;
+    } else if (it.type === "lvl"){
+      const p = prog(it.d, it.l), id = `n-${it.d.id}-${it.l}`;
+      const cls = ["node","l"+it.l, it.open?"":"locked", it.done?"done":"", it===current&&it.open?"current":"", it.d===intro?"hidden-intro":""].join(" ");
+      html += `<button class="${cls}" id="${id}" style="left:${it.x}px;top:${it.y}px"><div class="stadium">${it.open ? LEVELS[it.l].ico : "🔒"}</div>
+        <div class="label">${LEVELS[it.l].name}</div><div class="nstars">${p.done ? starsText(p.stars) : ""}</div></button>`;
+    } else {
+      const c = cupState(it.key), p3 = c.progress[3] || {};
+      html += `<button class="node cup ${it.open?"":"locked"} ${it.done?"done":""} ${it===current&&it.open?"current":""}" id="c-${it.d1.id}-${it.d2.id}" style="left:${it.x}px;top:${it.y}px">
+        <div class="stadium">${it.open ? "🏆" : "🔒"}</div><div class="label">גביע הליגה</div><div class="nstars">${p3.done ? starsText(p3.stars) : "מטבעות ×2"}</div></button>`;
+    }
+  });
+  // השחקן הקטן: עומד ליד התחנה הנוכחית (או ליד הקודמת, אם הוא צריך לרוץ אליה)
+  const startAt = (intro || fresh) ? (items[items.indexOf(intro ? items.find(x => x.type==="lvl" && x.d===intro) : fresh) - (intro?2:1)] || current) : current;
+  const sp = startAt.type === "sign" ? items[items.indexOf(startAt)-1] || startAt : startAt;
+  html += `<div class="token pl idle" id="token" style="left:${sp.x-44}px;top:${sp.y+20}px">${myPlayer()}</div>`;
+  inner.style.height = total + "px"; inner.innerHTML = html;
+  // לחיצות
+  items.forEach(it => {
+    if (it.type === "lvl") $(`n-${it.d.id}-${it.l}`).onclick = () => tapNode(it);
+    if (it.type === "cup") $(`c-${it.d1.id}-${it.d2.id}`).onclick = () => tapCup(it);
+  });
+  // גוללים כך שהתחנה הנוכחית באמצע המסך
+  const focus = intro ? items.find(x => x.type==="sign" && x.d===intro) : current;
+  map.scrollTop = Math.max(0, focus.y - map.clientHeight * .55);
+  if (intro) playIntro(intro, items);
+  else if (fresh) playUnlock(fresh);
+  save();
+}
+const nodeEl = it => it.type === "cup" ? $(`c-${it.d1.id}-${it.d2.id}`) : $(`n-${it.d.id}-${it.l}`);
+function runToken(it, delay){
+  const tok = $("token");
+  mapTimers.push(setTimeout(() => { setAction(tok, "run"); tok.style.left = (it.x-44)+"px"; tok.style.top = (it.y+20)+"px"; }, delay));
+  mapTimers.push(setTimeout(() => setAction(tok, "idle"), delay + 1050));
+}
+// אנימציית "מחזור חדש": השלט נופל, האצטדיונים קופצים אחד-אחד, והשחקן רץ לראשון
+function playIntro(d, items){
+  const sign = $("sg-" + d.id), lv = items.filter(x => x.type === "lvl" && x.d === d);
+  mapTimers.push(setTimeout(() => { sign.classList.remove("hidden-intro"); sign.classList.add("drop-in");
+    sign.insertAdjacentHTML("beforeend", `<div class="new-banner">מחזור חדש! ⚽</div>`); SFX.win(); confetti(24); }, 500));
+  lv.forEach((it, j) => mapTimers.push(setTimeout(() => { const n = nodeEl(it); n.classList.remove("hidden-intro"); n.classList.add("popped"); tone(520 + j*160, .14, "triangle", .12); }, 1300 + j*380)));
+  if (lv[0]) runToken(lv[0], 1300 + lv.length*380 + 200);
+  d.introduced = true; save();
 }
 // אנימציית פתיחת שלב: המנעול רועד → נפתח → השחקן רץ אליו
-function playUnlock(l, spot){
-  const node = $("node"+l), tok = $("token");
+function playUnlock(it){
+  const node = nodeEl(it);
   mapTimers.push(setTimeout(() => { node.classList.add("unlocking"); tone(400,.1,"square",.08); tone(300,.1,"square",.08,.15); }, 600));
   mapTimers.push(setTimeout(() => {
     node.classList.remove("unlocking","locked"); node.classList.add("popped","current");
-    node.querySelector(".stadium").textContent = LEVELS[l].ico;
-    [523,784,1046].forEach((f,i)=>tone(f,.15,"triangle",.12,i*.08)); confetti(16);
-    curDict.progress[l].seen = true; save();
+    node.querySelector(".stadium").textContent = LEVELS[it.l].ico;
+    [523,784,1046].forEach((f,i) => tone(f,.15,"triangle",.12,i*.08)); confetti(16);
+    prog(it.d, it.l).seen = true; it.open = true; save();
   }, 1150));
-  mapTimers.push(setTimeout(() => { setAction(tok, "run"); tok.style.left = (spot[0]-17)+"%"; tok.style.top = (spot[1]+4)+"%"; }, 1500));
-  mapTimers.push(setTimeout(() => setAction(tok, "idle"), 2550));
+  runToken(it, 1500);
 }
-function mapBubble(nodeId, text){
+function mapBubble(el, text){
   document.querySelectorAll(".map-bubble").forEach(b => b.remove());
-  const n = $(nodeId), b = document.createElement("div");
+  const b = document.createElement("div");
   b.className = "map-bubble"; b.textContent = text;
-  b.style.left = n.style.left; b.style.top = `calc(${n.style.top} - 54px)`;
-  $("map").appendChild(b); setTimeout(() => b.remove(), 1800);
+  b.style.left = el.style.left; b.style.top = `calc(${el.style.top} - 62px)`;
+  $("mapInner").appendChild(b); setTimeout(() => b.remove(), 1900);
 }
-function tapNode(l, isFresh){
-  const n = $("node"+l);
-  if (n.classList.contains("locked") || (isFresh && !curDict.progress[l].seen)){
-    wiggle(n.querySelector(".stadium")); SFX.miss(); mapBubble("node"+l, "קודם מסיימים את השלב הקודם 🙂"); return;
-  }
-  SFX.tap(); enterLevel(l);
+function tapNode(it){
+  const n = nodeEl(it);
+  if (!it.open){ wiggle(n.querySelector(".stadium")); SFX.miss(); mapBubble(n, "קודם מסיימים את השלב הקודם 🙂"); return; }
+  SFX.tap(); curDict = it.d; loadRecs(curDict); enterLevel(it.l);
 }
-function tapTrophy(allDone){
-  if (!allDone){ wiggle($("nodeT").querySelector(".stadium")); mapBubble("nodeT", "מסיימים את כל השלבים ← גביע! 🏆"); return; }
-  SFX.win(); confetti(40); mapBubble("nodeT", "אלוף המחזור! 🏆");
+function tapCup(it){
+  const n = nodeEl(it);
+  if (!it.open){ wiggle(n.querySelector(".stadium")); SFX.miss(); mapBubble(n, "מסיימים שלב 1 בשתי ההכתבות 🙂"); return; }
+  SFX.tap(); curDict = buildCup(it.d1, it.d2, it.key); loadRecs(curDict); enterLevel(3);
 }
 
 /* ---------- מנהרה: השחקן יוצא למגרש לפני השלב ---------- */
@@ -1198,7 +1501,7 @@ function enterLevel(l){
   tunnelTimer = setTimeout(() => startLevel(l), 2500);
   $("tunnel").onclick = () => { clearTimeout(tunnelTimer); $("tunnel").onclick = null; startLevel(l); };
 }
-$("levelsBack").onclick = () => show("home");
+$("levelsBack").onclick = () => { mapTimers.forEach(clearTimeout); show("home"); };
 
 /* =========================================================
    המשחק עצמו
@@ -1216,12 +1519,12 @@ function startLevel(level){
   p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(targetOf(w))) : []);
   G.prevStars = p.stars || 0;
   G.replay = !!p.done;
-  $("kicker").innerHTML = myPlayer();
+  $("kicker").innerHTML = myPlayerBack();   // השחקן מאחור: רואים שם ומספר על הגב
   $("ball").innerHTML = ballSVG(S.look.eq.ball);
   $("keeper").innerHTML = keeperSVG();
   $("scene").classList.toggle("short", level === 3); // בשלב 3 צריך מקום למקלדת
   $("game").classList.toggle("typing", level === 3);
-  show("game"); updateCoins(); nextWord();
+  show("game"); updateCoins(); layoutScene(); nextWord();
 }
 function curWord(){ return G.words[G.i]; }
 
@@ -1251,14 +1554,31 @@ function renderProgress(){
   $("progress").innerHTML = G.words.map((w,i) =>
     `<i class="${i<G.i?"done":i===G.i?"now":""}">${i>=G.origCount?"🔁":"⚽"}</i>`).join("");
 }
+/* מחשב את המיקומים במגרש לפי הגודל שלו (במסך 3 המגרש נמוך יותר בגלל המקלדת) */
+function layoutScene(){
+  const sc = $("scene"), W = sc.clientWidth, H = sc.clientHeight;
+  const hz = Math.round(H * 0.36);                         // קו השלטים (סוף היציעים)
+  const gw = W * 0.46, gh = H * 0.31, gy = hz + H * 0.13;   // שער: רוחב, גובה, קו שער
+  const L = G.L = { W, H, hz, gw, gh, gy, gx: W/2 - gw/2, ballS: Math.max(20, H*.12), ballX: W*.55, ballY: H*.78 };
+  // רקע: אצטדיון + קווי רחבה בפרספקטיבה
+  $("sceneBg").setAttribute("viewBox", `0 0 ${W} ${H}`);
+  $("sceneBg").innerHTML = stadiumSVG(isNight(), hz, W, H) +
+    `<path d="M${W*.16},${gy} L${W*.84},${gy} L${W*1.02},${H*.98} L${-W*.02},${H*.98}Z M${W*.32},${gy} L${W*.68},${gy} L${W*.74},${gy+H*.2} L${W*.26},${gy+H*.2}Z" fill="none" stroke="#fff" stroke-width="2" opacity=".75"/>
+     <path d="M0,${gy} L${W},${gy}" stroke="#fff" stroke-width="2.5" opacity=".8"/>
+     <ellipse cx="${L.ballX}" cy="${L.ballY+L.ballS*.45}" rx="4" ry="1.6" fill="#fff" opacity=".8"/>`;
+  Object.assign($("goal").style, { left: L.gx+"px", top: (gy-gh)+"px", width: gw+"px", height: gh+"px" });
+  const kh = gh * 0.98, kw = kh * 120/272;
+  Object.assign($("keeper").style, { left: (W/2 - kw/2)+"px", top: (gy - kh + kh*.04)+"px", width: kw+"px", height: kh+"px" });
+  const ph = H * (sc.classList.contains("short") ? .8 : .7), pw = ph * 120/272;
+  Object.assign($("kicker").style, { left: (W*.30 - pw/2)+"px", top: (H - ph*.92)+"px", width: pw+"px", height: ph+"px" });
+  Object.assign($("bubble").style, { left: (W*.30 + pw*.35)+"px", top: (H - ph*.98)+"px" });
+}
 function resetScene(){
-  const ball = $("ball");
+  const ball = $("ball"), L = G.L || (layoutScene(), G.L);
   ball.style.transition = "none";
-  ball.style.left = "58%"; ball.style.bottom = $("scene").classList.contains("short") ? "8px" : "14px";
-  ball.style.transform = ""; ball.style.opacity = 1;
-  $("keeper").style.transform = "translateX(-50%)";
+  Object.assign(ball.style, { width: L.ballS+"px", height: L.ballS+"px", left: (L.ballX - L.ballS/2)+"px", top: (L.ballY - L.ballS/2)+"px", transform: "", opacity: 1 });
+  $("keeper").style.transform = "";
   $("kicker").style.transform = "";
-  $("kicker").classList.remove("celebrate","encourage");
   setAction($("kicker"), "idle"); setAction($("keeper"), "idle");
   $("bubble").classList.remove("show");
   void ball.offsetWidth; ball.style.transition = "";
@@ -1285,7 +1605,7 @@ function nextWord(){
 }
 $("hearBtn").onclick = () => sayCur(false);
 $("slowBtn").onclick = () => sayCur(true);
-$("gameBack").onclick = () => { speechSynthesis && speechSynthesis.cancel(); curDict.id === "cup" ? show("home") : openLevels(curDict.id); };
+$("gameBack").onclick = () => { speechSynthesis && speechSynthesis.cancel(); openMap(); };
 // שורה קטנה מעל המילה: במילים נרדפות מראים את המילה ששומעים
 function showPrompt(w){
   const el = $("promptLine");
@@ -1374,22 +1694,22 @@ function renderChoices(opts, isRight){
 }
 
 /* ---------- שלב 3: כתיבת מילה שלמה ---------- */
-const KB_LETTERS = "אבגדהוזחטיכךלמםנןסעפףצץקרשת".split("");
-const KB_NIKUD = [N.QAMATS,N.PATAH,N.TSERE,N.SEGOL,N.HIRIQ,N.HOLAM,N.QUBUTS,N.SHEVA,N.DAGESH];
+// אותיות המקלדת. לשׁ ולשׂ יש מקשים נפרדים — הילד לא צריך לחפש את הנקודה
+const KB_LETTERS = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ך","ל","מ","ם","נ","ן","ס","ע","פ","ף","צ","ץ","ק","ר","שׁ","שׂ","ת"];
+const KB_NIKUD = [N.QAMATS,N.PATAH,N.TSERE,N.SEGOL,N.HIRIQ,N.HOLAM,N.QUBUTS];
 const KB_MORE = [N.HATAF_PATAH,N.HATAF_SEGOL,N.HATAF_QAMATS];
 
 function setupTyping(){
-  G.typed = []; G.showMore = false;
+  G.typed = []; G.cursor = 0; G.marks = null; G.showMore = false;
   renderTyped();
   const box = $("controls");
   // סידור המקלדת (7 מקשים בשורה):
-  // 4 שורות אותיות + מחיקה, שורת תנועות, שורה של שווא/דגש/שׁ/שׂ/עוד/בדוק, ושורה נסתרת של חטפים ורווח
+  // 4 שורות אותיות (כולל שׁ ו-שׂ), שורת תנועות, שורה של שווא/דגש/עוד/מחיקה/בדוק, ושורה נסתרת של חטפים ורווח
   let h = `<div class="kb">`;
   KB_LETTERS.forEach(l => h += `<button class="key" data-l="${l}">${l}</button>`);
-  h += `<button class="key fn" data-act="back">⌫</button>`;
   KB_NIKUD.forEach(m => h += `<button class="key n" data-m="${m}">${DOTTED}${m}</button>`);
-  h += `<button class="key n" data-m="${N.SHIN_DOT}">שׁ</button><button class="key n" data-m="${N.SIN_DOT}">שׂ</button>`;
-  h += `<button class="key fn" data-act="more">עוד…</button><button class="key check" data-act="check">בדוק ✔</button>`;
+  h += `<button class="key n" data-m="${N.SHEVA}">${DOTTED}${N.SHEVA}</button><button class="key n" data-m="${N.DAGESH}">${DOTTED}${N.DAGESH}</button>`;
+  h += `<button class="key fn" data-act="more">עוד…</button><button class="key fn wide" data-act="back">⌫</button><button class="key check" data-act="check">בדוק ✔</button>`;
   KB_MORE.forEach(m => h += `<button class="key n hidden more" data-m="${m}">${DOTTED}${m}</button>`);
   h += `<button class="key fn wide hidden more" data-act="space">רווח</button></div>`;
   box.innerHTML = h;
@@ -1400,70 +1720,86 @@ function setupTyping(){
 /* מקלדת חכמה: מדגישים את האותיות שיש במילה.
    כל פעם שהילד כותב את המילה נכון בניסיון ראשון — ההדגשה נחלשת:
    0 הצלחות = הדגשה חזקה, 1 = הדגשה קלה, 2 ומעלה = בלי הדגשה */
+const keyOfCluster = c => c.base === "ש" ? "ש" + (c.marks.includes(N.SIN_DOT) ? N.SIN_DOT : N.SHIN_DOT) : c.base;
 function smartKeyboard(){
   const wins = winsOf(targetOf(curWord()));
   const cls = wins === 0 ? "hl" : wins === 1 ? "hl-light" : "";
   if (!cls) return;
-  const letters = new Set(toClusters(targetOf(curWord())).map(c => c.base));
-  document.querySelectorAll(".key[data-l]").forEach(k => { if (letters.has(k.dataset.l)) k.classList.add(cls); });
+  const letters = new Set(toClusters(targetOf(curWord())).map(keyOfCluster));
+  document.querySelectorAll(".key[data-l]").forEach(k => { if (letters.has(k.dataset.l.normalize("NFC")) || letters.has(k.dataset.l)) k.classList.add(cls); });
 }
 function winsOf(text){ const w = (curDict.progress[3] && curDict.progress[3].wins) || {}; return w[cleanWord(text)] || 0; }
 function addWin(text){
   const p = curDict.progress[3]; p.wins = p.wins || {};
   const k = cleanWord(text); p.wins[k] = (p.wins[k] || 0) + 1; save();
 }
+/* הסמן (G.cursor) = כמה אותיות יש לפניו.
+   אות חדשה נכנסת במקום הסמן. ניקוד ומחיקה פועלים על האות שלפני הסמן.
+   לחיצה על אות במילה מזיזה את הסמן אחריה — כך מתקנים באמצע בלי למחוק הכל. */
 function onKey(k){
   if (G.busy) return;
   SFX.tap();
-  const T = G.typed, last = T[T.length-1];
-  if (k.dataset.l){ T.push({base:k.dataset.l, marks:[]}); }
+  const T = G.typed, prev = T[G.cursor-1];
+  if (k.dataset.l){
+    const l = k.dataset.l, base = l[0], dot = l.length > 1 ? [l[1]] : []; // שׁ/שׂ = ש + נקודה
+    T.splice(G.cursor, 0, {base, marks:dot}); G.cursor++;
+  }
   else if (k.dataset.m){
     const m = k.dataset.m;
-    // ניקוד חייב לשבת על אות
-    if (!last || !isLetter(last.base)) return wiggle(k);
-    if (m === N.SHIN_DOT || m === N.SIN_DOT){
-      if (last.base !== "ש") return wiggle(k); // נקודה כזו רק על ש
-      last.marks = last.marks.filter(x => x!==N.SHIN_DOT && x!==N.SIN_DOT);
-      last.marks.push(m);
-    } else if (m === N.DAGESH){
-      // דגש: לחיצה שנייה מורידה אותו
-      last.marks = last.marks.includes(m) ? last.marks.filter(x=>x!==m) : [...last.marks, m];
+    if (!prev || !isLetter(prev.base)) return wiggle(k); // ניקוד חייב לשבת על אות
+    if (m === N.DAGESH){
+      prev.marks = prev.marks.includes(m) ? prev.marks.filter(x=>x!==m) : [...prev.marks, m]; // לחיצה שנייה מורידה
     } else {
-      // תנועה: אם כבר יש תנועה — מחליפים (נוח לילדים)
-      last.marks = last.marks.filter(x => !VOWELS.includes(x)); last.marks.push(m);
+      prev.marks = prev.marks.filter(x => !VOWELS.includes(x)); prev.marks.push(m); // תנועה מחליפה תנועה
     }
   }
   else if (k.dataset.act === "back"){
-    if (last){ if (last.marks.length) last.marks.pop(); else T.pop(); }
+    if (prev){
+      // קודם מוחקים ניקוד (חוץ מהנקודה של שׁ/שׂ), ואז את האות עצמה
+      const extra = prev.marks.filter(x => x !== N.SHIN_DOT && x !== N.SIN_DOT);
+      if (extra.length) prev.marks.splice(prev.marks.lastIndexOf(extra[extra.length-1]), 1);
+      else { T.splice(G.cursor-1, 1); G.cursor--; }
+    }
   }
-  else if (k.dataset.act === "space"){ if (last && last.base !== " ") T.push({base:" ", marks:[]}); }
+  else if (k.dataset.act === "space"){ if (prev && prev.base !== " "){ T.splice(G.cursor, 0, {base:" ", marks:[]}); G.cursor++; } }
   else if (k.dataset.act === "more"){
     G.showMore = !G.showMore;
     document.querySelectorAll(".key.more").forEach(x => x.classList.toggle("hidden", !G.showMore));
     return;
   }
   else if (k.dataset.act === "check"){ return checkTyped(); }
-  $("feedback").textContent = ""; renderTyped();
+  G.marks = null; $("feedback").textContent = ""; renderTyped();
 }
 function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
 const typedText = () => G.typed.map(c => c.base + c.marks.join("")).join("");
-function renderTyped(marks){
+// מציגים את מה שהילד כתב. כל אות היא כפתור קטן — לחיצה עליה מזיזה את הסמן אחריה
+function renderTyped(marks, noCursor){
+  if (marks !== undefined) G.marks = marks;
+  marks = G.marks;
   const v = $("wordView");
-  if (!G.typed.length){ v.innerHTML = `<span class="placeholder">כתוב כאן את המילה ✏️</span><span class="cursor"></span>`; return; }
-  v.innerHTML = G.typed.map((c,i) => {
-    const t = esc(c.base === " " ? " " : c.base + [...c.marks].sort().join(""));
-    if (marks && marks[i]){
-      if (!marks[i].letterOk) return `<span class="bad-l">${t}</span>`;
-      if (!marks[i].nikudOk) return `<span class="bad-n">${t}</span>`;
-    }
-    return t;
-  }).join("") + (marks ? "" : `<span class="cursor"></span>`);
+  const cur = noCursor ? "" : `<span class="cursor"></span>`;
+  if (!G.typed.length){ v.innerHTML = `<span class="placeholder">כתוב כאן את המילה ✏️</span>${cur}`; return; }
+  let h = G.cursor === 0 ? cur : "";
+  G.typed.forEach((c,i) => {
+    const t = esc(c.base === " " ? "\u00A0" : c.base + [...c.marks].sort().join(""));
+    let cls = "tl";
+    if (marks && marks[i]){ if (!marks[i].letterOk) cls += " bad-l"; else if (!marks[i].nikudOk) cls += " bad-n"; }
+    h += `<span class="${cls}" data-i="${i}">${t}</span>` + (G.cursor === i+1 ? cur : "");
+  });
+  v.innerHTML = h;
+  if (!noCursor) v.querySelectorAll(".tl").forEach(el => el.onclick = () => {
+    if (G.busy) return;
+    G.cursor = +el.dataset.i + 1; SFX.tap(); renderTyped();
+  });
 }
 function checkTyped(){
   if (!G.typed.length){ $("feedback").className="feedback try"; $("feedback").textContent = "קודם שמע 🔊 ואז כתוב 🙂"; return; }
   const w = curWord();
   const r = compareWords(typedText(), targetOf(w), modeOf(w));
-  if (r.ok){ renderTyped(); $("wordView").querySelector(".cursor")?.remove(); return success(); }
+  if (r.ok){ renderTyped(null, true); return success(); }
+  // אחרי טעות: הסמן קופץ לבד אחרי האות הראשונה שצריך לתקן
+  const firstBad = r.details.findIndex(d => !d.letterOk || !d.nikudOk);
+  G.cursor = firstBad >= 0 ? firstBad + 1 : G.typed.length;
   renderTyped(r.details);
   // הסבר עדין מה לא מתאים
   const badL = r.details.filter(d=>!d.letterOk).length, badN = r.details.filter(d=>d.letterOk && !d.nikudOk).length;
@@ -1471,7 +1807,7 @@ function checkTyped(){
   if (r.lenDiff < 0) msg = "חסרה אות 🙂 הקשב שוב 👂";
   else if (r.lenDiff > 0) msg = "יש אות אחת יותר מדי 🙂";
   else if (badL) msg = `כמעט! ${badL===1?"אות אחת":badL+" אותיות"} מסומנ${badL===1?"ת":"ות"} בכתום 🧡`;
-  else msg = `האותיות נכונות! 🎉 תקן את הניקוד בצהוב`;
+  else msg = `כמעט! 🎉 תקן את הניקוד בצהוב`;
   miss(msg);
 }
 
@@ -1487,7 +1823,7 @@ function success(){
   $("feedback").className = "feedback good"; $("feedback").textContent = pick(PRAISE);
   shoot(true);
   setTimeout(() => { payWord(coins); }, 600);
-  setTimeout(() => { G.i++; nextWord(); }, 1900);
+  setTimeout(() => { G.i++; nextWord(); }, 2200);
 }
 function miss(msg){
   G.tries++;
@@ -1541,27 +1877,29 @@ function giveCoins(n){
 
 /* אנימציית הבעיטה: גול או שהשוער תופס */
 function shoot(goal){
-  const ball = $("ball"), keeper = $("keeper"), kicker = $("kicker"), scene = $("scene");
+  const ball = $("ball"), keeper = $("keeper"), kicker = $("kicker"), L = G.L;
   SFX.kick();
-  // השחקן רץ צעד קדימה ובועט (האנימציה של הרגל נמצאת ב-CSS: .pl.kick)
+  // השחקן רץ צעד לכיוון הכדור ובועט (התנועה של הרגל ב-CSS: .pl.kick)
   setAction(kicker, "kick");
-  kicker.style.transform = "translateX(12px)";
-  setTimeout(() => { kicker.style.transform = ""; }, 450);
-  const H = scene.clientHeight;
+  kicker.style.transform = "translate(10px,-6px) scale(.97)";
+  setTimeout(() => { kicker.style.transform = ""; }, 520);
   const side = Math.random() < .5 ? -1 : 1;
+  const tx = W => (W/2 + side * L.gw * .32) - L.ballS*.25, ty = L.gy - L.gh * .62;
   if (goal){
-    ball.style.left = (50 + side*15) + "%";
-    ball.style.bottom = (H*0.52) + "px";
-    ball.style.transform = "scale(.6) rotate(720deg)";
-    keeper.style.transform = `translateX(${-50 - side*70}%) rotate(${-side*55}deg)`; // השוער קופץ לצד הלא נכון
-    setAction(keeper, "reach");
-    setTimeout(() => { SFX.goal(); $("goal").classList.remove("shake"); void $("goal").offsetWidth; $("goal").classList.add("shake");
-      $("crowd").classList.remove("cheer"); void $("crowd").offsetWidth; $("crowd").classList.add("cheer"); confetti(18); react(true); }, 500);
+    setTimeout(() => {
+      Object.assign(ball.style, { left: tx(L.W)+"px", top: ty+"px", transform: "scale(.45) rotate(720deg)" });
+      keeper.style.transform = `translateX(${-side*L.gw*.32}px) rotate(${-side*62}deg)`; // השוער קופץ לצד הלא נכון
+      setAction(keeper, "reach");
+    }, 180);
+    setTimeout(() => { SFX.goal(); const g = $("goal"); g.classList.remove("shake"); void g.offsetWidth; g.classList.add("shake");
+      const c = $("crowd"); c.classList.remove("cheer"); void c.offsetWidth; c.classList.add("cheer"); confetti(18); react(true); }, 700);
   } else {
-    ball.style.left = "50%"; ball.style.bottom = (H*0.42) + "px"; ball.style.transform = "scale(.7) rotate(360deg)";
-    setTimeout(() => setAction(keeper, "reach"), 250); // השוער מושיט ידיים ותופס
-    setTimeout(() => { SFX.miss(); react(false); ball.style.bottom = (H*0.1) + "px"; ball.style.left = "55%"; ball.style.transform = ""; }, 550);
-    setTimeout(() => { if (!G.busy) resetScene(); }, 1300);
+    setTimeout(() => {
+      Object.assign(ball.style, { left: (L.W/2 - L.ballS*.25)+"px", top: (L.gy - L.gh*.55)+"px", transform: "scale(.5) rotate(360deg)" });
+      setAction(keeper, "reach"); // השוער מושיט ידיים ותופס
+    }, 180);
+    setTimeout(() => { SFX.miss(); react(false); Object.assign(ball.style, { top: (L.gy - L.ballS*.4)+"px", transform: "scale(.5)" }); }, 760);
+    setTimeout(() => { if (!G.busy) resetScene(); }, 1500);
   }
 }
 // תגובה של השחקן: אנימציה + בועת דיבור
@@ -1614,29 +1952,20 @@ function finishLevel(){
     : `אימון חוזר 💪 שיא כוכבים חדש = מטבעות`;
   const nextL = [G.level+1, G.level+2].find(l => l<=3 && wordsFor(curDict,l).length);
   $("doneNext").textContent = nextL ? "לשלב הבא ▶" : "למפה 🗺️";
-  $("doneNext").style.display = curDict.id === "cup" ? "none" : ""; // לגביע אין מפה
+  if (curDict.id === "cup") $("doneNext").textContent = "למפה 🗺️";
   // "לשלב הבא" חוזר למפה — שם רואים את המנעול נפתח והשחקן רץ לאצטדיון הבא
-  $("doneNext").onclick = () => { SFX.tap(); openLevels(curDict.id); };
+  $("doneNext").onclick = () => { SFX.tap(); openMap(); };
   show("done");
 }
-$("doneAgain").onclick = () => { if (curDict.id === "cup") curDict = buildCup(); enterLevel(G.level); };
+$("doneAgain").onclick = () => { if (curDict.id === "cup") curDict = buildCup(curDict.d1, curDict.d2, curDict.cupKey); enterLevel(G.level); };
 
-/* ---------- הגביע: מילים מעורבבות מכמה הכתבות ----------
+/* ---------- הגביע: מילים מעורבבות משתי הכתבות ----------
    בונים "הכתבה מדומה" עם id="cup". כל מילה זוכרת מאיזו הכתבה הגיעה (_d),
    כדי שההקלטה, סוג הבדיקה והמילה הנרדפת יילקחו מההכתבה המקורית. */
-function buildCup(){
-  const cutoff = Date.now() - CONFIG.CUP_WEEKS * 7 * 24 * 3600 * 1000;
-  const recent = S.dictations.slice().sort((a,b) => b.created - a.created);
-  let ds = recent.filter(d => d.created >= cutoff);
-  if (ds.length < 2) ds = recent.slice(0, 4); // אם אין מספיק הכתבות חדשות — לוקחים את האחרונות
-  let words = ds.flatMap(d => shuffle(d.words).slice(0, CONFIG.CUP_WORDS_PER_DICT).map(w => Object.assign({}, w, {_d:d.id})));
+function buildCup(d1, d2, key){
+  let words = [d1, d2].flatMap(d => shuffle(d.words).slice(0, CONFIG.CUP_WORDS_PER_DICT).map(w => Object.assign({}, w, {_d:d.id})));
   words = shuffle(words).slice(0, CONFIG.CUP_MAX_WORDS);
-  return { id:"cup", name:"גביע הליגה", mode:"full", target:"word", words, progress:S.cup.progress };
-}
-function startCup(){
-  curDict = buildCup();
-  loadRecs(curDict);
-  enterLevel(3); // הגביע הוא "המשחק הגדול": שומעים וכותבים מילה שלמה
+  return { id:"cup", cupKey:key, d1, d2, name:"גביע הליגה", mode:"full", target:"word", words, progress:cupState(key).progress };
 }
 
 /* ---------- טקס סיום: גביע, כוכבים שקופצים, ומטבעות שעפים למונה ---------- */
