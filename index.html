@@ -288,13 +288,18 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 @keyframes lookDown{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-2deg)}}
 .juggle-ball{animation:jugBall 1.1s ease-in-out infinite}
 @keyframes jugBall{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-95px) rotate(200deg)}}
-/* ריצה */
-.pl.run .p-legL{animation:legA .34s ease-in-out infinite alternate} .pl.run .p-legR{animation:legB .34s ease-in-out infinite alternate}
-.pl.run .p-shinL{animation:shinA .34s ease-in-out infinite alternate} .pl.run .p-shinR{animation:shinB .34s ease-in-out infinite alternate}
-.pl.run .p-armL{animation:legB .34s ease-in-out infinite alternate} .pl.run .p-armR{animation:legA .34s ease-in-out infinite alternate}
-.pl.run .p-up{animation:runBob .17s ease-in-out infinite alternate}
-@keyframes legA{from{transform:rotate(26deg)}to{transform:rotate(-26deg)}} @keyframes legB{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
-@keyframes shinA{from{transform:rotate(0)}to{transform:rotate(40deg)}} @keyframes shinB{from{transform:rotate(40deg)}to{transform:rotate(0)}}
+/* ריצה (מקדימה, לכיוון המצלמה): הברך עולה קדימה — בציור מקדימה זה נראה כמו רגל שמתקצרת ועולה,
+   ולא כמו רגל שמסתובבת הצידה. כל רגל בתורה, והידיים מתנדנדות בכיוון ההפוך */
+.pl.run .p-legL{animation:liftA .36s ease-in-out infinite alternate} .pl.run .p-legR{animation:liftB .36s ease-in-out infinite alternate}
+.pl.run .p-shinL{animation:kneeA .36s ease-in-out infinite alternate} .pl.run .p-shinR{animation:kneeB .36s ease-in-out infinite alternate}
+.pl.run .p-armL{animation:swingA .36s ease-in-out infinite alternate} .pl.run .p-armR{animation:swingB .36s ease-in-out infinite alternate}
+.pl.run .p-up{animation:runBob .18s ease-in-out infinite alternate}
+@keyframes liftA{from{transform:translateY(0)}to{transform:translateY(-16px)}}
+@keyframes liftB{from{transform:translateY(-16px)}to{transform:translateY(0)}}
+@keyframes kneeA{from{transform:scaleY(1)}to{transform:scaleY(.72)}}
+@keyframes kneeB{from{transform:scaleY(.72)}to{transform:scaleY(1)}}
+@keyframes swingA{from{transform:rotate(-14deg)}to{transform:rotate(16deg)}}
+@keyframes swingB{from{transform:rotate(14deg)}to{transform:rotate(-16deg)}}
 @keyframes runBob{to{transform:translateY(-3px)}}
 /* בעיטה: הרגל נמשכת אחורה (העקב עולה) ואז נזרקת קדימה */
 .pl.kick .p-legR{animation:kickThigh .5s ease-out} .pl.kick .p-shinR{animation:kickShin .5s ease-out}
