@@ -156,6 +156,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .key.n{background:#fff4d6;font-size:30px}   /* מקשי ניקוד בצבע אחר */
 .key.fn{background:#dfe9f5;font-size:18px}
 .key.wide{grid-column:span 2}
+.key.check.w3{grid-column:span 3}
+.word .tl.fixed{background:#c9f7d8;border-radius:8px;border-bottom:4px solid #2ec46b;animation:popIn .35s}
 .key.check{grid-column:span 2;background:#2ec46b;color:#fff;font-size:22px;font-weight:bold;box-shadow:0 3px 0 #1f8f4c}
 .key.hidden{display:none}
 /* מקלדת חכמה: הדגשה חזקה / קלה של האותיות שבמילה */
@@ -191,7 +193,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .node{position:absolute;transform:translate(-50%,-50%);background:none;padding:0;display:flex;flex-direction:column;align-items:center;z-index:2}
 .stadium{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8eef5);border:6px solid var(--sun);font-size:36px;
   display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 rgba(0,0,0,.2),0 10px 14px rgba(0,0,0,.18);position:relative}
-.node.l2 .stadium{border-color:var(--blue)} .node.l3 .stadium{border-color:var(--purple)}
+.node.l2 .stadium{border-color:var(--blue)} .node.l3 .stadium{border-color:#2ec46b} .node.l4 .stadium{border-color:var(--purple)}
 .node.cup .stadium{width:100px;height:100px;font-size:46px;border-color:#f4c430;background:radial-gradient(circle at 35% 30%,#fffbe6,#ffe58a)}
 .node .label{background:#fff;border-radius:12px;padding:2px 10px;font-size:16px;font-weight:bold;margin-top:6px;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.15)}
 .node .nstars{font-size:14px;letter-spacing:1px;min-height:18px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
@@ -205,6 +207,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .node.popped .stadium{animation:popIn .45s cubic-bezier(.3,1.8,.5,1)}
 @keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}
 .hidden-intro{visibility:hidden}
+.empty-map{padding:40px 20px;text-align:center;font-size:20px;color:#fff;font-weight:bold}
 /* שלט של הכתבה: לוח עץ עם שם ומדליה */
 .sign{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;align-items:center;gap:8px;white-space:nowrap;
   background:linear-gradient(#c98b52,#9a6233);color:#fff;font-size:19px;font-weight:900;padding:8px 18px;border-radius:12px;
@@ -256,6 +259,9 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .note{font-size:14px;color:#5a6b86;margin:6px 0}
 .warn{font-size:15px;background:#fff6dd;border-radius:10px;padding:8px;margin:6px 0}
+.big-warn{font-size:18px;font-weight:bold;background:#ffe9a8;border:2px solid #f4c430;text-align:center}
+.src-tag{font-size:13px;background:#e7f0ff;color:#2459d6;border-radius:8px;padding:1px 6px;margin-right:4px}
+#parentBtn.due::after{content:"";position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 0 2px #fff}
 .nq-bar{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
 .nq-bar button{width:42px;height:42px;font-size:26px;border-radius:10px;background:#fff4d6;box-shadow:0 2px 0 #e0c98a}
 .word-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #eef2f6}
@@ -482,6 +488,10 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <button class="small-btn" id="parentExit">יציאה ✖</button>
     </div>
 
+    <!-- תזכורות להורה: גיבוי חודשי והוספה למסך הבית -->
+    <div class="warn big-warn" id="backupDue" style="display:none"></div>
+    <div class="warn" id="installTip" style="display:none">📲 <b>כדאי להוסיף את המשחק למסך הבית</b> — כך הוא נפתח כמו אפליקציה, והמטבעות נשמרים טוב יותר.<br>בספארי: לחצו על כפתור השיתוף ⬆️ ← "הוסף למסך הבית".</div>
+
     <div class="card">
       <h3>פרטים</h3>
       <label>שם פרטי של הילד (רק שם פרטי, נשמר רק במכשיר הזה)</label>
@@ -506,12 +516,23 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
     <div class="card">
       <h3>גיבוי</h3>
       <div class="warn">⚠️ ההכתבות, ההקלטות והמטבעות נשמרים רק בדפדפן של המכשיר הזה. באייפון הם עלולים להימחק אם לא נכנסים למשחק כמה ימים, או בניקוי נתוני גלישה. כדאי: להוסיף את המשחק למסך הבית, ולשמור גיבוי מדי פעם.</div>
+      <div class="note" id="autoBkStatus"></div>
+      <button class="big-btn green" style="width:100%;font-size:20px" id="shareBackup">📤 שליחת גיבוי למנהל</button>
+      <div class="note">הגיבוי נשלח לבד בסוף כל הכתבה. הכפתור שולח גיבוי עכשיו. (ההקלטות לא נכללות — בשבילן יש "שמירת גיבוי לקובץ".)</div>
       <div class="row">
         <button class="small-btn" id="exportBtn">💾 שמירת גיבוי לקובץ</button>
         <button class="small-btn" id="importBtn">📂 טעינת גיבוי</button>
         <input type="file" id="importFile" accept=".json,application/json" style="display:none">
       </div>
       <div class="note" id="backupMsg"></div>
+    </div>
+
+    <div class="card">
+      <h3>♻️ שחזור מגיבוי</h3>
+      <div class="note">אם המטבעות או ההתקדמות נמחקו: המנהל שולח לכם את קוד הגיבוי (טקסט ארוך שמתחיל ב-LIGA). מדביקים אותו כאן ולוחצים "שחזור".</div>
+      <textarea id="restoreText" style="min-height:70px;font-size:14px;direction:ltr" placeholder="LIGA1:..."></textarea>
+      <button class="small-btn" id="restoreBtn" style="margin-top:6px">♻️ שחזור</button>
+      <div class="note" id="restoreMsg"></div>
     </div>
 
     <div class="card">
@@ -535,7 +556,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       </div>
       <div class="note" id="resetMsg"></div>
     </div>
-    <div class="note" style="text-align:center">ליגת המילים · גרסה 4 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
+    <div class="note" style="text-align:center">ליגת המילים · גרסה 6 · בלי חשבונות, בלי פרסומות, בלי איסוף נתונים</div>
   </section>
 
   <!-- ========== עריכת הכתבה (הורה) ========== -->
@@ -545,6 +566,8 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <button class="small-btn" id="editorBack">חזרה</button>
     </div>
     <div class="card">
+      <div class="warn" id="siteNote" style="display:none">🌐 ההכתבה הזאת מגיעה מהאתר. את המילים משנים במחשב (בקובץ dictations.json), וכאן אפשר רק להקליט מילים 🎙️.</div>
+      <div id="editFields">
       <label>שם ההכתבה (למשל: הכתבה 12)</label>
       <input type="text" id="dictName" maxlength="25">
       <label>המילים — מילה אחת בכל שורה, עם ניקוד</label>
@@ -553,18 +576,14 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
       <div class="nq-bar" id="nqBar"></div>
       <button class="small-btn" id="dictaBtn">🔗 פתיחת הנקדן של דיקטה (באתר חיצוני)</button>
       <div class="note">בדיקטה: כותבים את המילים, מעתיקים את התוצאה המנוקדת ומדביקים כאן.</div>
-      <label>מה הילד כותב?</label>
-      <div class="row">
-        <label style="font-size:18px"><input type="radio" name="target" value="word" checked> את המילה ששמע</label>
-        <label style="font-size:18px"><input type="radio" name="target" value="syn"> את המילה הנרדפת</label>
-      </div>
-      <div class="note">מילים נרדפות: כותבים בכל שורה "מילה = נרדפת", למשל: חָבֵר = רֵעַ. הילד ישמע "חָבֵר" ויכתוב "רֵעַ".</div>
+      <div class="note">אם ברשימה יש מילים נרדפות (למשל "חָבֵר = רֵעַ") — שתי המילים ייכנסו להכתבה.</div>
       <label>מה לבדוק כשהילד כותב?</label>
       <div class="row">
         <label style="font-size:18px"><input type="radio" name="checkMode" value="full" checked> אותיות + ניקוד</label>
         <label style="font-size:18px"><input type="radio" name="checkMode" value="letters"> אותיות בלבד</label>
       </div>
       <button class="big-btn green" style="width:100%;font-size:20px" id="dictSave">שמירה ✔</button>
+      </div>
       <div class="note" id="editorMsg"></div>
     </div>
     <div class="card" id="wordsCard" style="display:none">
@@ -586,7 +605,7 @@ button{font-family:var(--font);cursor:pointer;border:none;touch-action:manipulat
    רישום תקלות — נשמר רק במכשיר, בלי שם הילד ובלי המילים.
    נמצא בתחילת הקוד כדי לתפוס גם תקלות שקורות בזמן העלייה
    ========================================================= */
-const APP_VERSION = "4";
+const APP_VERSION = "6";
 const ERR_KEY = "ligat-milim-errors";
 function logError(msg, where){
   try{
@@ -615,6 +634,14 @@ const CONFIG = {
   MAX_REC_MS: 5000,       // הקלטה נעצרת לבד אחרי 5 שניות
   IMPROVE_BONUS_PER_STAR: 5,
   SPEAK_PRAISE: true,
+  WRITE_ROUNDS: 3,        // שלב 3 (אימון כתיבה): כמה סיבובים צריך לעשות
+  COINS_WRITE: 1,         // שלב 3: מטבעות על כל מילה נכונה בכל סיבוב
+  NIKUD_BONUS: 2,         // שלב 4: בונוס על ניקוד נכון בניסיון הראשון
+  NIKUD_AUTOFILL_AFTER: 2,// שלב 4: אחרי כמה טעויות בניקוד המשחק משלים לבד
+  // גיבוי אוטומטי במייל (EmailJS). המנהל ממלא את 3 הקודים מהחשבון שלו. ריק = הגיבוי האוטומטי כבוי
+  EMAILJS: { serviceId: "", templateId: "", publicKey: "" },
+  SITE_FILE: "dictations.json", // קובץ ההכתבות שבאתר (המנהל מעדכן אותו מהמחשב)
+  BACKUP_EVERY_DAYS: 30,  // כל כמה ימים להזכיר לגבות
   CUP_COIN_MULT: 2,       // גביע: פי כמה מטבעות
   CUP_WORDS_PER_DICT: 5,  // גביע: כמה מילים לוקחים מכל אחת משתי ההכתבות
   CUP_MAX_WORDS: 12,      // גביע: כמה מילים לכל היותר בסיבוב     // השחקן אומר בקול "אַלּוּף!" / "כִּמְעַט!" (false = רק כתוב) // משחק חוזר: מטבעות רק על שיפור — כמה מטבעות על כל כוכב חדש
@@ -724,6 +751,24 @@ function loadState(){
   }catch(e){ S = defaultState(); }
   fixLook();
   S.cup = S.cup || { progress:{} }; // התקדמות בגביע (מטבעות ששולמו, כוכבים)
+  migrate();
+}
+/* מעבר משמירות ישנות לגרסה 6:
+   - "המשחק הגדול" היה שלב 3 ועכשיו הוא שלב 4 (שלב 3 = אימון כתיבה החדש)
+   - מילים נרדפות שנשמרו הופכות לשתי מילים רגילות */
+function migrate(){
+  if ((S.schema || 0) >= 6) return;
+  S.dictations.forEach(d => {
+    const p = d.progress = d.progress || {};
+    if (p[3] && !p[4]){
+      p[4] = p[3];
+      p[3] = p[4].done ? { done:true, round:CONFIG.WRITE_ROUNDS, stars:p[4].stars, seen:true } : (p[4].seen ? { seen:true } : {});
+    }
+    d.words = (d.words || []).flatMap(w => w.syn ? [{text:w.text}, {text:w.syn}] : [{text:w.text}]);
+    delete d.target;
+  });
+  Object.values(S.cups || {}).forEach(c => { if (c.progress && c.progress[3] && !c.progress[4]){ c.progress[4] = c.progress[3]; delete c.progress[3]; } });
+  S.schema = 6;
 }
 // משלים שדות חסרים במראה (למשל שמירה מגרסה 1, שלא היה בה מראה)
 function fixLook(){
@@ -1235,7 +1280,7 @@ $("namingOk").onclick = () => {
 
 /* ===================== מסך הבית ===================== */
 function starsText(n){ return "⭐".repeat(n) + "☆".repeat(3-n); }
-function dictStars(d){ return [1,2,3].reduce((s,l)=> s + ((d.progress[l]&&d.progress[l].stars)||0), 0); }
+function dictStars(d){ return [1,2,3,4].reduce((s,l)=> s + ((d.progress[l]&&d.progress[l].stars)||0), 0); }
 function renderHome(){
   updateCoins();
   $("homeBg").innerHTML = stadiumSVG(isNight(), 330);
@@ -1243,12 +1288,16 @@ function renderHome(){
   $("homePl").innerHTML = myPlayer();
   $("homeBall").innerHTML = ballSVG(S.look.eq.ball);
   $("homeNote").style.display = "none";
+  $("parentBtn").classList.toggle("due", backupDue()); // נקודה אדומה על ⚙️ כשהגיע הזמן לגבות
 }
 $("homePl").onclick = () => { SFX.tap(); openWardrobe(); };
 $("wrOpen").onclick = () => { SFX.tap(); openWardrobe(); };
-$("playBtn").onclick = () => {
+$("playBtn").onclick = async () => {
   audio(); unlockSpeech(); SFX.tap();
-  if (!S.dictations.length){ $("homeNote").textContent = "עוד אין הכתבות 🙂 בקשו מההורה להוסיף"; $("homeNote").style.display = ""; return; }
+  if (!S.dictations.length){
+    await syncSite();
+    if (!S.dictations.length){ $("homeNote").textContent = "עוד אין הכתבות 🙂 בקרוב תגיע הכתבה"; $("homeNote").style.display = ""; return; }
+  }
   openMap();
 };
 
@@ -1342,18 +1391,22 @@ let curDict = null;
 const LEVELS = {
   1:{ico:"🎯", name:"אימון בעיטות", desc:"השלם את האות החסרה"},
   2:{ico:"✨", name:"אימון מסירות", desc:"השלם את הניקוד החסר"},
-  3:{ico:"🏟️", name:"המשחק הגדול", desc:"שמע וכתוב את כל המילה"}
+  3:{ico:"✍️", name:"אימון כתיבה", desc:"כתוב את המילה בלי ניקוד · 3 סיבובים"},
+  4:{ico:"🏟️", name:"המשחק הגדול", desc:"כתוב את כל המילה עם ניקוד"}
 };
+const isTypingLevel = l => l >= 3; // בשלבים 3 ו-4 כותבים במקלדת
 // איזה מילים מתאימות לכל שלב
 function wordsFor(d, level){
   if (level === 2) return d.mode === "letters" ? [] : d.words.filter(w => toClusters(targetOf(w,d)).some(vowelOf));
   if (level === 1) return d.words.filter(w => toClusters(targetOf(w,d)).filter(c=>isLetter(c.base)).length >= 2);
   return d.words;
 }
+// שלב נפתח כשהשלב שלפניו (מבין השלבים שיש להם מילים) הסתיים
 function levelOpen(d, level){
-  if (level === 1) return true;
-  const prev = level === 3 && !wordsFor(d,2).length ? 1 : level - 1;
-  return !!(d.progress[prev] && d.progress[prev].done);
+  const lv = dictLevels(d), i = lv.indexOf(level);
+  if (i <= 0) return true;
+  const p = d.progress[lv[i-1]];
+  return !!(p && p.done);
 }
 /* ---------- מפת הליגה: שביל אחד ארוך ----------
    מלמטה למעלה: לכל הכתבה יש שלט (עם מדליה כשמסיימים), ואחריו האצטדיונים של השלבים שלה.
@@ -1361,7 +1414,7 @@ function levelOpen(d, level){
 const MAP_STEP = 128, SIGN_STEP = 96;    // רווח אנכי בין תחנות (פיקסלים)
 let mapTimers = [];
 const prog = (d, l) => d.progress[l] || (d.progress[l] = {});
-const dictLevels = d => [1,2,3].filter(l => wordsFor(d, l).length);
+const dictLevels = d => (d.words && d.words.length) ? [1,2,3,4].filter(l => wordsFor(d, l).length) : [];
 const dictDone = d => dictLevels(d).every(l => prog(d,l).done);
 function cupState(key){ S.cups = S.cups || {}; return S.cups[key] || (S.cups[key] = { progress:{} }); }
 
@@ -1386,7 +1439,7 @@ function openMap(){
   const newest = ds[ds.length-1];
   // הכתבה חדשה שעוד לא "הוצגה": אנימציה של אצטדיון חדש. הכתבות שכבר שיחקו בהן נחשבות מוצגות
   ds.forEach(d => { if (!d.introduced && dictLevels(d).some(l => prog(d,l).done)) d.introduced = true; });
-  const intro = ds.find(d => !d.introduced);
+  const intro = ds.slice().reverse().find(d => !d.introduced); // אם נוספו כמה — מציגים את החדשה ביותר
   ds.forEach(d => { if (d !== intro) d.introduced = true; });
   let fresh = null; // שלב שנפתח עכשיו (אנימציית מנעול)
   items.forEach(it => {
@@ -1397,13 +1450,14 @@ function openMap(){
     }
     if (it.type === "cup"){
       const c = cupState(it.key);
-      it.open = !!(prog(it.d1,1).done && prog(it.d2,1).done); it.done = !!(c.progress[3] && c.progress[3].done);
+      it.open = !!(prog(it.d1,1).done && prog(it.d2,1).done); it.done = !!(c.progress[4] && c.progress[4].done);
     }
   });
   // התחנה הנוכחית: בהכתבה החדשה ביותר שיש בה שלב פתוח ולא גמור; אחרת הראשונה שלא נגמרה
   const playable = items.filter(it => it.type !== "sign" && it.open && !it.done);
   let current = playable.filter(it => (it.d || it.d2) === newest)[0] || playable[playable.length-1] || items.filter(it=>it.type!=="sign").pop();
   if (fresh) current = fresh;
+  if (!current){ $("mapInner").innerHTML = `<div class="empty-map">⏳ ההכתבות נטענות...</div>`; return; }
   // --- ציור: שביל, קישוטים, שלטים, אצטדיונים ושחקן ---
   const pts = items.map(it => [it.x, it.y]);
   let d = `M${pts[0][0]},${pts[0][1]+60}`;
@@ -1421,9 +1475,9 @@ function openMap(){
       const p = prog(it.d, it.l), id = `n-${it.d.id}-${it.l}`;
       const cls = ["node","l"+it.l, it.open?"":"locked", it.done?"done":"", it===current&&it.open?"current":"", it.d===intro?"hidden-intro":""].join(" ");
       html += `<button class="${cls}" id="${id}" style="left:${it.x}px;top:${it.y}px"><div class="stadium">${it.open ? LEVELS[it.l].ico : "🔒"}</div>
-        <div class="label">${LEVELS[it.l].name}</div><div class="nstars">${p.done ? starsText(p.stars) : ""}</div></button>`;
+        <div class="label">${LEVELS[it.l].name}</div><div class="nstars">${p.done ? starsText(p.stars) : (it.l === 3 && p.round ? `סיבוב ${p.round}/${CONFIG.WRITE_ROUNDS}` : "")}</div></button>`;
     } else {
-      const c = cupState(it.key), p3 = c.progress[3] || {};
+      const c = cupState(it.key), p3 = c.progress[4] || {};
       html += `<button class="node cup ${it.open?"":"locked"} ${it.done?"done":""} ${it===current&&it.open?"current":""}" id="c-${it.d1.id}-${it.d2.id}" style="left:${it.x}px;top:${it.y}px">
         <div class="stadium">${it.open ? "🏆" : "🔒"}</div><div class="label">גביע הליגה</div><div class="nstars">${p3.done ? starsText(p3.stars) : "מטבעות ×2"}</div></button>`;
     }
@@ -1487,7 +1541,7 @@ function tapNode(it){
 function tapCup(it){
   const n = nodeEl(it);
   if (!it.open){ wiggle(n.querySelector(".stadium")); SFX.miss(); mapBubble(n, "מסיימים שלב 1 בשתי ההכתבות 🙂"); return; }
-  SFX.tap(); curDict = buildCup(it.d1, it.d2, it.key); loadRecs(curDict); enterLevel(3);
+  SFX.tap(); curDict = buildCup(it.d1, it.d2, it.key); loadRecs(curDict); enterLevel(4);
 }
 
 /* ---------- מנהרה: השחקן יוצא למגרש לפני השלב ---------- */
@@ -1498,7 +1552,7 @@ function enterLevel(l){
   $("tunnelPlayer").innerHTML = myPlayer();
   $("tunnelBanner").innerHTML = curDict.id === "cup"
     ? `🏆 גביע הליגה<small>מילים מכל ההכתבות · מטבעות כפולים!</small>`
-    : `${LEVELS[l].ico} שלב ${l}: ${LEVELS[l].name}<small>${LEVELS[l].desc}</small>`;
+    : `${LEVELS[l].ico} שלב ${l}: ${LEVELS[l].name}<small>${l === 3 ? `סיבוב ${Math.min(((curDict.progress[3]||{}).round||0) + 1, CONFIG.WRITE_ROUNDS)} מתוך ${CONFIG.WRITE_ROUNDS} · בלי ניקוד` : LEVELS[l].desc}</small>`;
   ["tunnelPlayer","tunnelBanner"].forEach(id => { const e = $(id); e.classList.remove("go"); void e.offsetWidth; e.classList.add("go"); });
   show("tunnel");
   setTimeout(() => noise(1.6,.22), 900); // הקהל מריע
@@ -1524,11 +1578,13 @@ function startLevel(level){
   p.paid = p.paid || (p.done ? curDict.words.map(w => cleanWord(targetOf(w))) : []);
   G.prevStars = p.stars || 0;
   G.replay = !!p.done;
+  // שלב 3: באיזה סיבוב אנחנו (0,1,2). כל סיבוב משלם בנפרד; אחרי שסיימו את כל הסיבובים — לא משלמים שוב
+  G.roundIdx = level === 3 ? Math.min(p.round || 0, CONFIG.WRITE_ROUNDS - 1) : 0;
   $("kicker").innerHTML = myPlayerBack();   // השחקן מאחור: רואים שם ומספר על הגב
   $("ball").innerHTML = ballSVG(S.look.eq.ball);
   $("keeper").innerHTML = keeperSVG();
-  $("scene").classList.toggle("short", level === 3); // בשלב 3 צריך מקום למקלדת
-  $("game").classList.toggle("typing", level === 3);
+  $("scene").classList.toggle("short", isTypingLevel(level)); // בשלבי הכתיבה צריך מקום למקלדת
+  $("game").classList.toggle("typing", isTypingLevel(level));
   show("game"); updateCoins(); layoutScene(); nextWord();
 }
 function curWord(){ return G.words[G.i]; }
@@ -1539,8 +1595,9 @@ function curWord(){ return G.words[G.i]; }
    בגביע המילים מגיעות מכמה הכתבות, ולכן כל מילה "זוכרת" מאיזו הכתבה היא (_d) */
 const dictOfWord = w => (w && w._d) ? S.dictations.find(d => d.id === w._d) : curDict;
 const modeOf = w => (dictOfWord(w) || curDict).mode;
-const isSynMode = (w, d) => (d || dictOfWord(w) || {}).target === "syn" && !!w.syn;
-const targetOf = (w, d) => isSynMode(w, d) ? w.syn : w.text;
+// מילים נרדפות הוסרו (גרסה 6): כותבים תמיד את המילה ששומעים
+const isSynMode = () => false;
+const targetOf = w => w.text;
 const recDictId = w => (w && w._d) || curDict.id;
 const sayCur = slow => sayWord(curWord().text, recDictId(curWord()), slow);
 const inRetry = () => G.i >= G.origCount; // האם אנחנו בחלק של התרגול החוזר
@@ -1597,7 +1654,7 @@ function nextWord(){
     showRetryIntro(); return;
   }
   if (G.i >= G.words.length) return finishLevel();
-  G.tries = 0; G.busy = false; G.typed = [];
+  G.tries = 0; G.nikTries = 0; G.busy = false; G.typed = []; G.fixed = null;
   resetScene(); renderProgress();
   $("feedback").textContent = ""; $("feedback").className = "feedback";
   const w = curWord();
@@ -1712,6 +1769,13 @@ function setupTyping(){
   // 4 שורות אותיות (כולל שׁ ו-שׂ), שורת תנועות, שורה של שווא/דגש/עוד/מחיקה/בדוק, ושורה נסתרת של חטפים ורווח
   let h = `<div class="kb">`;
   KB_LETTERS.forEach(l => h += `<button class="key" data-l="${l}">${l}</button>`);
+  if (G.level === 3){
+    // שלב 3: כותבים רק אותיות — מקלדת בלי ניקוד
+    h += `<button class="key fn wide" data-act="back">⌫</button><button class="key fn wide" data-act="space">רווח</button><button class="key check w3" data-act="check">בדוק ✔</button></div>`;
+    box.innerHTML = h;
+    box.querySelectorAll(".key").forEach(k => k.onclick = () => onKey(k));
+    return smartKeyboard();
+  }
   KB_NIKUD.forEach(m => h += `<button class="key n" data-m="${m}">${DOTTED}${m}</button>`);
   h += `<button class="key n" data-m="${N.SHEVA}">${DOTTED}${N.SHEVA}</button><button class="key n" data-m="${N.DAGESH}">${DOTTED}${N.DAGESH}</button>`;
   h += `<button class="key fn" data-act="more">עוד…</button><button class="key fn wide" data-act="back">⌫</button><button class="key check" data-act="check">בדוק ✔</button>`;
@@ -1733,9 +1797,9 @@ function smartKeyboard(){
   const letters = new Set(toClusters(targetOf(curWord())).map(keyOfCluster));
   document.querySelectorAll(".key[data-l]").forEach(k => { if (letters.has(k.dataset.l.normalize("NFC")) || letters.has(k.dataset.l)) k.classList.add(cls); });
 }
-function winsOf(text){ const w = (curDict.progress[3] && curDict.progress[3].wins) || {}; return w[cleanWord(text)] || 0; }
+function winsOf(text){ const p = curDict.progress[G.level]; const w = (p && p.wins) || {}; return w[cleanWord(text)] || 0; }
 function addWin(text){
-  const p = curDict.progress[3]; p.wins = p.wins || {};
+  const p = curDict.progress[G.level]; p.wins = p.wins || {};
   const k = cleanWord(text); p.wins[k] = (p.wins[k] || 0) + 1; save();
 }
 /* הסמן (G.cursor) = כמה אותיות יש לפניו.
@@ -1789,6 +1853,7 @@ function renderTyped(marks, noCursor){
     const t = esc(c.base === " " ? "\u00A0" : c.base + [...c.marks].sort().join(""));
     let cls = "tl";
     if (marks && marks[i]){ if (!marks[i].letterOk) cls += " bad-l"; else if (!marks[i].nikudOk) cls += " bad-n"; }
+    if (G.fixed && G.fixed.has(i)) cls += " fixed"; // ניקוד שהמשחק השלים לבד
     h += `<span class="${cls}" data-i="${i}">${t}</span>` + (G.cursor === i+1 ? cur : "");
   });
   v.innerHTML = h;
@@ -1800,8 +1865,14 @@ function renderTyped(marks, noCursor){
 function checkTyped(){
   if (!G.typed.length){ $("feedback").className="feedback try"; $("feedback").textContent = "קודם שמע 🔊 ואז כתוב 🙂"; return; }
   const w = curWord();
-  const r = compareWords(typedText(), targetOf(w), modeOf(w));
+  // שלב 3 בודק רק אותיות; שלב 4 בודק לפי ההגדרה של ההכתבה (בדרך כלל גם ניקוד)
+  const r = compareWords(typedText(), targetOf(w), G.level === 3 ? "letters" : modeOf(w));
   if (r.ok){ renderTyped(null, true); return success(); }
+  // שלב 4: האותיות נכונות ורק הניקוד לא — אחרי כמה טעויות המשחק משלים לבד
+  if (G.level === 4 && r.lenDiff === 0 && r.details.every(d => d.letterOk)){
+    G.nikTries++;
+    if (G.nikTries >= CONFIG.NIKUD_AUTOFILL_AFTER) return autoFillNikud(r);
+  }
   // אחרי טעות: הסמן קופץ לבד אחרי האות הראשונה שצריך לתקן
   const firstBad = r.details.findIndex(d => !d.letterOk || !d.nikudOk);
   G.cursor = firstBad >= 0 ? firstBad + 1 : G.typed.length;
@@ -1822,10 +1893,15 @@ const ENCOURAGE = ["כמעט! נסה שוב 💪","השוער תפס הפעם…
 
 function success(){
   G.busy = true;
-  const coins = G.tries === 0 ? CONFIG.COINS_FIRST_TRY : CONFIG.COINS_RETRY;
+  let coins = G.tries === 0 ? CONFIG.COINS_FIRST_TRY : CONFIG.COINS_RETRY;
+  if (G.level === 3) coins = CONFIG.COINS_WRITE;          // שלב 3: מטבע לכל מילה בכל סיבוב
+  // שלב 4: ניקוד נכון בניסיון הראשון = בונוס
+  const w = curWord();
+  const bonus = G.level === 4 && G.tries === 0 && modeOf(w) !== "letters" && toClusters(targetOf(w)).some(c => vowelOf(c)) ? CONFIG.NIKUD_BONUS : 0;
   if (G.tries === 0 && !inRetry()) G.firstTry++; // הכוכבים נקבעים לפי הסיבוב הרגיל בלבד
-  if (G.level === 3 && G.tries === 0) addWin(targetOf(curWord())); // למקלדת החכמה
-  $("feedback").className = "feedback good"; $("feedback").textContent = pick(PRAISE);
+  if (isTypingLevel(G.level) && G.tries === 0) addWin(targetOf(w)); // למקלדת החכמה
+  $("feedback").className = "feedback good"; $("feedback").textContent = pick(PRAISE) + (bonus ? `  ✨ בונוס ניקוד +${bonus}` : "");
+  coins += bonus;
   shoot(true);
   setTimeout(() => { payWord(coins); }, 600);
   setTimeout(() => { G.i++; nextWord(); }, 2200);
@@ -1838,21 +1914,23 @@ function miss(msg){
   $("feedback").className = "feedback try";
   if (G.tries >= CONFIG.SHOW_ANSWER_AFTER) return showAnswer();
   let text = msg || pick(ENCOURAGE);
-  if (G.level === 3 && G.tries >= CONFIG.HINT_AFTER) text += "  " + hintText();
+  if (isTypingLevel(G.level) && G.tries >= CONFIG.HINT_AFTER) text += "  " + hintText();
   $("feedback").textContent = text;
 }
 // רמז בשלב 3: מראים את האות הראשונה שלא מתאימה
 function hintText(){
   const t = toClusters(targetOf(curWord())), a = toClusters(typedText());
-  let i = 0; while (i < t.length && a[i] && clusterText(a[i]) === clusterText(t[i])) i++;
+  const show = c => G.level === 3 ? c.base : clusterText(c); // בשלב 3 בלי ניקוד
+  let i = 0; while (i < t.length && a[i] && (G.level === 3 ? a[i].base === t[i].base : clusterText(a[i]) === clusterText(t[i]))) i++;
   if (i >= t.length) return "";
-  return `💡 רמז: האות ה-${i+1} היא ${clusterText(t[i])}`;
+  return `💡 רמז: האות ה-${i+1} היא ${show(t[i])}`;
 }
 // אחרי 3 ניסיונות: מראים בעדינות את המילה הנכונה וממשיכים
 function showAnswer(){
   G.busy = true;
   const w = curWord();
-  $("wordView").innerHTML = `<span style="color:#1d4e89">${esc(cleanWord(targetOf(w)))}</span>`;
+  const ans = G.level === 3 ? toClusters(targetOf(w)).map(c => c.base).join("") : cleanWord(targetOf(w));
+  $("wordView").innerHTML = `<span style="color:#1d4e89">${esc(ans)}</span>`;
   $("feedback").className = "feedback good";
   $("feedback").textContent = "זו המילה 👆 בפעם הבאה זה יצליח! מטבע על המאמץ 🪙";
   $("controls").innerHTML = `<button class="big-btn green next-btn" style="width:100%" id="contBtn">המשך ▶</button>`;
@@ -1861,10 +1939,28 @@ function showAnswer(){
 }
 
 // נותן מטבעות על מילה — רק אם עוד לא קיבלו עליה מטבעות בשלב הזה
+/* שלב 4: אחרי כמה טעויות בניקוד — המשחק משלים לבד את הניקוד, אות אחרי אות, ועובר למילה הבאה */
+function autoFillNikud(r){
+  G.busy = true; G.tries++;
+  if (!inRetry() && !G.retry.includes(curWord())) G.retry.push(curWord()); // המילה תחזור בהארכה
+  shoot(false);
+  const w = curWord(), t = toClusters(targetOf(w));
+  const toFix = r.details.map((d,i) => d.nikudOk ? -1 : i).filter(i => i >= 0);
+  G.fixed = new Set(); G.marks = null;
+  $("feedback").className = "feedback good"; $("feedback").textContent = "בוא נשלים את הניקוד ביחד ✨";
+  toFix.forEach((i, j) => setTimeout(() => {
+    G.typed[i] = { base: t[i].base, marks: [...t[i].marks] }; G.fixed.add(i);
+    tone(700 + j*120, .1, "sine", .12); renderTyped(null, true);
+  }, 500 + j*450));
+  const end = 500 + toFix.length*450;
+  setTimeout(() => { $("feedback").textContent = "הנה הניקוד הנכון 👆 ממשיכים!"; sayWord(w.text, recDictId(w), true); }, end);
+  setTimeout(() => { payWord(CONFIG.COINS_SHOWN); G.i++; nextWord(); }, end + 2600);
+}
 function payWord(n){
   const w = curWord();
   // בגביע: המפתח כולל את ההכתבה, ומקבלים פי CUP_COIN_MULT מטבעות
-  const key = (w._d ? w._d + "|" : "") + cleanWord(targetOf(w));
+  const key = (G.level === 3 ? "r" + G.roundIdx + "|" : "") + (w._d ? w._d + "|" : "") + cleanWord(targetOf(w));
+  if (G.level === 3) n = Math.min(n, CONFIG.COINS_WRITE);
   const paid = curDict.progress[G.level].paid;
   if (paid.includes(key)) return; // כבר שולם — בלי מטבעות (משחק חוזר)
   paid.push(key);
@@ -1945,21 +2041,28 @@ function finishLevel(){
   const p = curDict.progress[G.level];
   // בונוס שיפור: רק אם זה משחק חוזר והילד קיבל יותר כוכבים מהשיא הקודם
   const bonus = G.replay && stars > G.prevStars ? (stars - G.prevStars) * CONFIG.IMPROVE_BONUS_PER_STAR : 0;
-  p.done = true; p.stars = Math.max(stars, p.stars||0);
+  // שלב 3: צריך כמה סיבובים. כל סיבוב שמסתיים מקדם את המונה; אחרי הסיבוב האחרון השלב "גמור"
+  const roundsLeft = G.level === 3 && curDict.id !== "cup" && !p.done;
+  if (roundsLeft) p.round = Math.min((p.round || 0) + 1, CONFIG.WRITE_ROUNDS);
+  const moreRounds = roundsLeft && p.round < CONFIG.WRITE_ROUNDS;
+  if (!moreRounds) p.done = true;
+  p.stars = Math.max(stars, p.stars||0);
   if (bonus) giveCoins(bonus);
   save();
+  // סיימו את כל השלבים של ההכתבה (מדליה 🥇) — שולחים גיבוי אוטומטי למנהל
+  if (curDict.id !== "cup" && dictDone(curDict) && !curDict.backupSent) autoBackup(curDict);
   SFX.win(); confetti(40);
   ceremony(stars, G.earned);
-  $("doneTitle").textContent = stars === 3 ? "אַלּוּף הַלִּיגָה! 🏆" : stars === 2 ? "מִשְׂחָק מְצֻיָּן! ⚽" : "כָּל הַכָּבוֹד עַל הַמַּאֲמָץ! 💪";
+  $("doneTitle").textContent = moreRounds ? `סִבּוּב ${p.round} מִתּוֹךְ ${CONFIG.WRITE_ROUNDS} ✔`
+    : stars === 3 ? "אַלּוּף הַלִּיגָה! 🏆" : stars === 2 ? "מִשְׂחָק מְצֻיָּן! ⚽" : "כָּל הַכָּבוֹד עַל הַמַּאֲמָץ! 💪";
   setTimeout(() => sayPraise($("doneTitle").textContent), 600);
   $("doneCoins").textContent = bonus ? `שיפרת את השיא! בונוס 🪙 ${bonus}`
     : G.earned ? `הרווחת 🪙 ${G.earned}`
     : `אימון חוזר 💪 שיא כוכבים חדש = מטבעות`;
-  const nextL = [G.level+1, G.level+2].find(l => l<=3 && wordsFor(curDict,l).length);
-  $("doneNext").textContent = nextL ? "לשלב הבא ▶" : "למפה 🗺️";
-  if (curDict.id === "cup") $("doneNext").textContent = "למפה 🗺️";
+  const lv = curDict.id === "cup" ? [] : dictLevels(curDict), nextL = lv[lv.indexOf(G.level) + 1];
+  $("doneNext").textContent = moreRounds ? "לסיבוב הבא ▶" : nextL ? "לשלב הבא ▶" : "למפה 🗺️";
   // "לשלב הבא" חוזר למפה — שם רואים את המנעול נפתח והשחקן רץ לאצטדיון הבא
-  $("doneNext").onclick = () => { SFX.tap(); openMap(); };
+  $("doneNext").onclick = () => { SFX.tap(); moreRounds ? enterLevel(3) : openMap(); };
   show("done");
 }
 $("doneAgain").onclick = () => { if (curDict.id === "cup") curDict = buildCup(curDict.d1, curDict.d2, curDict.cupKey); enterLevel(G.level); };
@@ -2057,7 +2160,102 @@ $("gateCancel").onclick = () => show("home");
 /* ===================== מסך הורה ===================== */
 function openParent(){
   $("childName").value = S.childName; $("playerName2").value = S.playerName;
-  renderParentList(); renderVoiceStatus(); renderErrStatus(); show("parent");
+  renderParentList(); renderVoiceStatus(); renderErrStatus(); renderBackupStatus(); show("parent");
+}
+/* ---------- גיבוי: תזכורת חודשית ושליחה בלחיצה אחת ---------- */
+const hasProgress = () => S.coins > 0 || S.dictations.some(d => Object.values(d.progress || {}).some(p => p && p.done));
+const backupDue = () => hasProgress() && (!S.lastBackup || Date.now() - S.lastBackup > CONFIG.BACKUP_EVERY_DAYS * 864e5);
+const isInstalled = () => window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+function renderBackupStatus(){
+  const due = backupDue();
+  $("backupDue").style.display = due ? "" : "none";
+  $("backupDue").innerHTML = due ? `💾 הגיע הזמן לגבות! לחצו למטה על "שליחת גיבוי למנהל"` : "";
+  $("autoBkStatus").textContent = (emailjsReady() ? "✅ גיבוי אוטומטי פעיל" : "⚙️ הגיבוי האוטומטי עוד לא הוגדר")
+    + (S.lastBackup ? ` · גיבוי אחרון: ${new Date(S.lastBackup).toLocaleDateString("he-IL")}` : "")
+    + (S.pendingBackup ? " · ⏳ גיבוי ממתין לאינטרנט" : "");
+  $("installTip").style.display = isInstalled() ? "none" : "";
+  $("parentBtn").classList.toggle("due", due);
+}
+async function backupFile(){
+  const keys = await allRecKeys(), recs = {};
+  for (const k of keys) recs[k] = await getRec(k);
+  const data = JSON.stringify({app:"ligat-milim", version:APP_VERSION, saved:new Date().toISOString(), state:S, recordings:recs});
+  const name = "ligat-milim-backup-" + new Date().toISOString().slice(0,10) + ".json";
+  return new File([data], name, {type:"application/json"});
+}
+function markBackedUp(){ S.lastBackup = Date.now(); save(); renderBackupStatus(); }
+/* ---------- גיבוי אוטומטי במייל (EmailJS) ----------
+   הגיבוי הוא "קוד" אחד ארוך (טקסט) שנשלח למנהל במייל. בלי הקלטות, כדי שיהיה קטן.
+   ההכתבות מהאתר לא נכנסות (הן שמורות ב-GitHub) — רק ההתקדמות שלהן. */
+const emailjsReady = () => !!(CONFIG.EMAILJS.serviceId && CONFIG.EMAILJS.templateId && CONFIG.EMAILJS.publicKey);
+function backupCode(){
+  const strip = pr => { const o = {}; Object.entries(pr || {}).forEach(([k,v]) => { const c = Object.assign({}, v); delete c.paid; delete c.wins; o[k] = c; }); return o; };
+  const st = JSON.parse(JSON.stringify(S));
+  st.dictations = st.dictations.map(d => d.source === "site"
+    ? { id:d.id, source:"site", name:d.name, created:d.created, words:[], progress:strip(d.progress), introduced:d.introduced, medalSeen:d.medalSeen, backupSent:d.backupSent }
+    : Object.assign(d, { progress: strip(d.progress) }));
+  Object.values(st.cups || {}).forEach(c => c.progress = strip(c.progress));
+  delete st.cup; delete st.pendingBackup;
+  const json = JSON.stringify(st);
+  return "LIGA1:" + btoa(unescape(encodeURIComponent(json))); // טקסט בטוח להעתקה
+}
+async function sendBackupEmail(reason){
+  if (!emailjsReady()) return "noconfig";
+  const done = S.dictations.filter(d => dictDone(d)).length;
+  try{
+    const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ service_id:CONFIG.EMAILJS.serviceId, template_id:CONFIG.EMAILJS.templateId, user_id:CONFIG.EMAILJS.publicKey,
+        template_params:{ child_name:S.childName || "-", player_name:S.playerName || "-", coins:S.coins, done_dicts:done,
+          reason, date:new Date().toLocaleString("he-IL"), backup_code:backupCode() } })
+    });
+    if (!r.ok) throw new Error("status " + r.status + " " + (await r.text()).slice(0,80));
+    S.lastBackup = Date.now(); S.pendingBackup = false; save();
+    return "ok";
+  }catch(e){
+    S.pendingBackup = true; save();             // ננסה שוב בפעם הבאה שהמשחק נפתח
+    logError("emailjs: " + e.message, "backup");
+    return "fail";
+  }
+}
+// נשלח לבד כשההכתבה הושלמה (מדליה). מראה הודעה קטנה במסך הסיום
+async function autoBackup(d){
+  const res = await sendBackupEmail("סיום הכתבה: " + d.name);
+  if (res === "ok"){ d.backupSent = true; save(); const el = $("doneCoins"); if (el) el.textContent += " · 💾 הגיבוי נשלח"; }
+}
+$("shareBackup").onclick = async () => {
+  if (emailjsReady()){
+    $("backupMsg").textContent = "⏳ שולח...";
+    const res = await sendBackupEmail("שליחה ידנית ממסך ההורה");
+    $("backupMsg").textContent = res === "ok" ? "✅ הגיבוי נשלח למנהל" : "❌ השליחה לא הצליחה (אולי אין אינטרנט). ננסה שוב לבד בפעם הבאה.";
+    renderBackupStatus(); return;
+  }
+  // עוד לא הוגדר EmailJS — משתמשים בחלון השיתוף של הטלפון
+  const file = await backupFile();
+  if (navigator.canShare && navigator.canShare({ files:[file] })){
+    try{ await navigator.share({ files:[file], title:"גיבוי ליגת המילים" }); markBackedUp(); $("backupMsg").textContent = "✅ הגיבוי נשלח."; }
+    catch(e){ if (e.name !== "AbortError") $("backupMsg").textContent = "❌ השליחה לא הצליחה. נסו 'שמירת גיבוי לקובץ'."; }
+  } else { downloadFile(file); markBackedUp(); $("backupMsg").textContent = "הגיבוי נשמר כקובץ."; }
+};
+// שחזור: מדביקים את הקוד שהגיע במייל
+let restoreArmed = false;
+$("restoreBtn").onclick = async () => {
+  const txt = $("restoreText").value.trim().replace(/\s+/g, "");
+  if (!txt.startsWith("LIGA1:")){ $("restoreMsg").textContent = "❌ זה לא נראה כמו קוד גיבוי (הוא צריך להתחיל ב-LIGA1:)"; return; }
+  if (!restoreArmed){ restoreArmed = true; $("restoreMsg").textContent = "לחצו שוב כדי לאשר — המצב הנוכחי יוחלף בגיבוי"; setTimeout(()=>restoreArmed=false, 5000); return; }
+  try{
+    const st = JSON.parse(decodeURIComponent(escape(atob(txt.slice(6)))));
+    S = Object.assign(defaultState(), st); fixLook(); S.cup = S.cup || {progress:{}}; migrate(); save();
+    await syncSite();                            // מחזיר את המילים של ההכתבות מהאתר
+    $("restoreMsg").textContent = "✅ השחזור הצליח! 🪙 " + S.coins; $("restoreText").value = "";
+    openParent();
+  }catch(e){ $("restoreMsg").textContent = "❌ הקוד לא תקין. אולי הוא לא הועתק עד הסוף?"; }
+  restoreArmed = false;
+};
+function downloadFile(file){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file); a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove();
 }
 /* ---------- דיווח תקלות ---------- */
 function renderErrStatus(){
@@ -2086,7 +2284,7 @@ function renderParentList(){
   const box = $("parentDictList");
   if (!S.dictations.length){ box.innerHTML = `<div class="note">אין הכתבות עדיין</div>`; return; }
   box.innerHTML = S.dictations.slice().sort((a,b)=>b.created-a.created).map(d =>
-    `<div class="word-row"><span class="w" style="font-size:19px">${esc(d.name)} <span class="src">(${d.words.length} מילים)</span></span>
+    `<div class="word-row"><span class="w" style="font-size:19px">${esc(d.name)} ${d.source==="site"?'<span class="src-tag">🌐 מהאתר</span>':""} <span class="src">(${d.words.length} מילים)</span></span>
      <button class="small-btn" data-id="${d.id}">עריכה ✏️</button></div>`).join("");
   box.querySelectorAll("button").forEach(b => b.onclick = () => openEditor(b.dataset.id));
 }
@@ -2100,14 +2298,7 @@ $("voiceTest").onclick = () => speak("שָׁלוֹם");
 
 /* ---------- גיבוי: ייצוא וייבוא ---------- */
 $("exportBtn").onclick = async () => {
-  const keys = await allRecKeys(), recs = {};
-  for (const k of keys) recs[k] = await getRec(k);
-  const data = JSON.stringify({app:"ligat-milim", version:1, saved:new Date().toISOString(), state:S, recordings:recs});
-  const blob = new Blob([data], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "ligat-milim-backup-" + new Date().toISOString().slice(0,10) + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
+  downloadFile(await backupFile()); markBackedUp();
   $("backupMsg").textContent = "✅ קובץ הגיבוי נוצר. באייפון הוא נשמר באפליקציית 'קבצים' (הורדות).";
 };
 $("importBtn").onclick = () => $("importFile").click();
@@ -2116,7 +2307,7 @@ $("importFile").onchange = async e => {
   try{
     const data = JSON.parse(await f.text());
     if (data.app !== "ligat-milim" || !data.state) throw new Error("not a backup");
-    S = Object.assign(defaultState(), data.state); fixLook(); save();
+    S = Object.assign(defaultState(), data.state); fixLook(); save(); syncSite();
     for (const [k,v] of Object.entries(data.recordings||{})) await setRec(k, v);
     $("backupMsg").textContent = "✅ הגיבוי נטען בהצלחה!";
     openParent();
@@ -2155,42 +2346,48 @@ function openEditor(id){
   $("editorTitle").textContent = d ? "עריכת הכתבה" : "הכתבה חדשה";
   $("dictName").value = d ? d.name : "הכתבה " + (S.dictations.length + 1);
   // מילה נרדפת נשמרת ומוצגת שוב בפורמט "מילה = נרדפת"
-  $("dictWords").value = d ? d.words.map(w => w.syn ? `${w.text} = ${w.syn}` : w.text).join("\n") : "";
-  document.querySelector(`input[name=target][value=${d&&d.target==="syn"?"syn":"word"}]`).checked = true;
+  $("dictWords").value = d ? d.words.map(w => w.text).join("\n") : "";
   document.querySelector(`input[name=checkMode][value=${d?d.mode:"full"}]`).checked = true;
   $("editorMsg").textContent = ""; $("deleteMsg").textContent = "";
-  $("deleteCard").style.display = d ? "" : "none";
+  // הכתבה מהאתר: אי אפשר לשנות מילים או למחוק (השינוי נעשה בקובץ באתר), רק להקליט
+  const site = !!(d && d.source === "site");
+  $("siteNote").style.display = site ? "" : "none";
+  $("editFields").style.display = site ? "none" : "";
+  $("deleteCard").style.display = d && !site ? "" : "none";
   renderWordRows(); show("editor");
 }
 $("newDict").onclick = () => openEditor(null);
 $("editorBack").onclick = () => { stopRec(); openParent(); };
 
-$("dictSave").onclick = () => {
-  const name = $("dictName").value.trim() || "הכתבה";
-  // מילה בכל שורה. שורה עם "=" = מילה ומילה נרדפת, למשל: חָבֵר = רֵעַ
-  const lines = $("dictWords").value.split(/\n+/).map(l => l.trim()).filter(Boolean);
+// הופך שורות טקסט למילים. שורה עם "=" = מילה ומילה נרדפת, למשל: חָבֵר = רֵעַ
+function parseWords(lines){
   const words = [];
   for (const line of lines){
-    const [main, syn] = line.split("=").map(x => x && x.trim());
+    const [main, syn] = String(line).split("=").map(x => x && x.trim());
     const text = cleanWord(main || "");
     if (!text || ![...text].some(isLetter)) continue;
-    words.push(syn ? {text, syn: cleanWord(syn)} : {text});
+    words.push({text});
+    // "חָבֵר = רֵעַ": שתי המילים נכנסות להכתבה כמילים רגילות
+    const t2 = cleanWord(syn || "");
+    if (t2 && [...t2].some(isLetter)) words.push({text: t2});
   }
+  return words;
+}
+$("dictSave").onclick = () => {
+  const name = $("dictName").value.trim() || "הכתבה";
+  const words = parseWords($("dictWords").value.split(/\n+/).map(l => l.trim()).filter(Boolean));
   if (!words.length){ $("editorMsg").textContent = "צריך לפחות מילה אחת בעברית 🙂"; return; }
   const mode = document.querySelector("input[name=checkMode]:checked").value;
-  const target = document.querySelector("input[name=target]:checked").value; // word = המילה עצמה, syn = המילה הנרדפת
   const noNikud = words.every(w => !toClusters(w.text).some(c => c.marks.length));
   if (editId){
     const d = S.dictations.find(x=>x.id===editId);
-    d.name = name; d.words = words; d.mode = mode; d.target = target;
+    d.name = name; d.words = words; d.mode = mode;
   } else {
     editId = "d" + Date.now();
-    S.dictations.push({id:editId, name, created:Date.now(), mode, target, words, progress:{}});
+    S.dictations.push({id:editId, name, created:Date.now(), mode, words, progress:{}});
   }
   save();
-  $("editorMsg").textContent = `✅ נשמר! ${words.length} מילים.` + (noNikud && mode==="full" ? " ⚠️ שימו לב: אין במילים ניקוד." : "")
-    + (target === "syn" && !words.some(w=>w.syn) ? " ⚠️ בחרתם 'מילה נרדפת' אבל אין שורות עם =." : "")
-    + (target === "syn" && words.some(w=>!w.syn) && words.some(w=>w.syn) ? " (במילים בלי = הילד יכתוב את המילה עצמה.)" : "");
+  $("editorMsg").textContent = `✅ נשמר! ${words.length} מילים.` + (noNikud && mode==="full" ? " ⚠️ שימו לב: אין במילים ניקוד." : "");
   $("editorTitle").textContent = "עריכת הכתבה"; $("deleteCard").style.display = "";
   renderWordRows();
 };
@@ -2258,10 +2455,59 @@ function stopRec(){
 /* =========================================================
    התחלה
    ========================================================= */
+/* =========================================================
+   הכתבות מהאתר: המשחק קורא את הקובץ dictations.json שנמצא ליד המשחק ב-GitHub.
+   הכתבה חדשה בקובץ = "מחזור חדש" במפה. ההתקדמות של הילד נשארת בטלפון.
+   אם אין אינטרנט — משתמשים בהכתבות שכבר נשמרו בפעם הקודמת.
+   ========================================================= */
+async function syncSite(){
+  try{
+    const r = await fetch(CONFIG.SITE_FILE + "?t=" + Date.now(), { cache:"no-store" });
+    if (!r.ok) return false;                       // אין קובץ (למשל כשפותחים מהמחשב) — לא נורא
+    const data = await r.json();
+    const list = Array.isArray(data.dictations) ? data.dictations : [];
+    let changed = false; const seen = new Set();
+    list.forEach((x, i) => {
+      if (!x || x.id === undefined || !Array.isArray(x.words)) return;
+      const id = "site-" + String(x.id), words = parseWords(x.words);
+      if (!words.length) return;
+      seen.add(id);
+      const f = { name: String(x.name || "הכתבה"), mode: x.mode === "letters" ? "letters" : "full",
+                  target: "word", words, created: Date.parse(x.date) || (1e12 + i), source:"site" };
+      const d = S.dictations.find(d => d.id === id);
+      if (!d){ S.dictations.push(Object.assign({ id, progress:{} }, f)); changed = true; }
+      else if (JSON.stringify([d.name,d.mode,d.target,d.words,d.created]) !== JSON.stringify([f.name,f.mode,f.target,f.words,f.created])){ Object.assign(d, f); changed = true; }
+    });
+    // הכתבה שהמנהל מחק מהקובץ — נעלמת גם מהמשחק
+    const before = S.dictations.length;
+    S.dictations = S.dictations.filter(d => d.source !== "site" || seen.has(d.id));
+    if (S.dictations.length !== before) changed = true;
+    // כשמגיעות הכתבות אמיתיות — מורידים את ההכתבה לדוגמה (אם לא שיחקו בה)
+    const sample = S.dictations.find(d => d.id === "sample");
+    if (seen.size && sample && !Object.values(sample.progress || {}).some(p => p && p.done)){ S.dictations = S.dictations.filter(d => d !== sample); changed = true; }
+    if (changed) save();
+    return changed;
+  }catch(e){
+    if (e instanceof SyntaxError) logError("dictations.json לא תקין: " + e.message, "sync"); // שגיאה בקובץ — המנהל יראה בדיווח
+    return false;
+  }
+}
+// אחרי עדכון: מרעננים את המסך שפתוח עכשיו
+async function syncAndRefresh(){
+  const changed = await syncSite();
+  if (!changed) return;
+  const active = document.querySelector(".screen.active");
+  if (active && active.id === "home") renderHome();
+  if (active && active.id === "levels") openMap();
+}
+// כשחוזרים למשחק (למשל אחרי יום) — בודקים שוב אם יש הכתבה חדשה
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncAndRefresh(); });
+
 loadState();
 renderNaming();
 updateCoins();
 show(S.playerName ? "home" : "naming");
+syncAndRefresh().then(() => { if (S.pendingBackup) sendBackupEmail("ניסיון חוזר (לא היה אינטרנט)"); });
 </script>
 </body>
 </html>
